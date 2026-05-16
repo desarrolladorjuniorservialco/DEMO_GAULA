@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>NEXO-147 | Acceso Seguro</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles_pc.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles_media.css') }}">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+</head>
+
+<body class="login-body">
+
+<div class="bg-grid"></div>
+<div class="orb orb-one"></div>
+<div class="orb orb-two"></div>
+
+<section class="login-screen">
+
+  <div class="login-visual">
+    <span class="tag">Sistema privado institucional</span>
+    <h1>NEXO-147</h1>
+    <p>
+      Plataforma demo para recepción, clasificación y seguimiento inicial de reportes GAULA.
+    </p>
+
+    <div class="login-orbit">
+      <div class="orbit-ring ring-one"></div>
+      <div class="orbit-ring ring-two"></div>
+      <div class="orbit-core">147</div>
+    </div>
+
+    <div class="login-metrics">
+      <div><strong>Admin</strong><span>Acceso completo</span></div>
+      <div><strong>Operador</strong><span>Solo formulario</span></div>
+    </div>
+  </div>
+
+  <div class="login-card">
+    <div class="login-card-header">
+      <h2>Acceso seguro</h2>
+      <p>Ingrese sus credenciales para continuar.</p>
+    </div>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <div class="alerts">
+          {% for category, message in messages %}
+            <div class="alert {{ category }}">{{ message }}</div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+
+    <form method="POST" class="form login-form">
+      <label>Usuario</label>
+      <input type="text" name="usuario" placeholder="admin u operador" required autocomplete="off">
+
+      <label>Contraseña</label>
+      <input type="password" name="password" placeholder="Contraseña de acceso" required>
+
+      <button class="btn primary" type="submit">Ingresar al sistema</button>
+    </form>
+
+    <div class="demo-users">
+      <p><strong>Usuario admin:</strong> admin / Admin147*</p>
+      <p><strong>Usuario operador:</strong> operador / Operador147*</p>
+    </div>
+  </div>
+
+</section>
+
+</body>
+</html>
