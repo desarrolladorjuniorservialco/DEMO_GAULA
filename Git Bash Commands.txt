@@ -1,0 +1,36 @@
+mkdir "Crear una carpeta nueva para guardar el repositorio"
+git init # comando para inciar git
+git config -global init.defaultBranch main  # con este comando se apunta a la raiz principal del proyecto
+
+
+# a partir de aquí ingresamos las credenciales de GitHub
+git config -global user.name "nombre de usuario"
+git config -global user.password "aqui va la contraseña del GitHub asociada al nombre de usuario"
+
+git config -list  # con este comando verificamos que la conexión del usuario se halla hecho de manera correcta
+
+
+
+# a partir de aqui, es importante generar las claves pública y privadas para la correcta conexión al repositorio
+
+ls -ls ~/.ssh   # con este comando se verifica estado actual de la configuración ssh
+
+
+# si no existe la clave SSH se empieza a generar
+ssh-keygen -t ed25519 -C "correo electrónico"    # Aquí se generar las claves, importante darle enter a todo para que quede la carpeta como ruta principal para el repositorio
+
+# A partir de aquí se inicia el agente SSH
+eval "$(ssh-agent -s)"
+# posteriormente se agrega el archivo de la clave pública
+ssh-add ~/.ssh/id_ed25519
+
+
+# Luego se copia la clave pública en el portapapeles para poder pegar la clave ssh en el repositorio.
+clip < ~/.ssh/id_ed25519.pub          o
+cat ~/.ssh/id_ed25519.pub | clip
+
+#	Luego vamos al repositorio en el apartado de configuraciones
+#	Ingresar a SSH and GPG keys
+#	presionar el botón en el parte superior derecha "new SSH key"
+#	Se agrega un título y se pega la clave en el partado "key", se presiona el botón "add SSH key"
+# 	Se verifica la conexión
