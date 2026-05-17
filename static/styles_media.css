@@ -23,7 +23,7 @@
   .hero {
     grid-template-columns: 1fr;
     padding: 38px 24px;
-    min-height: auto;
+    height: auto;
     border-radius: 32px;
   }
 

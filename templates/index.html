@@ -157,13 +157,14 @@
     {% endwith %}
   </div>
 
-  <form class="form" method="POST" action="{{ url_for('registrar_reporte') }}">
-
+  <form id="formulario-inicial" class="form" method="POST" action="{{ url_for('registrar_reporte') }}">
     <div class="form-section">
       <h3>1. Clasificación inicial</h3>
-
-      <select name="tipo_reporte" required>
-        <option value="">Tipo de reporte</option>
+      <label for="tipo_reporte" class="form-label">
+          Tipo de reporte *
+      </label>
+      <select id="tipo_reporte" name="tipo_reporte" required>
+        <option value="">--Seleccione una opción--</option>
         <option>Extorsión</option>
         <option>Secuestro</option>
         <option>Hurto</option>
@@ -174,16 +175,22 @@
         <option>Otro</option>
       </select>
 
-      <select name="prioridad" required>
-        <option value="">Prioridad operativa</option>
+      <label for="prioridad" class="form-label">
+        Prioridad *
+      </label>
+      <select id="prioridad" name="prioridad" required>
+        <option value="">--Seleccione una opción--</option>
         <option>Crítica</option>
         <option>Alta</option>
         <option>Media</option>
         <option>Baja</option>
       </select>
 
-      <select name="canal_recepcion">
-        <option value="">Canal de recepción</option>
+      <label for="canal_recepcion" class="form-label">
+        Canal de recepción *
+      </label>
+      <select id="canal_recepcion"  name="canal_recepcion" required>
+        <option value="">--Seleccione una opción---</option>
         <option>Línea 147</option>
         <option>Reporte presencial</option>
         <option>Unidad territorial</option>
@@ -191,12 +198,71 @@
         <option>Otro canal</option>
       </select>
 
-      <input type="text" name="unidad_gaula" placeholder="Unidad GAULA receptora">
+      <label for="unidad_gaula">
+        Unidad Gaula receptora *
+      </label>
+      <select name="unidad_gaula" id="unidad_gaula" required>
+        <option>--Seleccione una región o unidad--</option>
+        <optgroup label="Bogotá y Cundinamarca">
+            <option value="gaula_bogota">GAULA Policía Bogotá</option>
+            <option value="gaula_mil_bogota">GAULA Militar Bogotá</option>
+            <option value="gaula_cundinamarca">GAULA Policía Cundinamarca</option>
+            <option value="gaula_mil_cundinamarca">GAULA Militar Cundinamarca</option>
+        </optgroup>
+        
+        <optgroup label="Región Central y Eje Cafetero">
+            <option value="gaula_antioquia">GAULA Policía Antioquia</option>
+            <option value="gaula_medellin">GAULA Metropolitana de Medellín</option>
+            <option value="gaula_mil_oriente_antioquia">GAULA Militar Oriente Antioqueño</option>
+            <option value="gaula_caldas">GAULA Policía Caldas</option>
+            <option value="gaula_risaralda">GAULA Policía Risaralda</option>
+            <option value="gaula_quindio">GAULA Policía Quindío</option>
+            <option value="gaula_tolima">GAULA Policía Tolima</option>
+            <option value="gaula_huila">GAULA Policía Huila</option>
+        </optgroup>
+        
+        <optgroup label="Región Caribe y Norte">
+            <option value="gaula_barranquilla">GAULA Policía Barranquilla</option>
+            <option value="gaula_cartagena">GAULA Policía Cartagena</option>
+            <option value="gaula_santa_marta">GAULA Policía Santa Marta</option>
+            <option value="gaula_guajira">GAULA Policía La Guajira</option>
+            <option value="gaula_cesar">GAULA Policía Cesar</option>
+            <option value="gaula_cordoba">GAULA Policía Córdoba</option>
+            <option value="gaula_sucre">GAULA Policía Sucre</option>
+            <option value="gaula_san_andres">GAULA Policía San Andrés</option>
+        </optgroup>
+        
+        <optgroup label="Región Pacífica y Suroccidente">
+            <option value="gaula_valle">GAULA Policía Valle del Cauca</option>
+            <option value="gaula_cali">GAULA Metropolitana de Cali</option>
+            <option value="gaula_buenaventura">GAULA Militar Buenaventura</option>
+            <option value="gaula_cauca">GAULA Policía Cauca</option>
+            <option value="gaula_narino">GAULA Policía Nariño</option>
+            <option value="gaula_tumaco">GAULA Militar Tumaco</option>
+            <option value="gaula_choco">GAULA Policía Chocó</option>
+        </optgroup>
+        
+        <optgroup label="Llanos Orientales y Amazonía">
+            <option value="gaula_meta">GAULA Policía Meta</option>
+            <option value="gaula_casanare">GAULA Policía Casanare</option>
+            <option value="gaula_arauca">GAULA Policía Arauca</option>
+            <option value="gaula_guaviare">GAULA Policía Guaviare</option>
+            <option value="gaula_vaupes">GAULA Policía Vaupés</option>
+            <option value="gaula_amazonas">GAULA Policía Amazonas</option>
+        </optgroup>
+        
+        <optgroup label="Unidades de Élite">
+            <option value="gaula_elite_militar_1">GAULA Élite Militar No. 1</option>
+            <option value="gaula_elite_militar_2">GAULA Élite Militar No. 2</option>
+        </optgroup>
+      </select>
     </div>
 
     <div class="form-section">
-      <h3>2. Datos básicos del reportante</h3>
-
+      <h3>2. Denunciante</h3>
+      <label class="form-label">
+        Datos básicos del denunciante
+      </label>
       <input type="text" name="nombre_reportante" placeholder="Nombre del reportante">
       <input type="text" name="documento_reportante" placeholder="Documento o identificación">
       <input type="text" name="telefono_reportante" placeholder="Teléfono de contacto">
@@ -204,8 +270,10 @@
     </div>
 
     <div class="form-section">
-      <h3>3. Información del caso</h3>
-
+      <h3>3. Denuncia</h3>
+      <label class="form-label">
+        Información de la denuncia *
+      </label>
       <textarea name="descripcion" rows="5" placeholder="Descripción breve de los hechos" required></textarea>
       <input type="text" name="numero_extorsivo" placeholder="Número telefónico asociado">
       <input type="text" name="alias_sospechoso" placeholder="Alias, nombre o identificador del sospechoso">
@@ -215,7 +283,7 @@
       <textarea name="observaciones" rows="4" placeholder="Observaciones internas del operador"></textarea>
     </div>
 
-    <button class="btn primary" type="submit">Guardar reporte demo</button>
+    <button class="btn btn-primary" type="button" id="guardar_reporte">Guardar reporte</button>
   </form>
 </section>
 
@@ -252,8 +320,12 @@
 </main>
 
 <footer class="footer">
+  <img id="gaula" src="{{url_for('static', filename='assets/gaula.png')}}" alt="Gaula militar">
   <p>© NEXO-147 — Demo privada para validación funcional. Uso interno.</p>
+  <p>2026 - Todos los derechos reservados</p>
 </footer>
+
+<script src="{{url_for('static', filename='scripts.js')}}"></script>
 
 </body>
 </html>

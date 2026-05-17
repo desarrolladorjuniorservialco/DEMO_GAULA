@@ -1,0 +1,38 @@
+[debug] [2026-05-16T21:52:26.461Z] ----------------------------------------------------------------------
+[debug] [2026-05-16T21:52:26.464Z] Command:       C:\Program Files\nodejs\node.exe C:\Users\rojas\AppData\Roaming\npm\node_modules\firebase-tools\lib\bin\firebase.js init
+[debug] [2026-05-16T21:52:26.464Z] CLI Version:   15.18.0
+[debug] [2026-05-16T21:52:26.464Z] Platform:      win32
+[debug] [2026-05-16T21:52:26.464Z] Node Version:  v24.15.0
+[debug] [2026-05-16T21:52:26.464Z] Time:          Sat May 16 2026 16:52:26 GMT-0500 (Colombia Standard Time)
+[debug] [2026-05-16T21:52:26.464Z] ----------------------------------------------------------------------
+[debug] 
+[info] 
+     ######## #### ########  ######## ########     ###     ######  ########
+     ##        ##  ##     ## ##       ##     ##  ##   ##  ##       ##
+     ######    ##  ########  ######   ########  #########  ######  ######
+     ##        ##  ##    ##  ##       ##     ## ##     ##       ## ##
+     ##       #### ##     ## ######## ########  ##     ##  ######  ########
+
+You're about to initialize a Firebase project in this directory:
+
+  C:\Users\rojas\OneDrive\Documentos\PROJECTS\Servialco\DEMO_GAULA
+
+[info] 
+=== Project Setup
+[info] 
+[info] First, let's associate this project directory with a Firebase project.
+[info] You can create multiple project aliases by running firebase use --add, 
+[info] 
+[debug] [2026-05-16T21:52:43.906Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2026-05-16T21:52:43.907Z] > authorizing via signed-in user (rojascamilo090@gmail.com)
+[debug] [2026-05-16T21:52:43.910Z] Checked if tokens are valid: true, expires at: 1778971746947
+[debug] [2026-05-16T21:52:43.911Z] Checked if tokens are valid: true, expires at: 1778971746947
+[debug] [2026-05-16T21:52:43.913Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects pageSize=100
+[debug] [2026-05-16T21:52:55.020Z] *** [apiv2] error from fetch(https://firebase.googleapis.com/v1beta1/projects?pageSize=100, {"headers":{},"method":"GET","signal":{"reason":""}}): FetchError: request to https://firebase.googleapis.com/v1beta1/projects?pageSize=100 failed, reason: getaddrinfo ENOTFOUND firebase.googleapis.com
+[debug] [2026-05-16T21:52:55.021Z] Failed to make request to https://firebase.googleapis.com/v1beta1/projects?pageSize=100
+[debug] [2026-05-16T21:53:00.031Z] Error: Timed out.
+    at Timeout._onTimeout (C:\Users\rojas\AppData\Roaming\npm\node_modules\firebase-tools\lib\utils.js:309:49)
+    at listOnTimeout (node:internal/timers:605:17)
+    at process.processTimers (node:internal/timers:541:7)
+[error] 
+[error] Error: An unexpected error has occurred.
