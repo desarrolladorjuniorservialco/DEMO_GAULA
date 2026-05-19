@@ -4,6 +4,7 @@ from datetime import datetime
 import os
 import json
 import uuid
+from pathlib import Path as path
 
 nexo = Flask(__name__, static_folder="static", template_folder="templates")
 nexo.secret_key = os.getenv("SECRET_KEY", "demo-gaula-nexo-147")
@@ -21,9 +22,13 @@ USERS = {
         "password": "Operador147*",
         "role": "operador",
         "name": "Operador Línea 147"
+    },
+    "api": {
+        "password": "Api_general_nexo-147",
+        "role": "api_general",
+        "name": "API general del sistema"
     }
 }
-
 
 @nexo.after_request
 def disable_cache(response):
@@ -51,6 +56,21 @@ def admin_required(f):
             flash("Acceso restringido. Usuario operador solo puede registrar reportes.", "error")
             return redirect(url_for("home"))
         return f(*args, **kwargs)
+    return wrapper
+
+def api_required(f):
+
+    @wraps(f)
+    def wrapper(*args, **kwargs):
+
+        if "user" not in session:
+            return redirect(url_for("login"))
+
+        if session.get("role") not in ["api_general", "admin"]:
+            return redirect(url_for("home"))
+
+        return f(*args, **kwargs)
+
     return wrapper
 
 
@@ -100,11 +120,16 @@ def login():
         password = request.form.get("password", "").strip()
 
         user = USERS.get(usuario)
+        role = USERS.get("api", {}).get("role", {})
 
         if user and user["password"] == password:
             session["user"] = usuario
             session["role"] = user["role"]
             session["name"] = user["name"]
+
+            if session["role"] == role:
+                return redirect(url_for("api_general"))
+            
             return redirect(url_for("home"))
 
         flash("Usuario o contraseña incorrectos.", "error")
@@ -244,6 +269,26 @@ def cargar_formulario():
     except Exception as e:
         return jsonify({'Error': str(e)}), 500
 
+
+@nexo.route('/api_general', methods=['POST', 'GET'])
+@api_required
+def api_general():
+    carpeta_reportes = path('reportes')
+    archivo = "Reporte_260519_162606"
+    ruta = carpeta_reportes/f"{archivo}.json"
+    if not ruta.exists():
+        return jsonify({"Error": "Archivo inexistente, verifique elnombre del archivo."}), 404
+    try:
+        with open(ruta, 'r', encoding='utf-8') as archivo_json:
+            datos = json.load(archivo_json)
+            return jsonify(datos)
+    except json.JSONDecodeError:
+
+        return jsonify({
+            "error": "JSON inválido"
+        }), 400
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 
 
