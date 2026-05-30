@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block title %}
+NEXO-147 | Demo privada para GAULA
+{% endblock %}
+
+{% block contenido %}
+
+    <h2>Brechas de seguridad reportadas</h2>
+    <div class="separator">
+        <p>A continuación se muestra una lista de las brechas de seguridad reportadas en el
+        sistema. Esta información es crucial para el monitoreo y la respuesta oportuna 
+        por parte del equipo de seguridad.
+    </p>
+    <p>Cabe anotar que la informaci+on aquí reportada es extrae de una fuente abierta y gratuita</p>
+    </div>
+    
+
+    <table class="brechas-table" id="tablaBrechas">
+        <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>Dominio</th>
+                <th>Fecha de la brecha</th>
+                <th>Cantidad de Cuentas Afectadas</th>
+                <th>Descripción</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for brecha in brechas %}
+            <tr>
+                <td>{{ brecha.Nombre }}</td>
+                <td>{{ brecha.Dominio }}</td>
+                <td>{{ brecha.Fecha }}</td>
+                <td>{{ brecha.Cantidad_afectados }}</td>
+                <td>{{ brecha.Descripcion }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+
+    </table>
+
+{% endblock %}

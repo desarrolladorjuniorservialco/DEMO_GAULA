@@ -1,331 +1,291 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-  <meta charset="UTF-8">
-  <title>NEXO-147 | Plataforma Demo GAULA</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+{% extends "base.html" %}
 
-  <link rel="stylesheet" href="{{ url_for('static', filename='styles_pc.css') }}">
-  <link rel="stylesheet" href="{{ url_for('static', filename='styles_media.css') }}">
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
-</head>
+{% block title %}
+  NEXO-147 | Demo privada para GAULA
+{% endblock %}
 
-<body>
+{% block contenido %}
+  
 
-<div class="bg-grid"></div>
-<div class="orb orb-one"></div>
-<div class="orb orb-two"></div>
+  <main>
 
-<header class="header">
-  <a href="#" class="brand">
-    <img src="{{ url_for('static', filename='assets/logo.png') }}" alt="NEXO-147">
-    <div>
-      <strong>NEXO-147</strong>
-      <span>Ecosistema digital privado GAULA</span>
-    </div>
-  </a>
+  <section class="hero" id="inicio">
+    <div class="hero-text">
+      <span class="tag">Demo institucional privada</span>
 
-  <nav class="nav">
-    {% if session.get("role") == "admin" %}
-      <a href="#inicio">Inicio</a>
-      <a href="#modulos">Módulos</a>
-      <a href="#reporte">Reporte 147</a>
-      <a href="#trazabilidad">Trazabilidad</a>
-      <a href="{{ url_for('dashboard') }}">Dashboard</a>
-      <a href="{{ url_for('logout') }}">Cerrar sesión</a>
-    {% else %}
-      <a href="#reporte">Formulario 147</a>
-      <a href="{{ url_for('logout') }}">Cerrar sesión</a>
-    {% endif %}
-  </nav>
-</header>
+      <h1>Centro digital de recepción y seguimiento operativo.</h1>
 
-<main>
+      <p>
+        Plataforma demostrativa para registrar reportes de la línea 147, clasificar
+        novedades operativas y preparar la trazabilidad inicial del caso dentro de
+        un entorno privado, ordenado y escalable.
+      </p>
 
-<section class="hero" id="inicio">
-  <div class="hero-text">
-    <span class="tag">Demo institucional privada</span>
+      <div class="hero-actions">
+        <a href="#reporte" class="btn primary">Registrar reporte</a>
 
-    <h1>Centro digital de recepción y seguimiento operativo.</h1>
-
-    <p>
-      Plataforma demostrativa para registrar reportes de la línea 147, clasificar
-      novedades operativas y preparar la trazabilidad inicial del caso dentro de
-      un entorno privado, ordenado y escalable.
-    </p>
-
-    <div class="hero-actions">
-      <a href="#reporte" class="btn primary">Registrar reporte</a>
-
-      {% if session.get("role") == "admin" %}
-        <a href="#modulos" class="btn ghost">Ver módulos</a>
-        <a href="{{ url_for('dashboard') }}" class="btn ghost">Abrir dashboard</a>
-      {% endif %}
-    </div>
-
-    <div class="hero-metrics">
-      <div><strong>147</strong><span>Recepción nacional</span></div>
-      <div><strong>34</strong><span>GAULAs conectados</span></div>
-      <div><strong>24/7</strong><span>Gestión operativa</span></div>
-    </div>
-  </div>
-
-  <div class="hero-panel">
-    <div class="nexo-core">
-      <div class="nexo-ring ring-a"></div>
-      <div class="nexo-ring ring-b"></div>
-      <div class="nexo-ring ring-c"></div>
-      <div class="nexo-center">
-        <strong>147</strong>
-        <span>NEXO</span>
+        {% if session.get("role") == "admin" %}
+          <a href="#modulos" class="btn ghost">Ver módulos</a>
+          <a href="{{ url_for('dashboard') }}" class="btn ghost">Abrir dashboard</a>
+        {% endif %}
       </div>
 
-      <div class="node node-one">Recepción</div>
-      <div class="node node-two">Análisis</div>
-      <div class="node node-three">Seguimiento</div>
-      <div class="node node-four">Dashboard</div>
-    </div>
-  </div>
-</section>
-
-{% if session.get("role") == "admin" %}
-<section class="section" id="modulos">
-  <div class="section-title">
-    <span class="tag">Componentes funcionales</span>
-    <h2>Módulos base de la demo</h2>
-    <p>
-      Vista administrativa para validar componentes, navegación, captura inicial
-      de información y estructura futura de análisis operativo.
-    </p>
-  </div>
-
-  <div class="service-grid">
-    <article class="service-card">
-      <div class="icon">📞</div>
-      <h3>Recepción 147</h3>
-      <p>Ingreso estandarizado de reportes, llamadas, novedades y casos críticos.</p>
-    </article>
-
-    <article class="service-card">
-      <div class="icon">🛡️</div>
-      <h3>Clasificación del caso</h3>
-      <p>Tipificación preliminar: extorsión, secuestro, hurto, amenaza, fraude u otro evento.</p>
-    </article>
-
-    <article class="service-card">
-      <div class="icon">🔎</div>
-      <h3>Datos de inteligencia</h3>
-      <p>Captura inicial de teléfonos, alias, medios de pago, evidencia y observaciones.</p>
-    </article>
-
-    <article class="service-card">
-      <div class="icon">📊</div>
-      <h3>Dashboard operativo</h3>
-      <p>Base para revisión de reportes, KPIs, estados y toma de decisiones.</p>
-    </article>
-  </div>
-</section>
-{% endif %}
-
-<section class="contact" id="reporte">
-  <div class="contact-text">
-    <span class="tag">Formulario línea 147</span>
-    <h2>Registro básico de reporte</h2>
-    <p>
-      Formulario demostrativo para capturar la información inicial del caso.
-      En esta etapa, los datos se guardan localmente en archivo JSON.
-    </p>
-
-    <div class="security-note">
-      <strong>Sesión activa</strong>
-      <span>{{ session.get("name") }} · Rol: {{ session.get("role") }}</span>
+      <div class="hero-metrics">
+        <div><strong>147</strong><span>Recepción nacional</span></div>
+        <div><strong>34</strong><span>GAULAs conectados</span></div>
+        <div><strong>24/7</strong><span>Gestión operativa</span></div>
+      </div>
     </div>
 
-    <div class="security-note">
-      <strong>Modo demo privado</strong>
-      <span>Sin correo externo · Sin nube · Sin base de datos · Guardado local controlado</span>
-    </div>
-
-    {% with messages = get_flashed_messages(with_categories=true) %}
-      {% if messages %}
-        <div class="alerts">
-          {% for category, message in messages %}
-            <div class="alert {{ category }}">{{ message }}</div>
-          {% endfor %}
+    <div class="hero-panel">
+      <div class="nexo-core">
+        <div class="nexo-ring ring-a"></div>
+        <div class="nexo-ring ring-b"></div>
+        <div class="nexo-ring ring-c"></div>
+        <div class="nexo-center">
+          <strong>147</strong>
+          <span>NEXO</span>
         </div>
-      {% endif %}
-    {% endwith %}
-  </div>
 
-  <form id="formulario-inicial" class="form" method="POST" action="{{ url_for('registrar_reporte') }}">
-    <div class="form-section">
-      <h3>1. Clasificación inicial</h3>
-      <label for="tipo_reporte" class="form-label">
-          Tipo de reporte *
-      </label>
-      <select id="tipo_reporte" name="tipo_reporte" required>
-        <option value="">--Seleccione una opción--</option>
-        <option>Extorsión</option>
-        <option>Secuestro</option>
-        <option>Hurto</option>
-        <option>Amenaza</option>
-        <option>Fraude digital</option>
-        <option>Desaparición asociada</option>
-        <option>Información de inteligencia</option>
-        <option>Otro</option>
-      </select>
+        <div class="node node-one">Recepción</div>
+        <div class="node node-two">Análisis</div>
+        <div class="node node-three">Seguimiento</div>
+        <div class="node node-four">Dashboard</div>
+      </div>
+    </div>
+  </section>
 
-      <label for="prioridad" class="form-label">
-        Prioridad *
-      </label>
-      <select id="prioridad" name="prioridad" required>
-        <option value="">--Seleccione una opción--</option>
-        <option>Crítica</option>
-        <option>Alta</option>
-        <option>Media</option>
-        <option>Baja</option>
-      </select>
-
-      <label for="canal_recepcion" class="form-label">
-        Canal de recepción *
-      </label>
-      <select id="canal_recepcion"  name="canal_recepcion" required>
-        <option value="">--Seleccione una opción---</option>
-        <option>Línea 147</option>
-        <option>Reporte presencial</option>
-        <option>Unidad territorial</option>
-        <option>Correo institucional</option>
-        <option>Otro canal</option>
-      </select>
-
-      <label for="unidad_gaula">
-        Unidad Gaula receptora *
-      </label>
-      <select name="unidad_gaula" id="unidad_gaula" required>
-        <option>--Seleccione una región o unidad--</option>
-        <optgroup label="Bogotá y Cundinamarca">
-            <option value="gaula_bogota">GAULA Policía Bogotá</option>
-            <option value="gaula_mil_bogota">GAULA Militar Bogotá</option>
-            <option value="gaula_cundinamarca">GAULA Policía Cundinamarca</option>
-            <option value="gaula_mil_cundinamarca">GAULA Militar Cundinamarca</option>
-        </optgroup>
-        
-        <optgroup label="Región Central y Eje Cafetero">
-            <option value="gaula_antioquia">GAULA Policía Antioquia</option>
-            <option value="gaula_medellin">GAULA Metropolitana de Medellín</option>
-            <option value="gaula_mil_oriente_antioquia">GAULA Militar Oriente Antioqueño</option>
-            <option value="gaula_caldas">GAULA Policía Caldas</option>
-            <option value="gaula_risaralda">GAULA Policía Risaralda</option>
-            <option value="gaula_quindio">GAULA Policía Quindío</option>
-            <option value="gaula_tolima">GAULA Policía Tolima</option>
-            <option value="gaula_huila">GAULA Policía Huila</option>
-        </optgroup>
-        
-        <optgroup label="Región Caribe y Norte">
-            <option value="gaula_barranquilla">GAULA Policía Barranquilla</option>
-            <option value="gaula_cartagena">GAULA Policía Cartagena</option>
-            <option value="gaula_santa_marta">GAULA Policía Santa Marta</option>
-            <option value="gaula_guajira">GAULA Policía La Guajira</option>
-            <option value="gaula_cesar">GAULA Policía Cesar</option>
-            <option value="gaula_cordoba">GAULA Policía Córdoba</option>
-            <option value="gaula_sucre">GAULA Policía Sucre</option>
-            <option value="gaula_san_andres">GAULA Policía San Andrés</option>
-        </optgroup>
-        
-        <optgroup label="Región Pacífica y Suroccidente">
-            <option value="gaula_valle">GAULA Policía Valle del Cauca</option>
-            <option value="gaula_cali">GAULA Metropolitana de Cali</option>
-            <option value="gaula_buenaventura">GAULA Militar Buenaventura</option>
-            <option value="gaula_cauca">GAULA Policía Cauca</option>
-            <option value="gaula_narino">GAULA Policía Nariño</option>
-            <option value="gaula_tumaco">GAULA Militar Tumaco</option>
-            <option value="gaula_choco">GAULA Policía Chocó</option>
-        </optgroup>
-        
-        <optgroup label="Llanos Orientales y Amazonía">
-            <option value="gaula_meta">GAULA Policía Meta</option>
-            <option value="gaula_casanare">GAULA Policía Casanare</option>
-            <option value="gaula_arauca">GAULA Policía Arauca</option>
-            <option value="gaula_guaviare">GAULA Policía Guaviare</option>
-            <option value="gaula_vaupes">GAULA Policía Vaupés</option>
-            <option value="gaula_amazonas">GAULA Policía Amazonas</option>
-        </optgroup>
-        
-        <optgroup label="Unidades de Élite">
-            <option value="gaula_elite_militar_1">GAULA Élite Militar No. 1</option>
-            <option value="gaula_elite_militar_2">GAULA Élite Militar No. 2</option>
-        </optgroup>
-      </select>
+  {% if session.get("role") == "admin" %}
+  <section class="section" id="modulos">
+    <div class="section-title">
+      <span class="tag">Componentes funcionales</span>
+      <h2>Módulos base de la demo</h2>
+      <p>
+        Vista administrativa para validar componentes, navegación, captura inicial
+        de información y estructura futura de análisis operativo.
+      </p>
     </div>
 
-    <div class="form-section">
-      <h3>2. Denunciante</h3>
-      <label class="form-label">
-        Datos básicos del denunciante
-      </label>
-      <input type="text" name="nombre_reportante" placeholder="Nombre del reportante">
-      <input type="text" name="documento_reportante" placeholder="Documento o identificación">
-      <input type="text" name="telefono_reportante" placeholder="Teléfono de contacto">
-      <input type="text" name="ubicacion" placeholder="Ciudad, departamento o zona del evento">
+    <div class="service-grid">
+      <article class="service-card">
+        <div class="icon">📞</div>
+        <h3>Recepción 147</h3>
+        <p>Ingreso estandarizado de reportes, llamadas, novedades y casos críticos.</p>
+      </article>
+
+      <article class="service-card">
+        <div class="icon">🛡️</div>
+        <h3>Clasificación del caso</h3>
+        <p>Tipificación preliminar: extorsión, secuestro, hurto, amenaza, fraude u otro evento.</p>
+      </article>
+
+      <article class="service-card">
+        <div class="icon">🔎</div>
+        <h3>Datos de inteligencia</h3>
+        <p>Captura inicial de teléfonos, alias, medios de pago, evidencia y observaciones.</p>
+      </article>
+
+      <article class="service-card">
+        <div class="icon">📊</div>
+        <h3>Dashboard operativo</h3>
+        <p>Base para revisión de reportes, KPIs, estados y toma de decisiones.</p>
+      </article>
+    </div>
+  </section>
+  {% endif %}
+
+  <section class="contact" id="reporte">
+    <div class="contact-text">
+      <span class="tag">Formulario línea 147</span>
+      <h2>Registro básico de reporte</h2>
+      <p>
+        Formulario demostrativo para capturar la información inicial del caso.
+        En esta etapa, los datos se guardan localmente en archivo JSON.
+      </p>
+
+      <div class="security-note">
+        <strong>Sesión activa</strong>
+        <span>{{ session.get("name") }} · Rol: {{ session.get("role") }}</span>
+      </div>
+
+      <div class="security-note">
+        <strong>Modo demo privado</strong>
+        <span>Sin correo externo · Sin nube · Sin base de datos · Guardado local controlado</span>
+      </div>
+
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+          <div class="alerts">
+            {% for category, message in messages %}
+              <div class="alert {{ category }}">{{ message }}</div>
+            {% endfor %}
+          </div>
+        {% endif %}
+      {% endwith %}
     </div>
 
-    <div class="form-section">
-      <h3>3. Denuncia</h3>
-      <label class="form-label">
-        Información de la denuncia *
-      </label>
-      <textarea name="descripcion" rows="5" placeholder="Descripción breve de los hechos" required></textarea>
-      <input type="text" name="numero_extorsivo" placeholder="Número telefónico asociado">
-      <input type="text" name="alias_sospechoso" placeholder="Alias, nombre o identificador del sospechoso">
-      <input type="text" name="medio_pago" placeholder="Medio de pago, cuenta, billetera digital o canal usado">
-      <input type="text" name="valor_exigido" placeholder="Valor exigido o pérdida estimada">
-      <textarea name="evidencia" rows="4" placeholder="Descripción de evidencias: audios, capturas, enlaces, documentos"></textarea>
-      <textarea name="observaciones" rows="4" placeholder="Observaciones internas del operador"></textarea>
-    </div>
+    <form id="formulario-inicial" class="form" method="POST" action="{{ url_for('registrar_reporte') }}">
+      <div class="form-section">
+        <h3>1. Clasificación inicial</h3>
+        <label for="tipo_reporte" class="form-label">
+            Tipo de reporte *
+        </label>
+        <select id="tipo_reporte" name="tipo_reporte" required>
+          <option value="">--Seleccione una opción--</option>
+          <option>Extorsión</option>
+          <option>Secuestro</option>
+          <option>Hurto</option>
+          <option>Amenaza</option>
+          <option>Fraude digital</option>
+          <option>Desaparición asociada</option>
+          <option>Información de inteligencia</option>
+          <option>Otro</option>
+        </select>
 
-    <button class="btn btn-primary" type="button" id="guardar_reporte">Guardar reporte</button>
-  </form>
-</section>
+        <label for="prioridad" class="form-label">
+          Prioridad *
+        </label>
+        <select id="prioridad" name="prioridad" required>
+          <option value="">--Seleccione una opción--</option>
+          <option>Crítica</option>
+          <option>Alta</option>
+          <option>Media</option>
+          <option>Baja</option>
+        </select>
 
-{% if session.get("role") == "admin" %}
-<section class="split" id="trazabilidad">
-  <div>
-    <span class="tag">Flujo operativo</span>
-    <h2>Ciclo básico del caso</h2>
-    <p>
-      Esta versión permite simular el ingreso del caso y preparar la estructura
-      para futuras etapas: validación, asignación, análisis, seguimiento y cierre.
-    </p>
+        <label for="canal_recepcion" class="form-label">
+          Canal de recepción *
+        </label>
+        <select id="canal_recepcion"  name="canal_recepcion" required>
+          <option value="">--Seleccione una opción---</option>
+          <option>Línea 147</option>
+          <option>Reporte presencial</option>
+          <option>Unidad territorial</option>
+          <option>Correo institucional</option>
+          <option>Otro canal</option>
+        </select>
 
-    <ul class="check-list">
-      <li>Ingreso único del reporte.</li>
-      <li>Clasificación preliminar del delito.</li>
-      <li>Captura de datos operativos iniciales.</li>
-      <li>Registro local con identificador único.</li>
-      <li>Base preparada para futura conexión con base de datos.</li>
-    </ul>
-  </div>
+        <label for="unidad_gaula">
+          Unidad Gaula receptora *
+        </label>
+        <select name="unidad_gaula" id="unidad_gaula" required>
+          <option>--Seleccione una región o unidad--</option>
+          <optgroup label="Bogotá y Cundinamarca">
+              <option value="gaula_bogota">GAULA Policía Bogotá</option>
+              <option value="gaula_mil_bogota">GAULA Militar Bogotá</option>
+              <option value="gaula_cundinamarca">GAULA Policía Cundinamarca</option>
+              <option value="gaula_mil_cundinamarca">GAULA Militar Cundinamarca</option>
+          </optgroup>
+          
+          <optgroup label="Región Central y Eje Cafetero">
+              <option value="gaula_antioquia">GAULA Policía Antioquia</option>
+              <option value="gaula_medellin">GAULA Metropolitana de Medellín</option>
+              <option value="gaula_mil_oriente_antioquia">GAULA Militar Oriente Antioqueño</option>
+              <option value="gaula_caldas">GAULA Policía Caldas</option>
+              <option value="gaula_risaralda">GAULA Policía Risaralda</option>
+              <option value="gaula_quindio">GAULA Policía Quindío</option>
+              <option value="gaula_tolima">GAULA Policía Tolima</option>
+              <option value="gaula_huila">GAULA Policía Huila</option>
+          </optgroup>
+          
+          <optgroup label="Región Caribe y Norte">
+              <option value="gaula_barranquilla">GAULA Policía Barranquilla</option>
+              <option value="gaula_cartagena">GAULA Policía Cartagena</option>
+              <option value="gaula_santa_marta">GAULA Policía Santa Marta</option>
+              <option value="gaula_guajira">GAULA Policía La Guajira</option>
+              <option value="gaula_cesar">GAULA Policía Cesar</option>
+              <option value="gaula_cordoba">GAULA Policía Córdoba</option>
+              <option value="gaula_sucre">GAULA Policía Sucre</option>
+              <option value="gaula_san_andres">GAULA Policía San Andrés</option>
+          </optgroup>
+          
+          <optgroup label="Región Pacífica y Suroccidente">
+              <option value="gaula_valle">GAULA Policía Valle del Cauca</option>
+              <option value="gaula_cali">GAULA Metropolitana de Cali</option>
+              <option value="gaula_buenaventura">GAULA Militar Buenaventura</option>
+              <option value="gaula_cauca">GAULA Policía Cauca</option>
+              <option value="gaula_narino">GAULA Policía Nariño</option>
+              <option value="gaula_tumaco">GAULA Militar Tumaco</option>
+              <option value="gaula_choco">GAULA Policía Chocó</option>
+          </optgroup>
+          
+          <optgroup label="Llanos Orientales y Amazonía">
+              <option value="gaula_meta">GAULA Policía Meta</option>
+              <option value="gaula_casanare">GAULA Policía Casanare</option>
+              <option value="gaula_arauca">GAULA Policía Arauca</option>
+              <option value="gaula_guaviare">GAULA Policía Guaviare</option>
+              <option value="gaula_vaupes">GAULA Policía Vaupés</option>
+              <option value="gaula_amazonas">GAULA Policía Amazonas</option>
+          </optgroup>
+          
+          <optgroup label="Unidades de Élite">
+              <option value="gaula_elite_militar_1">GAULA Élite Militar No. 1</option>
+              <option value="gaula_elite_militar_2">GAULA Élite Militar No. 2</option>
+          </optgroup>
+        </select>
+      </div>
 
-  <div class="tech-box">
-    <div class="tech-line"></div>
-    <div class="tech-row"><span>Recepción</span><strong>147</strong></div>
-    <div class="tech-row"><span>Estado inicial</span><strong>Recibido</strong></div>
-    <div class="tech-row"><span>Almacenamiento</span><strong>JSON</strong></div>
-    <div class="tech-row"><span>Arquitectura futura</span><strong>BD</strong></div>
-    <div class="tech-row"><span>Modo</span><strong>Privado</strong></div>
-  </div>
-</section>
-{% endif %}
+      <div class="form-section">
+        <h3>2. Denunciante</h3>
+        <label class="form-label">
+          Datos básicos del denunciante
+        </label>
+        <input type="text" name="nombre_reportante" placeholder="Nombre del reportante">
+        <input type="text" name="documento_reportante" placeholder="Documento o identificación">
+        <input type="text" name="telefono_reportante" placeholder="Teléfono de contacto">
+        <input type="text" name="ubicacion" placeholder="Ciudad, departamento o zona del evento">
+      </div>
 
-</main>
+      <div class="form-section">
+        <h3>3. Denuncia</h3>
+        <label class="form-label">
+          Información de la denuncia *
+        </label>
+        <textarea name="descripcion" rows="5" placeholder="Descripción breve de los hechos" required></textarea>
+        <input type="text" name="numero_extorsivo" placeholder="Número telefónico asociado">
+        <input type="text" name="alias_sospechoso" placeholder="Alias, nombre o identificador del sospechoso">
+        <input type="text" name="medio_pago" placeholder="Medio de pago, cuenta, billetera digital o canal usado">
+        <input type="text" name="valor_exigido" placeholder="Valor exigido o pérdida estimada">
+        <textarea name="evidencia" rows="4" placeholder="Descripción de evidencias: audios, capturas, enlaces, documentos"></textarea>
+        <textarea name="observaciones" rows="4" placeholder="Observaciones internas del operador"></textarea>
+      </div>
 
-<footer class="footer">
-  <img id="gaula" src="{{url_for('static', filename='assets/gaula.png')}}" alt="Gaula militar">
-  <p>© NEXO-147 — Demo privada para validación funcional. Uso interno.</p>
-  <p>2026 - Todos los derechos reservados</p>
-</footer>
+      <button class="btn btn-primary" type="button" id="guardar_reporte">Guardar reporte</button>
+    </form>
+  </section>
 
-<script src="{{url_for('static', filename='scripts.js')}}"></script>
+  {% if session.get("role") == "admin" %}
+      <section class="split" id="trazabilidad">
+        <div>
+          <span class="tag">Flujo operativo</span>
+          <h2>Ciclo básico del caso</h2>
+          <p>
+            Esta versión permite simular el ingreso del caso y preparar la estructura
+            para futuras etapas: validación, asignación, análisis, seguimiento y cierre.
+          </p>
 
-</body>
-</html>
+          <ul class="check-list">
+            <li>Ingreso único del reporte.</li>
+            <li>Clasificación preliminar del delito.</li>
+            <li>Captura de datos operativos iniciales.</li>
+            <li>Registro local con identificador único.</li>
+            <li>Base preparada para futura conexión con base de datos.</li>
+          </ul>
+        </div>
+
+        <div class="tech-box">
+          <div class="tech-line"></div>
+          <div class="tech-row"><span>Recepción</span><strong>147</strong></div>
+          <div class="tech-row"><span>Estado inicial</span><strong>Recibido</strong></div>
+          <div class="tech-row"><span>Almacenamiento</span><strong>JSON</strong></div>
+          <div class="tech-row"><span>Arquitectura futura</span><strong>BD</strong></div>
+          <div class="tech-row"><span>Modo</span><strong>Privado</strong></div>
+        </div>
+      </section>
+    {% endif %}
+
+  </main>
+
+{% endblock %}
+
+{% include 'footer.html' %}

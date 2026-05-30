@@ -5,6 +5,8 @@ import os
 import json
 import uuid
 from pathlib import Path as path
+import requests
+from bs4 import BeautifulSoup
 
 nexo = Flask(__name__, static_folder="static", template_folder="templates")
 nexo.secret_key = os.getenv("SECRET_KEY", "demo-gaula-nexo-147")
@@ -59,18 +61,13 @@ def admin_required(f):
     return wrapper
 
 def api_required(f):
-
     @wraps(f)
     def wrapper(*args, **kwargs):
-
         if "user" not in session:
             return redirect(url_for("login"))
-
         if session.get("role") not in ["api_general", "admin"]:
             return redirect(url_for("home"))
-
         return f(*args, **kwargs)
-
     return wrapper
 
 
@@ -289,6 +286,35 @@ def api_general():
         }), 400
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+    
+
+# Conexion api externa
+@nexo.route('/api_externa', methods=['POST', 'GET'])
+def api_externa():
+    url = "https://haveibeenpwned.com/api/v3/breaches"
+    if request.method == 'GET':
+        try:
+            response = requests.get(url)
+            if response.status_code != 200:
+                return jsonify({"error": f"Error al conectar con la API externa: {response.status_code}"}), response.status_code
+            else:
+                response.raise_for_status()
+                datos = response.json()
+                resultados = []
+                for brecha in datos:
+                    resultados.append({
+                        "Nombre": brecha["Name"],
+                        "Dominio": brecha["Domain"],
+                        "Fecha": brecha["BreachDate"],
+                        "Cantidad_afectados": brecha["PwnCount"],
+                        "Descripcion": brecha["Description"]
+                    })
+                return render_template("brechas_seguridad.html", brechas=resultados)
+        except Exception as e:  
+            return jsonify({"error": str(e)}), 500
+    else:
+        return jsonify({"Mensaje": "Endpoint de API externa, envía una solicitud POST con datos JSON."}), 200
+    
 
 
 

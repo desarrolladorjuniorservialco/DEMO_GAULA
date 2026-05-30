@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8">
+    <title>NEXO-147 | Plataforma Demo GAULA</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles_pc.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles_media.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/jquery.dataTables.min.css">
+  </head>
+
+  <body>
+    <div class="bg-grid"></div>
+    <div class="orb orb-one"></div>
+    <div class="orb orb-two"></div>
+      <header class="header">
+        <a href="#" class="brand">
+          <img src="{{ url_for('static', filename='assets/logo.png')}}" alt="NEXO-147">
+          <div>
+            <strong>NEXO-147</strong>
+            <span>Ecosistema digital privado GAULA</span>
+          </div>
+        </a>
+
+        <nav class="nav">
+          {% if session.get("role") == "admin" %}
+            <a href="#inicio">Inicio</a>
+            <a href="#modulos">Módulos</a>
+            <a href="#reporte">Reporte 147</a>
+            <a href="#trazabilidad">Trazabilidad</a>
+            <a href="{{ url_for('dashboard') }}">Dashboard</a>
+            <a href="{{ url_for('logout') }}">Cerrar sesión</a>
+            <a href="{{ url_for('api_externa') }}">Verificación de brechas de seguridad</a>
+          {% else %}
+            <a href="#reporte">Formulario 147</a>
+            <a href="{{ url_for('logout') }}">Cerrar sesión</a>
+          {% endif %}
+        </nav>
+      </header>
+
+    <main>
+      {% block contenido %}
+      {% endblock %}
+    </main>
+      
+    
+    {% include 'footer.html' %}
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
+    <script src="{{ url_for('static', filename='tablas.js') }}"></script>
+  </body>
+  
+</html>

@@ -291,3 +291,20 @@
     height: 300px;
   }
 }
+
+.separator {
+  padding: 25px;
+  margin: auto auto 50px 50px;
+  border-radius: 8px;
+  margin-bottom: 24px;
+}
+
+.brechas-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: 16px;
+  font-family: 'Inter', sans-serif;
+  font-weight: 500;
+  color: #333;
+}
