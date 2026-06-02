@@ -25,7 +25,7 @@
     </div>
   </a>
 
-  <nav class="nav">
+  <nav class="nav" aria-label="Navegación principal del panel">
     <a href="{{ url_for('dashboard') }}">Dashboard</a>
     <a href="{{ url_for('home') }}">Formulario 147</a>
     <a href="{{ url_for('logout') }}">Salir</a>
@@ -36,18 +36,35 @@
 
 <section class="dashboard">
   <div class="section-title">
-    <span class="tag">Centro de mando demo</span>
-    <h2>Dashboard operativo NEXO-147</h2>
+    <h1>Dashboard operativo NEXO-147</h1>
     <p>Vista demostrativa para monitoreo de reportes, criticidad, distribución territorial y seguimiento inicial.</p>
   </div>
 
   <div class="kpi-grid">
-    <div class="kpi-card"><span>Casos activos</span><strong>{{ stats.casos_activos }}</strong></div>
-    <div class="kpi-card alert-kpi"><span>Casos críticos</span><strong>{{ stats.casos_criticos }}</strong></div>
-    <div class="kpi-card"><span>GAULAs conectados</span><strong>{{ stats.gaulas_conectados }}</strong></div>
-    <div class="kpi-card"><span>Respuesta media</span><strong>{{ stats.tiempo_respuesta }}</strong></div>
-    <div class="kpi-card"><span>Reportes 147</span><strong>{{ stats.reportes_147 }}</strong></div>
-    <div class="kpi-card"><span>Alertas OSINT</span><strong>{{ stats.alertas_osint }}</strong></div>
+    <article class="kpi-card" role="figure" aria-label="Casos activos: {{ stats.casos_activos }}">
+      <span>Casos activos</span>
+      <strong>{{ stats.casos_activos }}</strong>
+    </article>
+    <article class="kpi-card alert-kpi" role="figure" aria-label="Casos críticos: {{ stats.casos_criticos }}">
+      <span>Casos críticos</span>
+      <strong>{{ stats.casos_criticos }}</strong>
+    </article>
+    <article class="kpi-card" role="figure" aria-label="GAULAs conectados: {{ stats.gaulas_conectados }}">
+      <span>GAULAs conectados</span>
+      <strong>{{ stats.gaulas_conectados }}</strong>
+    </article>
+    <article class="kpi-card" role="figure" aria-label="Respuesta media: {{ stats.tiempo_respuesta }}">
+      <span>Respuesta media</span>
+      <strong>{{ stats.tiempo_respuesta }}</strong>
+    </article>
+    <article class="kpi-card" role="figure" aria-label="Reportes 147: {{ stats.reportes_147 }}">
+      <span>Reportes 147</span>
+      <strong>{{ stats.reportes_147 }}</strong>
+    </article>
+    <article class="kpi-card" role="figure" aria-label="Alertas OSINT: {{ stats.alertas_osint }}">
+      <span>Alertas OSINT</span>
+      <strong>{{ stats.alertas_osint }}</strong>
+    </article>
   </div>
 
   <div class="dashboard-grid">
@@ -71,7 +88,7 @@
     <div class="dashboard-card">
       <h3>Radar de criticidad operativa</h3>
 
-      <div class="radar-box">
+      <div class="radar-box" role="img" aria-label="Radar de criticidad operativa — visualización demo">
         <div class="radar-circle r1"></div>
         <div class="radar-circle r2"></div>
         <div class="radar-circle r3"></div>
@@ -89,7 +106,7 @@
     <div class="dashboard-card">
       <h3>Mapa nacional demo</h3>
 
-      <div class="map-demo-pro">
+      <div class="map-demo-pro" role="img" aria-label="Mapa nacional demo — georreferenciación futura">
         <div class="map-grid"></div>
         <div class="map-zone z1">Bogotá</div>
         <div class="map-zone z2">Meta</div>
@@ -124,13 +141,14 @@
 
     <div class="table-wrap">
       <table>
+        <caption class="sr-only">Últimos reportes registrados en el sistema</caption>
         <thead>
           <tr>
-            <th>Fecha</th>
-            <th>Tipo</th>
-            <th>Prioridad</th>
-            <th>Unidad</th>
-            <th>Estado</th>
+            <th scope="col">Fecha</th>
+            <th scope="col">Tipo</th>
+            <th scope="col">Prioridad</th>
+            <th scope="col">Unidad</th>
+            <th scope="col">Estado</th>
           </tr>
         </thead>
         <tbody>

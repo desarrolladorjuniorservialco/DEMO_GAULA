@@ -7,6 +7,8 @@
 
     <link rel="stylesheet" href="{{ url_for('static', filename='styles_pc.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='styles_media.css') }}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/jquery.dataTables.min.css">
   </head>
@@ -16,7 +18,7 @@
     <div class="orb orb-one"></div>
     <div class="orb orb-two"></div>
       <header class="header">
-        <a href="#" class="brand">
+        <a href="{{ url_for('home') }}" class="brand">
           <img src="{{ url_for('static', filename='assets/logo.png')}}" alt="NEXO-147">
           <div>
             <strong>NEXO-147</strong>
@@ -24,7 +26,7 @@
           </div>
         </a>
 
-        <nav class="nav">
+        <nav class="nav" aria-label="Navegación principal">
           {% if session.get("role") == "admin" %}
             <a href="#inicio">Inicio</a>
             <a href="#modulos">Módulos</a>

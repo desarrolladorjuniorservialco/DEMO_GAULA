@@ -1,0 +1,215 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-06-02T00:00:00Z",
+  "title": "Design System: NEXO-147",
+  "extensions": {
+    "colorMeta": {
+      "operational-cyan": {
+        "role": "primary",
+        "displayName": "Cian Operativo",
+        "canonical": "#2596be",
+        "tonalRamp": ["#041621", "#0b2b3e", "#124159", "#1b5873", "#2596be", "#49aec8", "#7ecfe0", "#d0f2fc"]
+      },
+      "command-signal": {
+        "role": "primary",
+        "displayName": "Señal de Mando",
+        "canonical": "#41d2ff",
+        "tonalRamp": ["#041b24", "#0a3345", "#134e68", "#1d6b8c", "#2a8fb5", "#41d2ff", "#7de1ff", "#c2f2ff"]
+      },
+      "status-green": {
+        "role": "secondary",
+        "displayName": "Verde Estado",
+        "canonical": "#6fca52",
+        "tonalRamp": ["#0a1f07", "#123b0d", "#1d5b14", "#2e7b1e", "#44a02c", "#6fca52", "#96e07a", "#c8f5b0"]
+      },
+      "status-green-bright": {
+        "role": "secondary",
+        "displayName": "Verde Estado Brillante",
+        "canonical": "#74e04b",
+        "tonalRamp": ["#0b2207", "#15400e", "#215f17", "#317f22", "#4da531", "#74e04b", "#9aed74", "#c4f8a8"]
+      },
+      "critical-red": {
+        "role": "tertiary",
+        "displayName": "Rojo Crítico",
+        "canonical": "#ff5a5a",
+        "tonalRamp": ["#2a0808", "#4d1010", "#711818", "#952020", "#bb2c2c", "#ff5a5a", "#ff8585", "#ffb8b8"]
+      },
+      "command-black": {
+        "role": "neutral",
+        "displayName": "Negro de Comando",
+        "canonical": "#07111f",
+        "tonalRamp": ["#07111f", "#0d1b2e", "#122537", "#183044", "#1f3c53", "#2b5470", "#3d728f", "#5a9bb0"]
+      },
+      "ops-navy": {
+        "role": "neutral",
+        "displayName": "Azul Operaciones",
+        "canonical": "#0d1b2e",
+        "tonalRamp": ["#0d1b2e", "#122537", "#183044", "#1f3c53", "#2b5470", "#3d728f", "#5a9bb0", "#86bfd2"]
+      },
+      "clear-signal": {
+        "role": "neutral",
+        "displayName": "Señal Clara",
+        "canonical": "#eefbff",
+        "tonalRamp": ["#b7d2dc", "#c5dde6", "#d3e8ef", "#e1f2f7", "#eefbff", "#f3fcff", "#f8feff", "#ffffff"]
+      },
+      "ops-mist": {
+        "role": "neutral",
+        "displayName": "Niebla Ops",
+        "canonical": "#b7d2dc",
+        "tonalRamp": ["#4a7a8a", "#6090a0", "#75a7b8", "#8dbdce", "#a2cfdb", "#b7d2dc", "#cce3ea", "#e0f0f5"]
+      }
+    },
+    "shadows": [
+      {
+        "name": "card-diffuse",
+        "value": "0 24px 60px rgba(0,0,0,0.26)",
+        "purpose": "Sombra estándar de card. Produce elevación flotante sin bordes duros."
+      },
+      {
+        "name": "card-heavy",
+        "value": "0 34px 100px rgba(0,0,0,0.42)",
+        "purpose": "Headers fijos, overlays, elementos de capa alta."
+      },
+      {
+        "name": "glow-cyan",
+        "value": "0 0 45px rgba(37,150,190,0.55)",
+        "purpose": "Indica elemento activo o acción primaria disponible. Solo en hover o estado activo."
+      },
+      {
+        "name": "glow-green",
+        "value": "0 0 22px rgba(116,224,75,0.80)",
+        "purpose": "Puntos de mapa, indicadores de señal activa, focus rings de formulario."
+      },
+      {
+        "name": "focus-ring-green",
+        "value": "0 0 0 4px rgba(111,202,82,0.17)",
+        "purpose": "Focus state de inputs. Indica campo activo sin agredir el diseño."
+      }
+    ],
+    "motion": [
+      {
+        "name": "ease-standard",
+        "value": "0.25s ease",
+        "purpose": "Transición estándar para hover states y cambios de color."
+      },
+      {
+        "name": "float-slow",
+        "value": "12s ease-in-out infinite",
+        "purpose": "Movimiento lento de orbs de fondo. Crea profundidad ambiental."
+      },
+      {
+        "name": "orbit-rotate",
+        "value": "rotate 14-18s linear infinite",
+        "purpose": "Rotación de anillos de órbita. Señal de sistema activo."
+      },
+      {
+        "name": "radar-sweep",
+        "value": "rotate 3.5s linear infinite",
+        "purpose": "Sweep del radar operativo."
+      },
+      {
+        "name": "map-pulse",
+        "value": "2s infinite ease-out",
+        "purpose": "Pulso de puntos de mapa. Señala actividad georreferenciada."
+      }
+    ],
+    "breakpoints": [
+      { "name": "tablet", "value": "1050px", "purpose": "Colapso de grids, nav wrap, dashboard a columna única." },
+      { "name": "mobile", "value": "560px", "purpose": "Reducción de tipografía, padding comprimido, kpi-grid a 1 columna." }
+    ]
+  },
+  "components": [
+    {
+      "name": "Botón Primario",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Acción principal de cada pantalla. Gradiente cian, píldora completa.",
+      "html": "<button class=\"ds-btn-primary\">Registrar reporte</button>",
+      "css": ".ds-btn-primary { display: inline-flex; align-items: center; justify-content: center; padding: 17px 30px; border-radius: 999px; font-size: 15px; font-weight: 900; font-family: 'Montserrat', sans-serif; color: #eefbff; background: linear-gradient(135deg, #2596be, #48cbe8); box-shadow: 0 20px 46px rgba(37,150,190,0.38); border: none; cursor: pointer; transition: 0.25s ease; text-decoration: none; } .ds-btn-primary:hover { transform: translateY(-4px); box-shadow: 0 28px 70px rgba(37,150,190,0.55); } .ds-btn-primary:focus-visible { outline: 2px solid #41d2ff; outline-offset: 3px; }"
+    },
+    {
+      "name": "Botón Ghost",
+      "kind": "button",
+      "refersTo": "button-ghost",
+      "description": "Acción secundaria. Transparente con borde cian.",
+      "html": "<button class=\"ds-btn-ghost\">Ver módulos</button>",
+      "css": ".ds-btn-ghost { display: inline-flex; align-items: center; justify-content: center; padding: 17px 30px; border-radius: 999px; font-size: 15px; font-weight: 900; font-family: 'Montserrat', sans-serif; color: #eefbff; background: rgba(255,255,255,0.06); border: 1px solid rgba(37,150,190,0.34); cursor: pointer; transition: 0.25s ease; text-decoration: none; } .ds-btn-ghost:hover { transform: translateY(-4px); background: rgba(111,202,82,0.14); } .ds-btn-ghost:focus-visible { outline: 2px solid #41d2ff; outline-offset: 3px; }"
+    },
+    {
+      "name": "Tag / Badge",
+      "kind": "chip",
+      "refersTo": "tag-badge",
+      "description": "Etiqueta de contexto institucional. Solo en mayúsculas.",
+      "html": "<span class=\"ds-tag\">Demo institucional privada</span>",
+      "css": ".ds-tag { display: inline-flex; padding: 9px 15px; border-radius: 999px; background: rgba(37,150,190,0.15); border: 1px solid rgba(37,150,190,0.34); color: #e8fbff; font-size: 12px; font-weight: 900; font-family: 'Montserrat', sans-serif; text-transform: uppercase; letter-spacing: 0.8px; }"
+    },
+    {
+      "name": "Input de Formulario",
+      "kind": "input",
+      "refersTo": "input-field",
+      "description": "Campo de captura de datos operativos. Focus con glow verde.",
+      "html": "<input class=\"ds-input\" type=\"text\" placeholder=\"Descripción del evento\">",
+      "css": ".ds-input { width: 100%; padding: 17px 18px; border-radius: 18px; border: 1px solid rgba(37,150,190,0.30); background: rgba(4,13,25,0.74); color: #eefbff; font-size: 15px; font-family: 'Montserrat', sans-serif; font-weight: 500; outline: none; transition: border-color 0.25s, box-shadow 0.25s; } .ds-input::placeholder { color: rgba(238,251,255,0.55); } .ds-input:focus { border-color: #6fca52; box-shadow: 0 0 0 4px rgba(111,202,82,0.17); }"
+    },
+    {
+      "name": "KPI Card",
+      "kind": "card",
+      "refersTo": "kpi-card",
+      "description": "Métrica operativa de dashboard. Número prominente, label en uppercase.",
+      "html": "<div class=\"ds-kpi-card\"><span>Casos activos</span><strong>48</strong></div>",
+      "css": ".ds-kpi-card { padding: 24px; border-radius: 28px; background: radial-gradient(circle at top right, rgba(65,210,255,0.22), transparent 38%), rgba(255,255,255,0.075); border: 1px solid rgba(65,210,255,0.25); box-shadow: 0 24px 70px rgba(0,0,0,0.32); } .ds-kpi-card span { display: block; color: #b7d2dc; font-size: 12px; font-weight: 800; font-family: 'Montserrat', sans-serif; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 10px; } .ds-kpi-card strong { display: block; color: #ffffff; font-size: 34px; font-weight: 900; font-family: 'Montserrat', sans-serif; }"
+    },
+    {
+      "name": "KPI Card Alerta",
+      "kind": "card",
+      "refersTo": "kpi-card",
+      "description": "Variante crítica del KPI card. Tinte rojo para casos de alta urgencia.",
+      "html": "<div class=\"ds-kpi-card ds-kpi-alert\"><span>Casos críticos</span><strong>12</strong></div>",
+      "css": ".ds-kpi-alert { background: radial-gradient(circle at top right, rgba(255,90,90,0.28), transparent 38%), rgba(255,255,255,0.075); border-color: rgba(255,90,90,0.35); }"
+    },
+    {
+      "name": "Nav Link",
+      "kind": "nav",
+      "refersTo": "button-ghost",
+      "description": "Enlace de navegación principal. Píldora con glow cian en hover.",
+      "html": "<a class=\"ds-nav-link\" href=\"#\">Dashboard</a>",
+      "css": ".ds-nav-link { color: #b7d2dc; text-decoration: none; font-weight: 800; font-size: 13px; font-family: 'Montserrat', sans-serif; padding: 11px 14px; border-radius: 999px; transition: 0.25s ease; display: inline-block; } .ds-nav-link:hover { color: #eefbff; background: rgba(37,150,190,0.15); box-shadow: 0 0 24px rgba(37,150,190,0.25); } .ds-nav-link:focus-visible { outline: 2px solid #41d2ff; outline-offset: 2px; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "El Centro de Operaciones",
+    "overview": "NEXO-147 vive en una sala de mando. La interfaz es oscura por necesidad operativa: bajo nivel de luz ambiental, largas jornadas, monitores compartidos. El fondo negro profundo no es estética — es ergonomía institucional. El cian operativo y el verde de estado son los únicos puntos de color de alto contraste porque en una sala de mando, el color es señal, no decoración.\n\nEl sistema rechaza explícitamente la densidad torpe de los sistemas gubernamentales heredados: campos grises apilados, tipografía sin jerarquía, formularios que parecen impresos escaneados. NEXO-147 debe sentirse como herramienta de profesionales de seguridad.\n\nLa profundidad visual se construye con capas de vidrio tintado, sombras difusas amplias, y gradientes radiales sutiles — nunca con bordes sólidos ni sombras duras.",
+    "keyCharacteristics": [
+      "Fondo negro profundo como base permanente",
+      "Cian y verde como únicos colores funcionales",
+      "Tipografía Montserrat peso 900 para máxima legibilidad",
+      "Glassmorfismo estructural, no decorativo",
+      "Animaciones de estado, nunca decorativas"
+    ],
+    "rules": [
+      { "name": "La Regla del Color como Señal", "body": "El color cian y el verde son señales operativas. Si no hay acción que tomar ni estado que comunicar, no hay color.", "section": "colors" },
+      { "name": "La Regla del Rojo Escaso", "body": "El rojo crítico aparece en ≤5% de la pantalla. Su poder viene de su rareza.", "section": "colors" },
+      { "name": "La Regla del Peso Extremo", "body": "En pantallas oscuras el texto delgado desaparece. No usar pesos menores a 600 en elementos interactivos ni encabezados.", "section": "typography" },
+      { "name": "La Regla del Glow como Estado", "body": "El resplandor indica actividad o acción disponible, nunca decoración en reposo.", "section": "elevation" }
+    ],
+    "dos": [
+      "Do usar #07111f como único background de body",
+      "Do reservar cian para acciones primarias y estados activos exclusivamente",
+      "Do usar peso 900 en todos los headings y elementos de navegación",
+      "Do aplicar backdrop-filter: blur(14-18px) en todas las cards y panels flotantes",
+      "Do usar verde estado para KPIs positivos, confirmaciones y focus states",
+      "Do separar visualmente el contenido de Admin y Operador",
+      "Do mantener el glow como señal de estado activo — nunca en reposo sin propósito"
+    ],
+    "donts": [
+      "Don't usar sistemas gubernamentales legacy como referencia estética",
+      "Don't agregar colores adicionales más allá del vocabulario definido",
+      "Don't usar border-left mayor a 1px como acento de color en cards",
+      "Don't aplicar background-clip: text con gradientes decorativos",
+      "Don't poner texto gris muted sobre fondos con tinte cian sin verificar contraste",
+      "Don't usar el rojo crítico fuera de estados de error o alerta máxima",
+      "Don't animar propiedades de layout sin necesidad operativa",
+      "Don't mostrar el dashboard admin a usuarios con rol operador"
+    ]
+  }
+}

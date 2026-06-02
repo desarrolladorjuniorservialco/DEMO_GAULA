@@ -7,6 +7,8 @@
 
   <link rel="stylesheet" href="{{ url_for('static', filename='styles_pc.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='styles_media.css') }}">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
 </head>
 
@@ -54,13 +56,13 @@
     {% endwith %}
 
     <form method="POST" class="form login-form">
-      <label>Usuario</label>
-      <input type="text" name="usuario" placeholder="admin u operador" required autocomplete="off">
+      <label for="usuario">Usuario</label>
+      <input type="text" id="usuario" name="usuario" placeholder="admin u operador" required autocomplete="username">
 
-      <label>Contraseña</label>
-      <input type="password" name="password" placeholder="Contraseña de acceso" required>
+      <label for="password">Contraseña</label>
+      <input type="password" id="password" name="password" placeholder="Contraseña de acceso" required autocomplete="current-password">
 
-      <button class="btn primary" type="submit">Ingresar al sistema</button>
+      <button class="btn btn-primary" type="submit">Ingresar al sistema</button>
     </form>
 
     <div class="demo-users">

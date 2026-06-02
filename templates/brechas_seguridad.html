@@ -6,24 +6,20 @@ NEXO-147 | Demo privada para GAULA
 
 {% block contenido %}
 
-    <h2>Brechas de seguridad reportadas</h2>
-    <div class="separator">
-        <p>A continuación se muestra una lista de las brechas de seguridad reportadas en el
-        sistema. Esta información es crucial para el monitoreo y la respuesta oportuna 
-        por parte del equipo de seguridad.
-    </p>
-    <p>Cabe anotar que la informaci+on aquí reportada es extrae de una fuente abierta y gratuita</p>
-    </div>
-    
-
+<section class="dashboard" style="margin-top: 40px;">
+  <div class="section-title">
+    <h1>Brechas de seguridad reportadas</h1>
+    <p>Fuente abierta: Have I Been Pwned. Información referencial para monitoreo institucional.</p>
+  </div>
+  <div class="dashboard-card">
     <table class="brechas-table" id="tablaBrechas">
         <thead>
             <tr>
-                <th>Nombre</th>
-                <th>Dominio</th>
-                <th>Fecha de la brecha</th>
-                <th>Cantidad de Cuentas Afectadas</th>
-                <th>Descripción</th>
+                <th scope="col">Nombre</th>
+                <th scope="col">Dominio</th>
+                <th scope="col">Fecha de la brecha</th>
+                <th scope="col">Cantidad de Cuentas Afectadas</th>
+                <th scope="col">Descripción</th>
             </tr>
         </thead>
         <tbody>
@@ -37,7 +33,8 @@ NEXO-147 | Demo privada para GAULA
             </tr>
             {% endfor %}
         </tbody>
-
     </table>
+  </div>
+</section>
 
 {% endblock %}

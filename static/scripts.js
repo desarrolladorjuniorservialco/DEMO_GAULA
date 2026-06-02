@@ -2,16 +2,20 @@ function guardar_reporte_json(){
 
     const btn_guardar_reporte = document.getElementById("guardar_reporte");
     if(!btn_guardar_reporte){
-        console.warn("Botón para guardar formulario no está disponible");
         return;
     }
 
     btn_guardar_reporte.onclick = async (e) => {
         e.preventDefault();
         const formulario = document.getElementById("formulario-inicial");
+        const feedback = document.getElementById("feedback-reporte");
+
         if(!formulario){
-            console.error("Formulario no encontrado");
-            alert("Error: Formulario no encontrado");
+            if(feedback){
+                feedback.textContent = "Error: Formulario no encontrado";
+                feedback.className = "alert error";
+                feedback.style.display = "";
+            }
             return;
         }
 
@@ -45,14 +49,23 @@ function guardar_reporte_json(){
 
             const resultado = await response.json();
 
-            alert(resultado.mensaje || "Informe guardado de manera satisfactoria");
-            window.location.href = "/#reporte";
+            if(feedback){
+                feedback.textContent = resultado.mensaje || "Informe guardado de manera satisfactoria";
+                feedback.className = "alert ok";
+                feedback.style.display = "";
+            }
+
+            setTimeout(() => {
+                window.location.href = "/#reporte";
+            }, 1800);
 
         }catch(error){
 
-            console.error("Error al guardar el formulario", error);
-
-            alert("Error al guardar el formulario, revisa la consola");
+            if(feedback){
+                feedback.textContent = "Error al guardar el formulario. Verifique su conexión e intente de nuevo.";
+                feedback.className = "alert error";
+                feedback.style.display = "";
+            }
         }
     };
 }

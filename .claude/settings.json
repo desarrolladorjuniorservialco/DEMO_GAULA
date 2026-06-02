@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(node .claude/skills/impeccable/scripts/context.mjs)",
+      "Bash(node \"C:\\\\Users\\\\Victor Pulido\\\\.claude\\\\skills\\\\impeccable\\\\scripts\\\\context.mjs\")",
+      "Bash(Get-ChildItem -Path \"c:\\\\Users\\\\Victor Pulido\\\\Documents\\\\GIT\\\\DEMO_GAULA\" -Depth 2)",
+      "Bash(Select-Object FullName, PSIsContainer)",
+      "Bash(Format-Table -AutoSize)",
+      "Bash(node \"C:\\\\Users\\\\Victor Pulido\\\\.claude\\\\skills\\\\impeccable\\\\scripts\\\\detect-csp.mjs\")",
+      "Skill(impeccable)",
+      "Skill(impeccable:*)"
+    ]
+  }
+}

@@ -131,7 +131,7 @@
             Tipo de reporte *
         </label>
         <select id="tipo_reporte" name="tipo_reporte" required>
-          <option value="">--Seleccione una opción--</option>
+          <option value="" disabled selected>--Seleccione una opción--</option>
           <option>Extorsión</option>
           <option>Secuestro</option>
           <option>Hurto</option>
@@ -146,7 +146,7 @@
           Prioridad *
         </label>
         <select id="prioridad" name="prioridad" required>
-          <option value="">--Seleccione una opción--</option>
+          <option value="" disabled selected>--Seleccione una opción--</option>
           <option>Crítica</option>
           <option>Alta</option>
           <option>Media</option>
@@ -157,7 +157,7 @@
           Canal de recepción *
         </label>
         <select id="canal_recepcion"  name="canal_recepcion" required>
-          <option value="">--Seleccione una opción---</option>
+          <option value="" disabled selected>--Seleccione una opción--</option>
           <option>Línea 147</option>
           <option>Reporte presencial</option>
           <option>Unidad territorial</option>
@@ -169,7 +169,7 @@
           Unidad Gaula receptora *
         </label>
         <select name="unidad_gaula" id="unidad_gaula" required>
-          <option>--Seleccione una región o unidad--</option>
+          <option value="" disabled selected>--Seleccione una región o unidad--</option>
           <optgroup label="Bogotá y Cundinamarca">
               <option value="gaula_bogota">GAULA Policía Bogotá</option>
               <option value="gaula_mil_bogota">GAULA Militar Bogotá</option>
@@ -227,9 +227,7 @@
 
       <div class="form-section">
         <h3>2. Denunciante</h3>
-        <label class="form-label">
-          Datos básicos del denunciante
-        </label>
+        <p class="form-helper">Datos básicos del denunciante</p>
         <input type="text" name="nombre_reportante" placeholder="Nombre del reportante">
         <input type="text" name="documento_reportante" placeholder="Documento o identificación">
         <input type="text" name="telefono_reportante" placeholder="Teléfono de contacto">
@@ -238,19 +236,20 @@
 
       <div class="form-section">
         <h3>3. Denuncia</h3>
-        <label class="form-label">
+        <label for="descripcion" class="form-label">
           Información de la denuncia *
         </label>
-        <textarea name="descripcion" rows="5" placeholder="Descripción breve de los hechos" required></textarea>
+        <textarea name="descripcion" id="descripcion" rows="5" placeholder="Descripción breve de los hechos" required></textarea>
         <input type="text" name="numero_extorsivo" placeholder="Número telefónico asociado">
         <input type="text" name="alias_sospechoso" placeholder="Alias, nombre o identificador del sospechoso">
         <input type="text" name="medio_pago" placeholder="Medio de pago, cuenta, billetera digital o canal usado">
         <input type="text" name="valor_exigido" placeholder="Valor exigido o pérdida estimada">
-        <textarea name="evidencia" rows="4" placeholder="Descripción de evidencias: audios, capturas, enlaces, documentos"></textarea>
-        <textarea name="observaciones" rows="4" placeholder="Observaciones internas del operador"></textarea>
+        <textarea name="evidencia" id="evidencia" rows="4" placeholder="Descripción de evidencias: audios, capturas, enlaces, documentos"></textarea>
+        <textarea name="observaciones" id="observaciones" rows="4" placeholder="Observaciones internas del operador"></textarea>
       </div>
 
-      <button class="btn btn-primary" type="button" id="guardar_reporte">Guardar reporte</button>
+      <div id="feedback-reporte" class="alert" role="alert" aria-live="polite" style="display:none;"></div>
+      <button class="btn btn-primary" type="button" id="guardar_reporte" aria-label="Guardar reporte de denuncia">Guardar reporte</button>
     </form>
   </section>
 

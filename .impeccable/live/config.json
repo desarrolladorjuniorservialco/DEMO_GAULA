@@ -1,0 +1,16 @@
+{
+  "files": [
+    "templates/base.html",
+    "templates/login.html",
+    "templates/dashboard.html",
+    "templates/brechas_seguridad.html"
+  ],
+  "insertBefore": "</body>",
+  "commentSyntax": ["<!--", "-->"],
+  "framework": "flask-jinja2",
+  "devServer": {
+    "command": "python app.py",
+    "port": 5000
+  },
+  "cspChecked": true
+}
