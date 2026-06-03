@@ -31,7 +31,9 @@
       "Bash(git -C \"C:\\\\Users\\\\Victor Pulido\\\\Documents\\\\GIT\\\\DEMO_GAULA\" add templates/console.html)",
       "Bash(git -C \"C:\\\\Users\\\\Victor Pulido\\\\Documents\\\\GIT\\\\DEMO_GAULA\" commit -m \"feat: add OSINT sub-tabs to panel-inteligencia with fetch + Cytoscape graph\")",
       "Bash(python -c \"import app; print\\('Import OK'\\)\")",
-      "Bash(python -c ' *)"
+      "Bash(python -c ' *)",
+      "Bash(powershell -Command \"Get-ChildItem -Depth 2 -Directory | Format-Table -Property FullName\")",
+      "Bash(powershell -Command \"Get-ChildItem -Filter '*.py' -Depth 0 | Select-Object -First 10 Name\")"
     ],
     "additionalDirectories": [
       "C:\\Users\\Victor Pulido\\Documents\\GIT\\DEMO_GAULA\\docs\\superpowers\\specs"

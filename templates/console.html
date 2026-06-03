@@ -76,7 +76,7 @@
         </a>
         <a href="#analisis-red" class="nav-item" data-panel="panel-inteligencia">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
-          <span>Correlaciones e OSINT</span>
+          <span>OSINT</span>
         </a>
         <a href="#hallazgos" class="nav-item" data-panel="panel-hallazgos">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 12h6m-6 4h6m2 5H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5.586a1 1 0 0 1 .707.293l5.414 5.414a1 1 0 0 1 .293.707V19a2 2 0 0 1-2 2z"/></svg>
@@ -683,18 +683,18 @@
         </section>
 
 
-        <!-- PANEL CORRELACIONES E OSINT (INTELIGENCIA TÁCTICA) -->
+        <!-- PANEL OSINT (INTELIGENCIA TÁCTICA) -->
         <section class="panel-section" id="panel-inteligencia">
           <div class="section-header-tactical">
-            <h2>Correlaciones de Redes Extorsivas y OSINT</h2>
+            <h2>OSINT</h2>
             <p>Búsqueda activa en redes sociales, datos abiertos y grafo de relaciones.</p>
           </div>
 
           <!-- Sub-tabs -->
           <div class="osint-tabs" style="display:flex;gap:.5rem;margin-bottom:1rem;border-bottom:1px solid #1e2535;padding-bottom:.5rem">
             <button class="osint-tab-btn btn btn-secondary-tactical active" data-tab="social" onclick="osintSwitchTab('social')">Redes Sociales</button>
-            <button class="osint-tab-btn btn btn-secondary-tactical" data-tab="opendata" onclick="osintSwitchTab('opendata')">Datos Abiertos</button>
-            <button class="osint-tab-btn btn btn-secondary-tactical" data-tab="graph" onclick="osintSwitchTab('graph')">Grafo de Relaciones</button>
+            <button class="osint-tab-btn btn btn-secondary-tactical" data-tab="opendata" onclick="osintSwitchTab('opendata')">Datos Abiertos <span id="osint-od-badge" style="display:none;background:#c8a84b;color:#07080c;font-size:.65rem;padding:1px 5px;border-radius:8px;margin-left:4px;font-weight:700">✓</span></button>
+            <button class="osint-tab-btn btn btn-secondary-tactical" data-tab="graph" onclick="osintSwitchTab('graph')">Grafo de Relaciones <span id="osint-graph-badge" style="display:none;background:#4bc8a8;color:#07080c;font-size:.65rem;padding:1px 5px;border-radius:8px;margin-left:4px;font-weight:700">✓</span></button>
           </div>
 
           <!-- Tab: Redes Sociales -->
@@ -1240,12 +1240,27 @@ function osintFetchSocial() {
   spinner.style.display = '';
   results.innerHTML = '';
 
+  // Ocultar badges de tabs relacionados mientras se busca
+  document.getElementById('osint-od-badge').style.display = 'none';
+  document.getElementById('osint-graph-badge').style.display = 'none';
+
   fetch('/osint/social/lookup?q=' + encodeURIComponent(q) + '&source=' + source)
     .then(r => {
       if (!r.ok) throw new Error('HTTP ' + r.status);
       return r.text();
     })
-    .then(html => { results.innerHTML = html; })
+    .then(html => {
+      results.innerHTML = html;
+
+      // Pre-llenar Datos Abiertos con el mismo query y activar badge
+      document.getElementById('osint-od-q').value = q;
+      document.getElementById('osint-od-badge').style.display = 'inline';
+
+      // Pre-llenar Grafo, activar badge y cargar grafo automáticamente
+      document.getElementById('osint-graph-q').value = q;
+      document.getElementById('osint-graph-badge').style.display = 'inline';
+      osintLoadGraph();
+    })
     .catch(err  => { results.innerHTML = '<p style="color:#f87171;font-size:.8rem">⚠ Error: ' + err.message + '</p>'; })
     .finally(() => { spinner.style.display = 'none'; });
 }
