@@ -1653,13 +1653,17 @@ function osintLoadGraph() {
       const typeColors = {};
       nodes.forEach(n => { typeColors[n.type] = n.color; });
 
-      // Build Cytoscape elements
+      // Build Cytoscape elements — VOSviewer logarithmic size scaling
+      const VOS_MIN = 20, VOS_MAX = 65;
+      const maxDeg  = Math.max(...Object.values(degree), 1);
       const elements = [];
       nodes.forEach(n => {
-        const deg = degree[n.id] || 1;
-        const sz  = n.is_target
-          ? 56
-          : Math.min(Math.max(n.base_size + deg * 3, n.base_size), 52);
+        const deg      = degree[n.id] || 1;
+        const sz       = n.is_target
+          ? VOS_MAX
+          : VOS_MIN + (VOS_MAX - VOS_MIN) * Math.log(deg + 1) / Math.log(maxDeg + 1);
+        const fontSize   = Math.round(8.5 + 5.5 * (sz - VOS_MIN) / (VOS_MAX - VOS_MIN));
+        const fontWeight = sz > 38 ? '700' : '400';
         elements.push({
           data: {
             id:              n.id,
@@ -1668,6 +1672,8 @@ function osintLoadGraph() {
             color:           n.color,
             shape:           n.shape,
             size:            sz,
+            fontSize:        fontSize + 'px',
+            fontWeight:      fontWeight,
             degree:          deg,
             confidence:      n.confidence,
             risk_level:      n.risk_level,
@@ -1708,28 +1714,28 @@ function osintLoadGraph() {
             selector: 'node.data-node',
             style: {
               'background-color':           'data(color)',
-              'shape':                      'data(shape)',
+              'shape':                      'ellipse',
               'width':                      'data(size)',
               'height':                     'data(size)',
               'label':                      'data(label)',
-              'color':                      '#c8d8e8',
-              'font-size':                  '9px',
-              'font-family':                '"JetBrains Mono", monospace',
-              'text-valign':                'bottom',
+              'color':                      '#e8f0fa',
+              'font-size':                  'data(fontSize)',
+              'font-weight':                'data(fontWeight)',
+              'font-family':                '"Open Sans", "Nunito Sans", sans-serif',
+              'text-valign':                'center',
               'text-halign':                'center',
-              'text-margin-y':              '6px',
-              'text-wrap':                  'ellipsis',
-              'text-max-width':             '90px',
+              'text-wrap':                  'wrap',
+              'text-max-width':             '120px',
               'text-background-color':      '#07080c',
-              'text-background-opacity':    0.72,
-              'text-background-padding':    '2px',
+              'text-background-opacity':    0.85,
+              'text-background-padding':    '4px',
               'text-background-shape':      'roundrectangle',
               'border-width':               '2px',
               'border-color':               'data(color)',
-              'border-opacity':             0.55,
-              'shadow-blur':                9,
+              'border-opacity':             0.60,
+              'shadow-blur':                10,
               'shadow-color':               'data(color)',
-              'shadow-opacity':             0.4,
+              'shadow-opacity':             0.42,
               'shadow-offset-x':            0,
               'shadow-offset-y':            0,
               'transition-property':        'shadow-opacity, border-opacity, opacity',
@@ -1744,11 +1750,9 @@ function osintLoadGraph() {
               'border-width':   '3px',
               'border-color':   '#e8c870',
               'border-opacity': 1,
-              'shadow-blur':    22,
+              'shadow-blur':    26,
               'shadow-color':   '#c8a84b',
-              'shadow-opacity': 0.82,
-              'font-size':      '11px',
-              'font-weight':    '600',
+              'shadow-opacity': 0.90,
               'z-index':        20,
             },
           },
@@ -1783,7 +1787,8 @@ function osintLoadGraph() {
               'background-opacity': 0.38,
               'border-style':       'dashed',
               'color':              '#6b8aaa',
-              'font-size':          '8px',
+              'font-size':          '8.5px',
+              'font-weight':        '400',
             },
           },
           {
@@ -1792,20 +1797,20 @@ function osintLoadGraph() {
               'line-color':              'data(edgeColor)',
               'target-arrow-color':      'data(edgeColor)',
               'target-arrow-shape':      'triangle',
-              'arrow-scale':             0.72,
+              'arrow-scale':             0.60,
               'curve-style':             'bezier',
-              'control-point-step-size': 40,
+              'control-point-step-size': 55,
               'width':                   'data(edgeWidth)',
               'label':                   '',
               'font-size':               '8px',
               'color':                   '#374757',
-              'font-family':             '"JetBrains Mono", monospace',
+              'font-family':             '"Open Sans", "Nunito Sans", sans-serif',
               'text-rotation':           'autorotate',
               'text-margin-y':           '-8px',
               'text-background-color':   '#07080c',
               'text-background-opacity': 0.8,
               'text-background-padding': '2px',
-              'opacity':                 0.58,
+              'opacity':                 0.27,
               'transition-property':     'opacity, width, line-color',
               'transition-duration':     '0.2s',
             },
@@ -1845,23 +1850,23 @@ function osintLoadGraph() {
         targetElem.position({ x: 0, y: 0 });
       }
 
-      // Force-directed refinement from radial seed
+      // Force-directed refinement from radial seed — VOSviewer physics
       const layout = _osintCy.layout({
         name:             'cose',
         animate:          true,
         randomize:        false,
-        nodeRepulsion:    70000,
-        idealEdgeLength:  190,
-        edgeElasticity:   0.35,
-        gravity:          0.25,
-        numIter:          1800,
-        initialTemp:      160,
-        coolingFactor:    0.992,
+        nodeRepulsion:    480000,
+        idealEdgeLength:  290,
+        edgeElasticity:   0.32,
+        gravity:          0.10,
+        numIter:          2800,
+        initialTemp:      180,
+        coolingFactor:    0.994,
         minTemp:          1.0,
         fit:              true,
-        padding:          80,
-        componentSpacing: 190,
-        nodeOverlap:      20,
+        padding:          90,
+        componentSpacing: 260,
+        nodeOverlap:      60,
       });
 
       layout.on('layoutstop', () => {
