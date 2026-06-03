@@ -4,9 +4,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from functools import wraps
 from datetime import datetime
 import os
-import json
 import uuid
-from pathlib import Path as path
 import requests
 from bs4 import BeautifulSoup
 
@@ -73,24 +71,6 @@ def seed_db():
                 ))
             db.session.commit()
 
-USERS = {
-    "admin": {
-        "password": "Admin147*",
-        "role": "admin",
-        "name": "Administrador NEXO-147"
-    },
-    "operador": {
-        "password": "Operador147*",
-        "role": "operador",
-        "name": "Operador Línea 147"
-    },
-    "api": {
-        "password": "Api_general_nexo-147",
-        "role": "api_general",
-        "name": "API general del sistema"
-    }
-}
-
 @nexo.after_request
 def disable_cache(response):
     response.headers["Cache-Control"] = "no-store, no-cache, must-revalidate, max-age=0"
@@ -114,53 +94,48 @@ def admin_required(f):
         if "user" not in session:
             return redirect(url_for("login"))
         if session.get("role") != "admin":
-            flash("Acceso restringido. Usuario operador solo puede registrar reportes.", "error")
+            flash("Acceso restringido a administradores.", "error")
             return redirect(url_for("home"))
         return f(*args, **kwargs)
     return wrapper
 
-def api_required(f):
+
+def director_required(f):
     @wraps(f)
     def wrapper(*args, **kwargs):
         if "user" not in session:
             return redirect(url_for("login"))
-        if session.get("role") not in ["api_general", "admin"]:
+        if session.get("role") not in ["admin", "director"]:
+            flash("Acceso restringido a directores y administradores.", "error")
             return redirect(url_for("home"))
         return f(*args, **kwargs)
     return wrapper
 
 
-def guardar_reporte(datos):
-    os.makedirs(DATA_DIR, exist_ok=True)
-
-    registro = {
-        "id_reporte": str(uuid.uuid4()),
-        "fecha_registro": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-        "estado": "Recibido",
-        "usuario_registro": session.get("user"),
-        "rol_usuario": session.get("role"),
-        "datos": datos
-    }
-
-    with open(REPORTES_FILE, "a", encoding="utf-8") as file:
-        file.write(json.dumps(registro, ensure_ascii=False) + "\n")
-
-    return registro["id_reporte"]
+def analista_required(f):
+    @wraps(f)
+    def wrapper(*args, **kwargs):
+        if "user" not in session:
+            return redirect(url_for("login"))
+        if session.get("role") not in ["admin", "analista"]:
+            flash("Acceso restringido a analistas y administradores.", "error")
+            return redirect(url_for("home"))
+        return f(*args, **kwargs)
+    return wrapper
 
 
-def cargar_reportes():
-    if not os.path.exists(REPORTES_FILE):
-        return []
+def operador_required(f):
+    @wraps(f)
+    def wrapper(*args, **kwargs):
+        if "user" not in session:
+            return redirect(url_for("login"))
+        if session.get("role") not in ["admin", "operador"]:
+            flash("Acceso restringido a operadores y administradores.", "error")
+            return redirect(url_for("home"))
+        return f(*args, **kwargs)
+    return wrapper
 
-    reportes = []
-    with open(REPORTES_FILE, "r", encoding="utf-8") as file:
-        for line in file:
-            try:
-                reportes.append(json.loads(line))
-            except json.JSONDecodeError:
-                continue
 
-    return reportes[::-1]
 
 
 @nexo.route("/")
@@ -175,17 +150,12 @@ def login():
         usuario = request.form.get("usuario", "").strip()
         password = request.form.get("password", "").strip()
 
-        user = USERS.get(usuario)
-        role = USERS.get("api", {}).get("role", {})
+        user = Usuario.query.filter_by(username=usuario, activo=True).first()
 
-        if user and user["password"] == password:
-            session["user"] = usuario
-            session["role"] = user["role"]
-            session["name"] = user["name"]
-
-            if session["role"] == role:
-                return redirect(url_for("api_general"))
-            
+        if user and check_password_hash(user.password_hash, password):
+            session["user"] = user.username
+            session["role"] = user.rol
+            session["name"] = user.nombre
             return redirect(url_for("home"))
 
         flash("Usuario o contraseña incorrectos.", "error")
@@ -202,64 +172,61 @@ def logout():
 @nexo.route("/registrar-reporte", methods=["POST"])
 @login_required
 def registrar_reporte():
-    # Handle both form-encoded and JSON requests
     if request.is_json:
         data = request.get_json()
     else:
         data = request.form.to_dict()
-    
-    datos = {
-        "tipo_reporte": data.get("tipo_reporte", "").strip(),
-        "prioridad": data.get("prioridad", "").strip(),
-        "unidad_gaula": data.get("unidad_gaula", "").strip(),
-        "canal_recepcion": data.get("canal_recepcion", "").strip(),
-        "reportante": {
-            "nombre": data.get("nombre_reportante", "").strip(),
-            "documento": data.get("documento_reportante", "").strip(),
-            "telefono": data.get("telefono_reportante", "").strip(),
-            "ubicacion": data.get("ubicacion", "").strip()
-        },
-        "caso": {
-            "descripcion": data.get("descripcion", "").strip(),
-            "numero_extorsivo": data.get("numero_extorsivo", "").strip(),
-            "alias_sospechoso": data.get("alias_sospechoso", "").strip(),
-            "medio_pago": data.get("medio_pago", "").strip(),
-            "valor_exigido": data.get("valor_exigido", "").strip(),
-            "evidencia": data.get("evidencia", "").strip(),
-            "observaciones": data.get("observaciones", "").strip()
-        }
-    }
 
-    if not datos["tipo_reporte"] or not datos["prioridad"] or not datos["caso"]["descripcion"]:
+    tipo_reporte = data.get("tipo_reporte", "").strip()
+    prioridad    = data.get("prioridad", "").strip()
+    descripcion  = data.get("descripcion", "").strip()
+
+    if not tipo_reporte or not prioridad or not descripcion:
         if request.is_json:
             return {"error": "Debe registrar tipo de reporte, prioridad y descripción mínima."}, 400
-        else:
-            flash("Debe registrar tipo de reporte, prioridad y descripción mínima.", "error")
-            return redirect(url_for("home") + "#reporte")
-
-    id_reporte = guardar_reporte(datos)
-    
-    if request.is_json:
-        return {"mensaje": f"Reporte registrado correctamente. Código interno: {id_reporte}", "id_reporte": id_reporte}, 201
-    else:
-        flash(f"Reporte registrado correctamente. Código interno: {id_reporte}", "ok")
+        flash("Debe registrar tipo de reporte, prioridad y descripción mínima.", "error")
         return redirect(url_for("home") + "#reporte")
+
+    reporte = Reporte(
+        id_reporte           = str(uuid.uuid4()),
+        usuario_registro     = session.get("user"),
+        rol_usuario          = session.get("role"),
+        tipo_reporte         = tipo_reporte,
+        prioridad            = prioridad,
+        unidad_gaula         = data.get("unidad_gaula", "").strip(),
+        canal_recepcion      = data.get("canal_recepcion", "").strip(),
+        nombre_reportante    = data.get("nombre_reportante", "").strip(),
+        documento_reportante = data.get("documento_reportante", "").strip(),
+        telefono_reportante  = data.get("telefono_reportante", "").strip(),
+        ubicacion            = data.get("ubicacion", "").strip(),
+        descripcion          = descripcion,
+        numero_extorsivo     = data.get("numero_extorsivo", "").strip(),
+        alias_sospechoso     = data.get("alias_sospechoso", "").strip(),
+        medio_pago           = data.get("medio_pago", "").strip(),
+        valor_exigido        = data.get("valor_exigido", "").strip(),
+        evidencia            = data.get("evidencia", "").strip(),
+        observaciones        = data.get("observaciones", "").strip(),
+    )
+    db.session.add(reporte)
+    db.session.commit()
+
+    if request.is_json:
+        return {"mensaje": f"Reporte registrado correctamente. Código interno: {reporte.id_reporte}", "id_reporte": reporte.id_reporte}, 201
+    flash(f"Reporte registrado correctamente. Código interno: {reporte.id_reporte}", "ok")
+    return redirect(url_for("home") + "#reporte")
 
 
 @nexo.route("/dashboard")
-@admin_required
+@director_required
 def dashboard():
-    reportes = cargar_reportes()
+    reportes = Reporte.query.order_by(Reporte.fecha_registro.desc()).all()
 
     total_reportes = len(reportes)
-    casos_criticos = sum(
-        1 for r in reportes
-        if r.get("datos", {}).get("prioridad", "").lower() == "crítica"
-    )
+    casos_criticos = sum(1 for r in reportes if (r.prioridad or "").lower() == "crítica")
 
     tipos_conteo = {}
     for r in reportes:
-        tipo = r.get("datos", {}).get("tipo_reporte", "Sin clasificar")
+        tipo = r.tipo_reporte or "Sin clasificar"
         tipos_conteo[tipo] = tipos_conteo.get(tipo, 0) + 1
 
     if not tipos_conteo:
@@ -283,12 +250,12 @@ def dashboard():
     ]
 
     stats = {
-        "casos_activos": total_reportes if total_reportes else 48,
-        "casos_criticos": casos_criticos if total_reportes else 12,
+        "casos_activos":     total_reportes if total_reportes else 48,
+        "casos_criticos":    casos_criticos if total_reportes else 12,
         "gaulas_conectados": 34,
-        "tiempo_respuesta": "08m",
-        "reportes_147": total_reportes if total_reportes else 124,
-        "alertas_osint": 19
+        "tiempo_respuesta":  "08m",
+        "reportes_147":      total_reportes if total_reportes else 124,
+        "alertas_osint":     19
     }
 
     return render_template(
@@ -303,49 +270,6 @@ def dashboard():
 def health():
     return {"status": "ok", "service": "NEXO-147 Demo"}
 
-
-@nexo.post("/registrar_reporte")
-@login_required
-def cargar_formulario():
-    try:
-        datos = request.get_json()
-        carpeta = "Reportes"
-        os.makedirs(carpeta, exist_ok=True)
-        marca_tiempo = datetime.now().strftime("%y%m%d_%H%M%S")
-        nombre_archivo = f"Reporte_{marca_tiempo}.json"
-
-        ruta = os.path.join("Reportes", nombre_archivo)
-
-        with open(ruta, "w", encoding='utf-8') as archivo:
-            json.dump(datos, archivo, indent=4, ensure_ascii=False)
-
-        return jsonify({"Mensaje": "Denuncia guardada de manera satisfactoria",
-                        "archivo": nombre_archivo}), 200
-
-    except Exception as e:
-        return jsonify({'Error': str(e)}), 500
-
-
-@nexo.route('/api_general', methods=['POST', 'GET'])
-@api_required
-def api_general():
-    carpeta_reportes = path('reportes')
-    archivo = "Reporte_260519_162606"
-    ruta = carpeta_reportes/f"{archivo}.json"
-    if not ruta.exists():
-        return jsonify({"Error": "Archivo inexistente, verifique elnombre del archivo."}), 404
-    try:
-        with open(ruta, 'r', encoding='utf-8') as archivo_json:
-            datos = json.load(archivo_json)
-            return jsonify(datos)
-    except json.JSONDecodeError:
-
-        return jsonify({
-            "error": "JSON inválido"
-        }), 400
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
-    
 
 # Conexion api externa
 @nexo.route('/api_externa', methods=['POST', 'GET'])

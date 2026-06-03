@@ -155,10 +155,10 @@
           {% if reportes %}
             {% for r in reportes %}
             <tr>
-              <td>{{ r.fecha_registro }}</td>
-              <td>{{ r.datos.tipo_reporte }}</td>
-              <td>{{ r.datos.prioridad }}</td>
-              <td>{{ r.datos.unidad_gaula }}</td>
+              <td>{{ r.fecha_registro.strftime('%Y-%m-%d %H:%M') }}</td>
+              <td>{{ r.tipo_reporte }}</td>
+              <td>{{ r.prioridad }}</td>
+              <td>{{ r.unidad_gaula }}</td>
               <td>{{ r.estado }}</td>
             </tr>
             {% endfor %}
