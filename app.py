@@ -1,4 +1,6 @@
 from flask import Flask, render_template, request, redirect, url_for, flash, session, jsonify
+from flask_sqlalchemy import SQLAlchemy
+from werkzeug.security import generate_password_hash, check_password_hash
 from functools import wraps
 from datetime import datetime
 import os
@@ -10,9 +12,66 @@ from bs4 import BeautifulSoup
 
 nexo = Flask(__name__, static_folder="static", template_folder="templates")
 nexo.secret_key = os.getenv("SECRET_KEY", "demo-gaula-nexo-147")
+_basedir = os.path.abspath(os.path.dirname(__file__))
+nexo.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///" + os.path.join(_basedir, "data", "nexo147.db")
+nexo.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
-DATA_DIR = "data"
-REPORTES_FILE = os.path.join(DATA_DIR, "reportes_147.jsonl")
+db = SQLAlchemy(nexo)
+
+
+class Usuario(db.Model):
+    __tablename__ = "usuarios"
+    id            = db.Column(db.Integer, primary_key=True)
+    username      = db.Column(db.String(50), unique=True, nullable=False)
+    password_hash = db.Column(db.String(256), nullable=False)
+    nombre        = db.Column(db.String(100), nullable=False)
+    rol           = db.Column(db.String(20), nullable=False)
+    activo        = db.Column(db.Boolean, default=True)
+
+
+class Reporte(db.Model):
+    __tablename__ = "reportes"
+    id                   = db.Column(db.Integer, primary_key=True)
+    id_reporte           = db.Column(db.String(36), nullable=False)
+    fecha_registro       = db.Column(db.DateTime, default=datetime.utcnow)
+    estado               = db.Column(db.String(20), default="Recibido")
+    usuario_registro     = db.Column(db.String(50))
+    rol_usuario          = db.Column(db.String(20))
+    tipo_reporte         = db.Column(db.String(50))
+    prioridad            = db.Column(db.String(20))
+    unidad_gaula         = db.Column(db.String(100))
+    canal_recepcion      = db.Column(db.String(50))
+    nombre_reportante    = db.Column(db.String(100))
+    documento_reportante = db.Column(db.String(30))
+    telefono_reportante  = db.Column(db.String(20))
+    ubicacion            = db.Column(db.String(200))
+    descripcion          = db.Column(db.Text)
+    numero_extorsivo     = db.Column(db.String(30))
+    alias_sospechoso     = db.Column(db.String(100))
+    medio_pago           = db.Column(db.String(50))
+    valor_exigido        = db.Column(db.String(50))
+    evidencia            = db.Column(db.String(200))
+    observaciones        = db.Column(db.Text)
+
+
+def seed_db():
+    with nexo.app_context():
+        db.create_all()
+        if Usuario.query.count() == 0:
+            usuarios_demo = [
+                ("admin",    "Admin147*",    "Administrador NEXO-147", "admin"),
+                ("director", "Director147*", "Director GAULA",         "director"),
+                ("analista", "Analista147*", "Analista Operacional",   "analista"),
+                ("operador", "Operador147*", "Operador Línea 147",     "operador"),
+            ]
+            for username, pwd, nombre, rol in usuarios_demo:
+                db.session.add(Usuario(
+                    username=username,
+                    password_hash=generate_password_hash(pwd),
+                    nombre=nombre,
+                    rol=rol
+                ))
+            db.session.commit()
 
 USERS = {
     "admin": {
@@ -319,5 +378,7 @@ def api_externa():
 
 
 if __name__ == "__main__":
+    os.makedirs("data", exist_ok=True)
+    seed_db()
     port = int(os.environ.get("PORT", 5000))
     nexo.run(host="0.0.0.0", port=port, debug=True)
