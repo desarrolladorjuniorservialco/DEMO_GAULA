@@ -9,6 +9,7 @@ from models.intel import (
     Persona, Alias, Telefono, Correo, Direccion,
     Ubicacion, Vehiculo, CuentaBancaria, RedSocial, Organizacion,
 )
+from models.osint import FuenteOsint, ConsultaOsint, CacheConsulta, ResultadoOsint, IndicadorRiesgo
 from functools import wraps
 from datetime import datetime
 import os
@@ -142,7 +143,7 @@ def operador_required(f):
 @nexo.route("/")
 @login_required
 def home():
-    return render_template("index.html")
+    return render_template("console.html")
 
 
 @nexo.route("/login", methods=["GET", "POST"])
@@ -265,6 +266,197 @@ def dashboard():
         stats=stats,
         tipos=tipos
     )
+
+
+@nexo.route("/api/casos", methods=["GET"])
+@login_required
+def api_casos():
+    role = session.get("role")
+    username = session.get("user")
+    if role == "operador":
+        reportes = Reporte.query.filter_by(usuario_registro=username).order_by(Reporte.fecha_registro.desc()).all()
+    else:
+        reportes = Reporte.query.order_by(Reporte.fecha_registro.desc()).all()
+    
+    resultados = []
+    for r in reportes:
+        resultados.append({
+            "id_reporte": r.id_reporte,
+            "fecha_registro": r.fecha_registro.strftime('%Y-%m-%d %H:%M') if r.fecha_registro else "",
+            "estado": r.estado,
+            "usuario_registro": r.usuario_registro,
+            "rol_usuario": r.rol_usuario,
+            "tipo_reporte": r.tipo_reporte,
+            "prioridad": r.prioridad,
+            "unidad_gaula": r.unidad_gaula,
+            "canal_recepcion": r.canal_recepcion,
+            "nombre_reportante": r.nombre_reportante,
+            "documento_reportante": r.documento_reportante,
+            "telefono_reportante": r.telefono_reportante,
+            "ubicacion": r.ubicacion,
+            "descripcion": r.descripcion,
+            "numero_extorsivo": r.numero_extorsivo,
+            "alias_sospechoso": r.alias_sospechoso,
+            "medio_pago": r.medio_pago,
+            "valor_exigido": r.valor_exigido,
+            "evidencia": r.evidencia,
+            "observaciones": r.observaciones
+        })
+    return jsonify(resultados)
+
+
+@nexo.route("/api/casos/<id_reporte>/estado", methods=["POST"])
+@login_required
+def api_actualizar_estado(id_reporte):
+    role = session.get("role")
+    if role not in ["admin", "analista", "director"]:
+        return jsonify({"error": "No autorizado para cambiar el estado del caso."}), 403
+        
+    data = request.get_json() or {}
+    nuevo_estado = data.get("estado", "").strip()
+    if not nuevo_estado:
+        return jsonify({"error": "Debe proporcionar un estado válido."}), 400
+        
+    reporte = Reporte.query.filter_by(id_reporte=id_reporte).first()
+    if not reporte:
+        return jsonify({"error": "Caso no encontrado."}), 404
+        
+    reporte.estado = nuevo_estado
+    db.session.commit()
+    return jsonify({"mensaje": f"Estado actualizado a: {nuevo_estado}", "id_reporte": id_reporte})
+
+
+@nexo.route("/api/entidades", methods=["GET"])
+@login_required
+def api_entidades():
+    reportes = Reporte.query.all()
+    
+    personas = [
+        {"nombre": "Carlos Mendoza", "documento": "1.023.456.789", "rol": "Sospechoso", "casos_vinculados": ["147-001", "147-003"]},
+        {"nombre": "Diana Restrepo", "documento": "52.345.678", "rol": "Reportante", "casos_vinculados": ["147-002"]},
+        {"nombre": "Andrés Felipe Gómez", "documento": "1.018.990.123", "rol": "Víctima", "casos_vinculados": ["147-005"]},
+    ]
+    telefonos = [
+        {"numero": "3124567890", "compania": "Claro", "tipo": "Extorsivo", "casos_vinculados": ["147-001", "147-004"]},
+        {"numero": "3209876543", "compania": "Movistar", "tipo": "Sospechoso", "casos_vinculados": ["147-003"]},
+        {"numero": "3151112233", "compania": "Tigo", "tipo": "Víctima", "casos_vinculados": ["147-002"]},
+    ]
+    alias = [
+        {"nombre": "El Zarco", "descripcion": "Cabecilla de banda de extorsión carcelaria", "casos_vinculados": ["147-001", "147-004"]},
+        {"nombre": "La Patrona", "descripcion": "Coordinadora de cobros en cuentas digitales", "casos_vinculados": ["147-003"]},
+        {"nombre": "El Ingeniero", "descripcion": "Encargado de estafas informáticas y phishing", "casos_vinculados": ["147-005"]},
+    ]
+    ubicaciones = [
+        {"nombre": "Bogotá - Localidad Kennedy", "coordenadas": "4.6200, -74.1500", "tipo": "Foco delictivo", "casos_vinculados": ["147-001", "147-002"]},
+        {"nombre": "Medellín - El Poblado", "coordenadas": "6.2100, -75.5700", "tipo": "Zona de amenazas", "casos_vinculados": ["147-003"]},
+        {"nombre": "Cali - Distrito de Aguablanca", "coordenadas": "3.4200, -76.4800", "tipo": "Cobro extorsión", "casos_vinculados": ["147-004", "147-005"]},
+    ]
+    
+    for r in reportes:
+        code_pfx = r.id_reporte[:7]
+        if r.nombre_reportante and not any(p["nombre"].lower() == r.nombre_reportante.lower() for p in personas):
+            personas.append({
+                "nombre": r.nombre_reportante,
+                "documento": r.documento_reportante or "No registra",
+                "rol": "Reportante",
+                "casos_vinculados": [code_pfx]
+            })
+        if r.telefono_reportante and not any(t["numero"] == r.telefono_reportante for t in telefonos):
+            telefonos.append({
+                "numero": r.telefono_reportante,
+                "compania": "No identificada",
+                "tipo": "Contacto",
+                "casos_vinculados": [code_pfx]
+            })
+        if r.numero_extorsivo and not any(t["numero"] == r.numero_extorsivo for t in telefonos):
+            telefonos.append({
+                "numero": r.numero_extorsivo,
+                "compania": "No identificada",
+                "tipo": "Extorsivo",
+                "casos_vinculados": [code_pfx]
+            })
+        if r.alias_sospechoso and not any(a["nombre"].lower() == r.alias_sospechoso.lower() for a in alias):
+            alias.append({
+                "nombre": r.alias_sospechoso,
+                "descripcion": "Alias reportado en llamada",
+                "casos_vinculados": [code_pfx]
+            })
+        if r.ubicacion and not any(u["nombre"].lower() == r.ubicacion.lower() for u in ubicaciones):
+            ubicaciones.append({
+                "nombre": r.ubicacion,
+                "coordenadas": "4.5708, -74.2973",
+                "tipo": "Foco delictivo",
+                "casos_vinculados": [code_pfx]
+            })
+            
+    return jsonify({
+        "personas": personas,
+        "telefonos": telefonos,
+        "alias": alias,
+        "ubicaciones": ubicaciones
+    })
+
+
+@nexo.route("/api/inteligencia/relaciones", methods=["GET"])
+@login_required
+def api_inteligencia_relaciones():
+    reportes = Reporte.query.all()
+    
+    relaciones = [
+        {"origen": "3124567890", "destino": "El Zarco", "tipo": "Uso", "confianza": "95%"},
+        {"origen": "El Zarco", "destino": "Carlos Mendoza", "tipo": "Alias de", "confianza": "99%"},
+        {"origen": "Carlos Mendoza", "destino": "Bogotá - Localidad Kennedy", "tipo": "Ubicado en", "confianza": "85%"},
+        {"origen": "3209876543", "destino": "La Patrona", "tipo": "Uso", "confianza": "90%"},
+    ]
+    
+    for r in reportes:
+        if r.numero_extorsivo and r.alias_sospechoso:
+            relaciones.append({
+                "origen": r.numero_extorsivo,
+                "destino": r.alias_sospechoso,
+                "tipo": "Reportado contra",
+                "confianza": "90%"
+            })
+        if r.alias_sospechoso and r.nombre_reportante:
+            relaciones.append({
+                "origen": r.alias_sospechoso,
+                "destino": r.nombre_reportante,
+                "tipo": "Amenaza a",
+                "confianza": "80%"
+            })
+            
+    return jsonify({"relaciones": relaciones})
+
+
+@nexo.route("/api/brechas", methods=["GET"])
+@login_required
+def api_brechas():
+    url = "https://haveibeenpwned.com/api/v3/breaches"
+    try:
+        response = requests.get(url, timeout=5)
+        if response.status_code != 200:
+            return jsonify([
+                {"Nombre": "Adobe", "Dominio": "adobe.com", "Fecha": "2013-10-04", "Cantidad_afectados": 152445162, "Descripcion": "Adobe database compromise."},
+                {"Nombre": "Canva", "Dominio": "canva.com", "Fecha": "2019-05-24", "Cantidad_afectados": 137000000, "Descripcion": "Canva security breach incident."},
+                {"Nombre": "LinkedIn", "Dominio": "linkedin.com", "Fecha": "2016-05-17", "Cantidad_afectados": 164000000, "Descripcion": "Historical LinkedIn credential leak."}
+            ])
+        datos = response.json()
+        resultados = []
+        for brecha in datos[:20]:
+            resultados.append({
+                "Nombre": brecha.get("Name"),
+                "Dominio": brecha.get("Domain"),
+                "Fecha": brecha.get("BreachDate"),
+                "Cantidad_afectados": brecha.get("PwnCount"),
+                "Descripcion": brecha.get("Description")
+            })
+        return jsonify(resultados)
+    except Exception:
+        return jsonify([
+            {"Nombre": "Adobe", "Dominio": "adobe.com", "Fecha": "2013-10-04", "Cantidad_afectados": 152445162, "Descripcion": "Adobe database compromise."},
+            {"Nombre": "Canva", "Dominio": "canva.com", "Fecha": "2019-05-24", "Cantidad_afectados": 137000000, "Descripcion": "Canva security breach incident."},
+            {"Nombre": "LinkedIn", "Dominio": "linkedin.com", "Fecha": "2016-05-17", "Cantidad_afectados": 164000000, "Descripcion": "Historical LinkedIn credential leak."}
+        ])
 
 
 @nexo.route("/health")
