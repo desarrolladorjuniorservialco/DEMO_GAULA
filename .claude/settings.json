@@ -8,7 +8,33 @@
       "Bash(git branch *)",
       "Bash(git stash *)",
       "Bash(.\\\\venv\\\\Scripts\\\\python.exe -c \"import flask; print\\('Flask OK'\\)\")",
-      "Bash(Select-Object Name, LastWriteTime)"
+      "Bash(Select-Object Name, LastWriteTime)",
+      "Bash(git -C \"C:\\\\Users\\\\Victor Pulido\\\\Documents\\\\GIT\\\\DEMO_GAULA\" log --oneline -10)",
+      "Bash(git -C \"C:\\\\Users\\\\Victor Pulido\\\\Documents\\\\GIT\\\\PRUEBA_OSINT\" log --oneline -10)",
+      "Bash(Get-ChildItem \"C:\\\\Users\\\\Victor Pulido\\\\Documents\\\\GIT\\\\DEMO_GAULA\" -Exclude venv)",
+      "Bash(Select-Object Name, PSIsContainer)",
+      "Bash(mkdir -p \"C:\\\\Users\\\\Victor Pulido\\\\Documents\\\\GIT\\\\DEMO_GAULA\\\\docs\\\\superpowers\\\\specs\")",
+      "Bash(git -C \"C:\\\\Users\\\\Victor Pulido\\\\Documents\\\\GIT\\\\DEMO_GAULA\" add docs/superpowers/specs/2026-06-03-osint-integration-design.md)",
+      "Bash(git -C 'C:\\\\Users\\\\Victor Pulido\\\\Documents\\\\GIT\\\\DEMO_GAULA' commit -m ' *)",
+      "Bash(git -C \"C:\\\\Users\\\\Victor Pulido\\\\Documents\\\\GIT\\\\DEMO_GAULA\" add docs/superpowers/plans/2026-06-03-osint-integration.md)",
+      "Bash(pip install *)",
+      "Bash(playwright install *)",
+      "Bash(git add *)",
+      "Bash(git commit *)",
+      "Bash(git -C \"C:\\\\Users\\\\Victor Pulido\\\\Documents\\\\GIT\\\\DEMO_GAULA\" add modules/osint/social/)",
+      "Bash(git -C \"C:\\\\Users\\\\Victor Pulido\\\\Documents\\\\GIT\\\\DEMO_GAULA\" commit -m \"feat: add adapted social OSINT blueprint \\(GitHub, Reddit, Facebook, X, TikTok\\)\")",
+      "PowerShell(New-Item -ItemType Directory -Path \"C:\\\\Users\\\\Victor Pulido\\\\Documents\\\\GIT\\\\DEMO_GAULA\\\\templates\\\\osint\" -Force)",
+      "Bash(.venv\\\\Scripts\\\\python -c \"import app; print\\('OK'\\)\")",
+      "Bash(.venv/Scripts/python -c \"import app; print\\('OK'\\)\")",
+      "Bash(git -C \"C:\\\\Users\\\\Victor Pulido\\\\Documents\\\\GIT\\\\DEMO_GAULA\" add app.py)",
+      "Bash(git -C \"C:\\\\Users\\\\Victor Pulido\\\\Documents\\\\GIT\\\\DEMO_GAULA\" commit -m \"feat: register OSINT blueprints and wire up osint_graph models in app.py\")",
+      "Bash(git -C \"C:\\\\Users\\\\Victor Pulido\\\\Documents\\\\GIT\\\\DEMO_GAULA\" add templates/console.html)",
+      "Bash(git -C \"C:\\\\Users\\\\Victor Pulido\\\\Documents\\\\GIT\\\\DEMO_GAULA\" commit -m \"feat: add OSINT sub-tabs to panel-inteligencia with fetch + Cytoscape graph\")",
+      "Bash(python -c \"import app; print\\('Import OK'\\)\")",
+      "Bash(python -c ' *)"
+    ],
+    "additionalDirectories": [
+      "C:\\Users\\Victor Pulido\\Documents\\GIT\\DEMO_GAULA\\docs\\superpowers\\specs"
     ]
   }
 }
