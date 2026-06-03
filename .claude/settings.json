@@ -33,7 +33,8 @@
       "Bash(python -c \"import app; print\\('Import OK'\\)\")",
       "Bash(python -c ' *)",
       "Bash(powershell -Command \"Get-ChildItem -Depth 2 -Directory | Format-Table -Property FullName\")",
-      "Bash(powershell -Command \"Get-ChildItem -Filter '*.py' -Depth 0 | Select-Object -First 10 Name\")"
+      "Bash(powershell -Command \"Get-ChildItem -Filter '*.py' -Depth 0 | Select-Object -First 10 Name\")",
+      "Bash(python -c \"from modules.osint.analytics.graph_builder import build_graph, _generate_findings; print\\('graph_builder OK'\\)\")"
     ],
     "additionalDirectories": [
       "C:\\Users\\Victor Pulido\\Documents\\GIT\\DEMO_GAULA\\docs\\superpowers\\specs"
