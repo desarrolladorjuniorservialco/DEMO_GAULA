@@ -1,7 +1,7 @@
 from flask import Flask, render_template, request, redirect, url_for, flash, session, jsonify
 from werkzeug.security import generate_password_hash, check_password_hash
 from models import db
-from models.nexo147 import Usuario, UnidadGaula
+from models.nexo147 import Usuario, UnidadGaula, Caso
 from functools import wraps
 from datetime import datetime
 import os

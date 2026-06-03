@@ -47,3 +47,41 @@ def test_unidad_gaula_nombre_unico(session):
     with pytest.raises(IntegrityError):
         session.commit()
     session.rollback()
+
+
+def test_caso_creacion(session):
+    import uuid
+    from models.nexo147 import Caso
+    ug = UnidadGaula(nombre="GAULA Medellin")
+    session.add(ug)
+    session.flush()
+
+    c = Caso(
+        id_caso=str(uuid.uuid4()),
+        estado="Recibido",
+        prioridad="Alta",
+        tipo_caso="Extorsion",
+        canal_recepcion="Linea 147",
+        unidad_gaula_id=ug.id,
+        descripcion="Extorsion telefonica.",
+        created_by="operador1",
+    )
+    session.add(c)
+    session.commit()
+    assert c.id is not None
+    assert c.estado == "Recibido"
+    assert c.unidad_gaula.nombre == "GAULA Medellin"
+
+
+def test_caso_id_caso_unico(session):
+    import uuid
+    import pytest
+    from sqlalchemy.exc import IntegrityError
+    from models.nexo147 import Caso
+    uid = str(uuid.uuid4())
+    session.add(Caso(id_caso=uid, estado="Recibido", created_by="test"))
+    session.commit()
+    session.add(Caso(id_caso=uid, estado="Recibido", created_by="test"))
+    with pytest.raises(IntegrityError):
+        session.commit()
+    session.rollback()
