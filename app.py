@@ -32,6 +32,7 @@ db.init_app(nexo)
 
 def seed_db():
     with nexo.app_context():
+        from models.osint_graph import Node as OsintNode, OsintEdge  # noqa: F401
         db.create_all()
 
         if Usuario.query.count() == 0:
@@ -63,6 +64,9 @@ def seed_db():
                     departamento=depto, created_by="seed",
                 ))
             db.session.commit()
+
+        from modules.osint.plugins.registry import discover_plugins
+        discover_plugins()
 
 @nexo.after_request
 def disable_cache(response):
@@ -771,6 +775,16 @@ def api_externa():
     
 
 
+
+
+# ── Módulo OSINT integrado ────────────────────────────────────────────────────
+from modules.osint.social    import social_osint_bp
+from modules.osint.opendata  import opendata_osint_bp
+from modules.osint.analytics import analytics_osint_bp
+
+nexo.register_blueprint(social_osint_bp,    url_prefix="/osint/social")
+nexo.register_blueprint(opendata_osint_bp,  url_prefix="/osint/opendata")
+nexo.register_blueprint(analytics_osint_bp, url_prefix="/osint/analytics")
 
 if __name__ == "__main__":
     os.makedirs(os.path.join(_basedir, "data"), exist_ok=True)
