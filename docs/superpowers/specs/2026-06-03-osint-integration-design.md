@@ -61,7 +61,6 @@ DEMO_GAULA/
     osint/
       social_fragment.html
       opendata_fragment.html
-      graph.html
 ```
 
 ### Fuente del código
@@ -113,10 +112,26 @@ Tres cambios aplicados en **todos** los archivos copiados a `modules/osint/`:
 from flask_login import login_required
 
 # DESPUÉS (DEMO_GAULA session-based):
-from app import login_required
+from modules.osint.auth import login_required
 ```
 
-El decorador `login_required` de DEMO_GAULA verifica `session["user"]` y redirige a `/login` si no hay sesión activa. El comportamiento es equivalente.
+Se crea `modules/osint/auth.py` con el decorador extraído de `app.py`:
+
+```python
+# modules/osint/auth.py
+from functools import wraps
+from flask import session, redirect, url_for
+
+def login_required(f):
+    @wraps(f)
+    def wrapper(*args, **kwargs):
+        if "user" not in session:
+            return redirect(url_for("login"))
+        return f(*args, **kwargs)
+    return wrapper
+```
+
+Esto evita importar desde `app.py` (que causaría importación circular) y mantiene el comportamiento idéntico al decorador existente.
 
 ### 2. Objeto de base de datos
 
@@ -181,8 +196,8 @@ Adaptado de `PRUEBA_OSINT/app/templates/social/results.html`. Muestra: perfil Gi
 ### `templates/osint/opendata_fragment.html`
 Adaptado de `PRUEBA_OSINT/app/templates/opendata/results.html`. Muestra: geolocalización IP, datos RDAP, certificados crt.sh.
 
-### `templates/osint/graph.html`
-Adaptado de `PRUEBA_OSINT/app/templates/analytics/graph.html`. Canvas Cytoscape.js standalone (sin la barra de búsqueda propia — la búsqueda la controla el panel).
+### Grafo de Relaciones — sin template propio
+El grafo se renderiza directamente en `console.html` via JavaScript. La ruta `/osint/analytics/graph` retorna JSON; Cytoscape.js lo consume inline. La ruta `/view` de PRUEBA_OSINT (que renderizaba una página completa con `analytics/graph.html`) **no se registra ni se necesita**.
 
 ---
 
