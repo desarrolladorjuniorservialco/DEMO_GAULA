@@ -19,6 +19,7 @@
   </style>
   <script src="https://unpkg.com/lucide@latest"></script>
   <script src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/cytoscape/3.28.1/cytoscape.min.js"></script>
 </head>
 <body class="console-body">
   <div class="bg-scanline"></div>
@@ -686,56 +687,77 @@
         <section class="panel-section" id="panel-inteligencia">
           <div class="section-header-tactical">
             <h2>Correlaciones de Redes Extorsivas y OSINT</h2>
-            <p>Visualización de enlaces entre delincuentes y verificación de brechas de seguridad externa en tiempo real.</p>
+            <p>Búsqueda activa en redes sociales, datos abiertos y grafo de relaciones.</p>
           </div>
 
-          <div class="dashboard-grid">
-            <!-- Simulación de Redes de Enlace -->
-            <div class="dashboard-card double-bezel col-span-6">
+          <!-- Sub-tabs -->
+          <div class="osint-tabs" style="display:flex;gap:.5rem;margin-bottom:1rem;border-bottom:1px solid #1e2535;padding-bottom:.5rem">
+            <button class="osint-tab-btn btn btn-secondary-tactical active" data-tab="social" onclick="osintSwitchTab('social')">Redes Sociales</button>
+            <button class="osint-tab-btn btn btn-secondary-tactical" data-tab="opendata" onclick="osintSwitchTab('opendata')">Datos Abiertos</button>
+            <button class="osint-tab-btn btn btn-secondary-tactical" data-tab="graph" onclick="osintSwitchTab('graph')">Grafo de Relaciones</button>
+          </div>
+
+          <!-- Tab: Redes Sociales -->
+          <div class="osint-tab-pane" id="osint-tab-social">
+            <div class="dashboard-card double-bezel">
               <div class="inner-core">
-                <h3>Relaciones Detectadas por Correlación Cruzada</h3>
-                <p class="helper-text-mono">Algoritmo de vinculación telefónica y alias:</p>
-                <div class="table-wrap">
-                  <table>
-                    <thead>
-                      <tr>
-                        <th>Origen</th>
-                        <th>Destino</th>
-                        <th>Vínculo</th>
-                        <th>Nivel Confianza</th>
-                      </tr>
-                    </thead>
-                    <tbody id="intel-relations-body">
-                      <!-- Carga dinámica -->
-                    </tbody>
-                  </table>
+                <h3>Búsqueda en Redes Sociales</h3>
+                <p class="helper-text-mono">Extracción de identidades digitales mediante API, scraping y dorking.</p>
+                <div style="display:flex;flex-wrap:wrap;gap:.5rem;align-items:center;margin-bottom:.75rem">
+                  <input type="text" id="osint-social-q" class="search-input-tactical" placeholder="usuario o alias..." style="flex:1;min-width:150px">
+                  <select id="osint-social-source" class="select-tactical">
+                    <option value="github">GitHub</option>
+                    <option value="reddit">Reddit</option>
+                    <option value="both">GitHub + Reddit</option>
+                    <option value="facebook">Facebook</option>
+                    <option value="x">X (Twitter)</option>
+                    <option value="tiktok">TikTok</option>
+                    <option value="deep_all">Profunda (FB+X+TikTok)</option>
+                    <option value="all">Todas las fuentes</option>
+                  </select>
+                  <button class="btn btn-primary-tactical" onclick="osintFetchSocial()">EJECUTAR</button>
                 </div>
+                <div id="osint-social-spinner" style="display:none;color:#4bc8a8;font-size:.8rem;margin-bottom:.5rem">⟳ Ejecutando búsqueda...</div>
+                <div id="osint-social-results" style="max-height:500px;overflow-y:auto"></div>
               </div>
             </div>
+          </div>
 
-            <!-- Módulo OSINT: Brechas externas -->
-            <div class="dashboard-card double-bezel col-span-6">
+          <!-- Tab: Datos Abiertos -->
+          <div class="osint-tab-pane" id="osint-tab-opendata" style="display:none">
+            <div class="dashboard-card double-bezel">
               <div class="inner-core">
-                <h3>OSINT: Brechas de Seguridad Ajenas</h3>
-                <p class="helper-text-mono">Verificación externa de filtración de datos de interés:</p>
-                <button class="btn btn-secondary-tactical mb-2" id="btn-load-osint">Escanear Brechas Activas</button>
-                <div class="table-wrap text-small-wrap" style="max-height: 300px; overflow-y: auto;">
-                  <table>
-                    <thead>
-                      <tr>
-                        <th>Nombre</th>
-                        <th>Dominio</th>
-                        <th>Fecha</th>
-                        <th>Expuestos</th>
-                      </tr>
-                    </thead>
-                    <tbody id="intel-osint-body">
-                      <tr>
-                        <td colspan="4" class="text-center">Presione "Escanear" para consultar la base de datos externa.</td>
-                      </tr>
-                    </tbody>
-                  </table>
+                <h3>Datos Abiertos: IP y Dominios</h3>
+                <p class="helper-text-mono">Geolocalización de IPs, registros RDAP y certificados de transparencia.</p>
+                <div style="display:flex;flex-wrap:wrap;gap:.5rem;align-items:center;margin-bottom:.75rem">
+                  <input type="text" id="osint-od-q" class="search-input-tactical" placeholder="IP o dominio..." style="flex:1;min-width:150px">
+                  <select id="osint-od-source" class="select-tactical">
+                    <option value="ip">Geoloc. IP</option>
+                    <option value="domain">Dominio RDAP + Certs</option>
+                    <option value="both">Ambos</option>
+                  </select>
+                  <button class="btn btn-primary-tactical" onclick="osintFetchOpendata()">EJECUTAR</button>
                 </div>
+                <div id="osint-od-spinner" style="display:none;color:#4bc8a8;font-size:.8rem;margin-bottom:.5rem">⟳ Consultando fuentes abiertas...</div>
+                <div id="osint-od-results" style="max-height:500px;overflow-y:auto"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Tab: Grafo de Relaciones -->
+          <div class="osint-tab-pane" id="osint-tab-graph" style="display:none">
+            <div class="dashboard-card double-bezel">
+              <div class="inner-core">
+                <h3>Grafo de Relaciones OSINT</h3>
+                <p class="helper-text-mono">Visualización del grafo de entidades acumulado en osint.db. Filtra por objetivo o carga todo.</p>
+                <div style="display:flex;gap:.5rem;align-items:center;margin-bottom:.75rem">
+                  <input type="text" id="osint-graph-q" class="search-input-tactical" placeholder="objetivo (vacío = todo el grafo)" style="flex:1">
+                  <button class="btn btn-primary-tactical" onclick="osintLoadGraph()">CARGAR GRAFO</button>
+                  <button class="btn btn-secondary-tactical" onclick="osintResetGraph()">LIMPIAR</button>
+                </div>
+                <div id="osint-graph-spinner" style="display:none;color:#4bc8a8;font-size:.8rem;margin-bottom:.5rem">⟳ Cargando grafo...</div>
+                <div id="osint-graph-info" style="font-size:.75rem;color:#6b8aaa;margin-bottom:.5rem"></div>
+                <div id="osint-graph-canvas" style="width:100%;height:420px;background:#07080c;border:1px solid #1e2535;border-radius:4px"></div>
               </div>
             </div>
           </div>
@@ -1197,5 +1219,145 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="{{ url_for('static', filename='console.js') }}"></script>
   <script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+<script>
+// ── OSINT Panel ────────────────────────────────────────────────────────────
+let _osintCy = null;
+
+function osintSwitchTab(tab) {
+  document.querySelectorAll('.osint-tab-pane').forEach(p => p.style.display = 'none');
+  document.querySelectorAll('.osint-tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('osint-tab-' + tab).style.display = '';
+  document.querySelector('[data-tab="' + tab + '"]').classList.add('active');
+}
+
+function osintFetchSocial() {
+  const q      = document.getElementById('osint-social-q').value.trim();
+  const source = document.getElementById('osint-social-source').value;
+  if (!q) { alert('Ingresa un objetivo.'); return; }
+
+  const spinner = document.getElementById('osint-social-spinner');
+  const results = document.getElementById('osint-social-results');
+  spinner.style.display = '';
+  results.innerHTML = '';
+
+  fetch('/osint/social/lookup?q=' + encodeURIComponent(q) + '&source=' + source)
+    .then(r => {
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      return r.text();
+    })
+    .then(html => { results.innerHTML = html; })
+    .catch(err  => { results.innerHTML = '<p style="color:#f87171;font-size:.8rem">⚠ Error: ' + err.message + '</p>'; })
+    .finally(() => { spinner.style.display = 'none'; });
+}
+
+function osintFetchOpendata() {
+  const q      = document.getElementById('osint-od-q').value.trim();
+  const source = document.getElementById('osint-od-source').value;
+  if (!q) { alert('Ingresa una IP o dominio.'); return; }
+
+  const spinner = document.getElementById('osint-od-spinner');
+  const results = document.getElementById('osint-od-results');
+  spinner.style.display = '';
+  results.innerHTML = '';
+
+  fetch('/osint/opendata/lookup?q=' + encodeURIComponent(q) + '&source=' + source)
+    .then(r => {
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      return r.text();
+    })
+    .then(html => { results.innerHTML = html; })
+    .catch(err  => { results.innerHTML = '<p style="color:#f87171;font-size:.8rem">⚠ Error: ' + err.message + '</p>'; })
+    .finally(() => { spinner.style.display = 'none'; });
+}
+
+function osintLoadGraph() {
+  const q       = document.getElementById('osint-graph-q').value.trim();
+  const spinner = document.getElementById('osint-graph-spinner');
+  const info    = document.getElementById('osint-graph-info');
+  spinner.style.display = '';
+  info.textContent = '';
+
+  if (_osintCy) { _osintCy.destroy(); _osintCy = null; }
+
+  fetch('/osint/analytics/graph?q=' + encodeURIComponent(q))
+    .then(r => {
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      return r.json();
+    })
+    .then(data => {
+      const GROUP_COLORS = {
+        target:'#c8a84b', contact:'#4bc8a8', network:'#4b8ac8',
+        org:'#c84b8a', repo:'#8ac84b', platform:'#6b6860',
+        x_platform:'#1DA1F2', x_profile:'#1565a8',
+        tiktok_platform:'#ff0050', tiktok_profile:'#a0002f',
+        social_profile:'#a855f7',
+      };
+
+      const elements = [];
+      (data.nodes || []).forEach(n => {
+        elements.push({ data: {
+          id: n.id, label: n.label || n.id,
+          color: GROUP_COLORS[n.group] || '#6b6860',
+        }});
+      });
+      (data.links || []).forEach(l => {
+        elements.push({ data: {
+          source: l.source, target: l.target, label: l.label || '',
+        }});
+      });
+
+      info.textContent = (data.nodes||[]).length + ' nodos · ' + (data.links||[]).length + ' aristas' + (q ? ' (subgrafo de "' + q + '")' : ' (grafo completo)');
+
+      if (elements.length === 0) {
+        info.textContent = 'Sin nodos. Ejecuta primero una búsqueda en Redes Sociales o Datos Abiertos.';
+        return;
+      }
+
+      _osintCy = cytoscape({
+        container: document.getElementById('osint-graph-canvas'),
+        elements: elements,
+        style: [
+          { selector: 'node', style: {
+            'background-color': 'data(color)',
+            'label': 'data(label)',
+            'color': '#d0d8e8',
+            'font-size': '9px',
+            'text-valign': 'bottom',
+            'text-margin-y': '3px',
+            'width': '24px', 'height': '24px',
+          }},
+          { selector: 'edge', style: {
+            'line-color': '#2a3a50',
+            'target-arrow-color': '#2a3a50',
+            'target-arrow-shape': 'triangle',
+            'curve-style': 'bezier',
+            'label': 'data(label)',
+            'font-size': '7px',
+            'color': '#4a5a6a',
+            'width': 1,
+          }},
+        ],
+        layout: { name: 'cose', animate: false, padding: 20 },
+      });
+    })
+    .catch(err => { info.textContent = '⚠ Error al cargar grafo: ' + err.message; })
+    .finally(() => { spinner.style.display = 'none'; });
+}
+
+function osintResetGraph() {
+  if (_osintCy) { _osintCy.destroy(); _osintCy = null; }
+  document.getElementById('osint-graph-info').textContent = '';
+  document.getElementById('osint-graph-q').value = '';
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  document.getElementById('osint-social-q')
+    .addEventListener('keydown', e => { if (e.key === 'Enter') osintFetchSocial(); });
+  document.getElementById('osint-od-q')
+    .addEventListener('keydown', e => { if (e.key === 'Enter') osintFetchOpendata(); });
+  document.getElementById('osint-graph-q')
+    .addEventListener('keydown', e => { if (e.key === 'Enter') osintLoadGraph(); });
+});
+</script>
 </body>
 </html>
