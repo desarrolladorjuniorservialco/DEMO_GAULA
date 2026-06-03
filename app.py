@@ -773,7 +773,7 @@ def api_externa():
 
 
 if __name__ == "__main__":
-    os.makedirs("data", exist_ok=True)
+    os.makedirs(os.path.join(_basedir, "data"), exist_ok=True)
     seed_db()
     port = int(os.environ.get("PORT", 5000))
     nexo.run(host="0.0.0.0", port=port, debug=True)

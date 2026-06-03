@@ -41,12 +41,17 @@
   padding: 0;
 }
 
-body, html {
+html {
+  height: 100%;
+  overflow: hidden;
+}
+
+body {
   background-color: var(--bg-deep);
   color: var(--text-primary);
   font-family: var(--font-display);
   font-size: 14px;
-  min-height: 100dvh;
+  height: 100%;
   overflow: hidden;
 }
 
@@ -102,8 +107,8 @@ body, html {
 /* --- LAYOUT DEL CENTRO DE CONTROL --- */
 .console-layout {
   display: flex;
-  height: 100dvh;
-  width: 100vw;
+  height: 100%;
+  width: 100%;
   position: relative;
 }
 
@@ -1322,9 +1327,9 @@ tr:hover td {
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 100vh;
-  width: 100vw;
-  overflow: hidden;
+  height: 100%;
+  width: 100%;
+  overflow: auto;
 }
 
 .login-screen {
@@ -1332,7 +1337,7 @@ tr:hover td {
   grid-template-columns: 1.1fr .9fr;
   width: calc(100% - 80px);
   max-width: 1080px;
-  height: 560px;
+  min-height: 560px;
   background-color: var(--bg-panel);
   border-radius: 28px;
   border: 1px solid rgba(255, 255, 255, 0.05);
