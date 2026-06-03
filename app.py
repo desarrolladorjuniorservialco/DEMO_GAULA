@@ -29,47 +29,37 @@ nexo.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 db.init_app(nexo)
 
 
-class Reporte(db.Model):
-    __tablename__ = "reportes"
-    id                   = db.Column(db.Integer, primary_key=True)
-    id_reporte           = db.Column(db.String(36), nullable=False)
-    fecha_registro       = db.Column(db.DateTime, default=datetime.utcnow)
-    estado               = db.Column(db.String(20), default="Recibido")
-    usuario_registro     = db.Column(db.String(50))
-    rol_usuario          = db.Column(db.String(20))
-    tipo_reporte         = db.Column(db.String(50))
-    prioridad            = db.Column(db.String(20))
-    unidad_gaula         = db.Column(db.String(100))
-    canal_recepcion      = db.Column(db.String(50))
-    nombre_reportante    = db.Column(db.String(100))
-    documento_reportante = db.Column(db.String(30))
-    telefono_reportante  = db.Column(db.String(20))
-    ubicacion            = db.Column(db.String(200))
-    descripcion          = db.Column(db.Text)
-    numero_extorsivo     = db.Column(db.String(30))
-    alias_sospechoso     = db.Column(db.String(100))
-    medio_pago           = db.Column(db.String(50))
-    valor_exigido        = db.Column(db.String(50))
-    evidencia            = db.Column(db.String(200))
-    observaciones        = db.Column(db.Text)
-
-
 def seed_db():
     with nexo.app_context():
         db.create_all()
+
         if Usuario.query.count() == 0:
-            usuarios_demo = [
+            for username, pwd, nombre, rol in [
                 ("admin",    "Admin147*",    "Administrador NEXO-147", "admin"),
                 ("director", "Director147*", "Director GAULA",         "director"),
                 ("analista", "Analista147*", "Analista Operacional",   "analista"),
-                ("operador", "Operador147*", "Operador Línea 147",     "operador"),
-            ]
-            for username, pwd, nombre, rol in usuarios_demo:
+                ("operador", "Operador147*", "Operador Linea 147",     "operador"),
+            ]:
                 db.session.add(Usuario(
                     username=username,
                     password_hash=generate_password_hash(pwd),
                     nombre=nombre,
-                    rol=rol
+                    rol=rol,
+                    created_by="seed",
+                ))
+            db.session.commit()
+
+        if UnidadGaula.query.count() == 0:
+            for nombre, ciudad, depto in [
+                ("GAULA Bogota D.C.",  "Bogota",       "Cundinamarca"),
+                ("GAULA Medellin",     "Medellin",     "Antioquia"),
+                ("GAULA Cali",         "Cali",         "Valle del Cauca"),
+                ("GAULA Barranquilla", "Barranquilla", "Atlantico"),
+                ("GAULA Bucaramanga",  "Bucaramanga",  "Santander"),
+            ]:
+                db.session.add(UnidadGaula(
+                    nombre=nombre, ciudad=ciudad,
+                    departamento=depto, created_by="seed",
                 ))
             db.session.commit()
 
@@ -179,93 +169,132 @@ def registrar_reporte():
     else:
         data = request.form.to_dict()
 
-    tipo_reporte = data.get("tipo_reporte", "").strip()
-    prioridad    = data.get("prioridad", "").strip()
-    descripcion  = data.get("descripcion", "").strip()
+    tipo_caso   = data.get("tipo_reporte", "").strip()
+    prioridad   = data.get("prioridad", "").strip()
+    descripcion = data.get("descripcion", "").strip()
 
-    if not tipo_reporte or not prioridad or not descripcion:
+    if not tipo_caso or not prioridad or not descripcion:
         if request.is_json:
-            return {"error": "Debe registrar tipo de reporte, prioridad y descripción mínima."}, 400
-        flash("Debe registrar tipo de reporte, prioridad y descripción mínima.", "error")
+            return {"error": "Debe registrar tipo de reporte, prioridad y descripcion minima."}, 400
+        flash("Debe registrar tipo de reporte, prioridad y descripcion minima.", "error")
         return redirect(url_for("home") + "#reporte")
 
-    reporte = Reporte(
-        id_reporte           = str(uuid.uuid4()),
-        usuario_registro     = session.get("user"),
-        rol_usuario          = session.get("role"),
-        tipo_reporte         = tipo_reporte,
-        prioridad            = prioridad,
-        unidad_gaula         = data.get("unidad_gaula", "").strip(),
-        canal_recepcion      = data.get("canal_recepcion", "").strip(),
-        nombre_reportante    = data.get("nombre_reportante", "").strip(),
-        documento_reportante = data.get("documento_reportante", "").strip(),
-        telefono_reportante  = data.get("telefono_reportante", "").strip(),
-        ubicacion            = data.get("ubicacion", "").strip(),
-        descripcion          = descripcion,
-        numero_extorsivo     = data.get("numero_extorsivo", "").strip(),
-        alias_sospechoso     = data.get("alias_sospechoso", "").strip(),
-        medio_pago           = data.get("medio_pago", "").strip(),
-        valor_exigido        = data.get("valor_exigido", "").strip(),
-        evidencia            = data.get("evidencia", "").strip(),
-        observaciones        = data.get("observaciones", "").strip(),
+    nombre_unidad = data.get("unidad_gaula", "").strip()
+    unidad = None
+    if nombre_unidad:
+        unidad = UnidadGaula.query.filter_by(nombre=nombre_unidad).first()
+        if not unidad:
+            unidad = UnidadGaula(nombre=nombre_unidad, created_by=session.get("user"))
+            db.session.add(unidad)
+            db.session.flush()
+
+    caso = Caso(
+        id_caso         = str(uuid.uuid4()),
+        estado          = "Recibido",
+        prioridad       = prioridad,
+        tipo_caso       = tipo_caso,
+        canal_recepcion = data.get("canal_recepcion", "").strip(),
+        unidad_gaula_id = unidad.id if unidad else None,
+        descripcion     = descripcion,
+        observaciones   = data.get("observaciones", "").strip(),
+        created_by      = session.get("user"),
     )
-    db.session.add(reporte)
+    db.session.add(caso)
+    db.session.flush()
+
+    nombre_rep = data.get("nombre_reportante", "").strip()
+    if nombre_rep or data.get("documento_reportante") or data.get("telefono_reportante"):
+        rep = Reportante(
+            nombre     = nombre_rep,
+            documento  = data.get("documento_reportante", "").strip(),
+            telefono   = data.get("telefono_reportante", "").strip(),
+            anonimo    = not bool(nombre_rep),
+            created_by = session.get("user"),
+        )
+        db.session.add(rep)
+        db.session.flush()
+        db.session.add(CasoReportante(
+            caso_id       = caso.id,
+            reportante_id = rep.id,
+            rol_en_caso   = "denunciante",
+            created_by    = session.get("user"),
+        ))
+
+    medio = data.get("medio_pago", "").strip()
+    if medio:
+        raw = data.get("valor_exigido", "0").strip().replace(",", "").replace("$", "") or "0"
+        try:
+            valor_decimal = float(raw)
+        except ValueError:
+            valor_decimal = 0.0
+        db.session.add(MedioPago(
+            caso_id       = caso.id,
+            tipo          = medio,
+            valor_exigido = valor_decimal,
+            referencia    = data.get("numero_extorsivo", "").strip(),
+            created_by    = session.get("user"),
+        ))
+
+    evidencia_txt = data.get("evidencia", "").strip()
+    if evidencia_txt:
+        db.session.add(Evidencia(
+            caso_id     = caso.id,
+            tipo        = "referencia",
+            descripcion = evidencia_txt,
+            created_by  = session.get("user"),
+        ))
+
+    db.session.add(EventoCaso(
+        caso_id      = caso.id,
+        tipo_evento  = "creacion",
+        descripcion  = "Caso registrado desde formulario.",
+        estado_nuevo = "Recibido",
+        created_by   = session.get("user"),
+    ))
+
     db.session.commit()
 
     if request.is_json:
-        return {"mensaje": f"Reporte registrado correctamente. Código interno: {reporte.id_reporte}", "id_reporte": reporte.id_reporte}, 201
-    flash(f"Reporte registrado correctamente. Código interno: {reporte.id_reporte}", "ok")
+        return {"mensaje": f"Reporte registrado. Codigo: {caso.id_caso}", "id_reporte": caso.id_caso}, 201
+    flash(f"Reporte registrado correctamente. Codigo interno: {caso.id_caso}", "ok")
     return redirect(url_for("home") + "#reporte")
 
 
 @nexo.route("/dashboard")
 @director_required
 def dashboard():
-    reportes = Reporte.query.order_by(Reporte.fecha_registro.desc()).all()
+    casos = Caso.query.order_by(Caso.fecha_registro.desc()).all()
 
-    total_reportes = len(reportes)
-    casos_criticos = sum(1 for r in reportes if (r.prioridad or "").lower() == "crítica")
+    total          = len(casos)
+    casos_criticos = sum(1 for c in casos if (c.prioridad or "").lower() == "critica")
 
     tipos_conteo = {}
-    for r in reportes:
-        tipo = r.tipo_reporte or "Sin clasificar"
+    for c in casos:
+        tipo = c.tipo_caso or "Sin clasificar"
         tipos_conteo[tipo] = tipos_conteo.get(tipo, 0) + 1
 
     if not tipos_conteo:
         tipos_conteo = {
-            "Extorsión": 18,
-            "Hurto": 11,
-            "Fraude digital": 9,
-            "Amenaza": 7,
-            "Secuestro": 3
+            "Extorsion": 18, "Hurto": 11, "Fraude digital": 9,
+            "Amenaza": 7,    "Secuestro": 3,
         }
 
     max_tipo = max(tipos_conteo.values()) if tipos_conteo else 1
-
     tipos = [
-        {
-            "tipo": tipo,
-            "cantidad": cantidad,
-            "porcentaje": f"{int((cantidad / max_tipo) * 100)}%"
-        }
-        for tipo, cantidad in tipos_conteo.items()
+        {"tipo": t, "cantidad": n, "porcentaje": f"{int((n / max_tipo) * 100)}%"}
+        for t, n in tipos_conteo.items()
     ]
 
     stats = {
-        "casos_activos":     total_reportes if total_reportes else 48,
-        "casos_criticos":    casos_criticos if total_reportes else 12,
+        "casos_activos":     total if total else 48,
+        "casos_criticos":    casos_criticos if total else 12,
         "gaulas_conectados": 34,
         "tiempo_respuesta":  "08m",
-        "reportes_147":      total_reportes if total_reportes else 124,
-        "alertas_osint":     19
+        "reportes_147":      total if total else 124,
+        "alertas_osint":     19,
     }
 
-    return render_template(
-        "dashboard.html",
-        reportes=reportes,
-        stats=stats,
-        tipos=tipos
-    )
+    return render_template("dashboard.html", reportes=casos, stats=stats, tipos=tipos)
 
 
 @nexo.route("/api/casos", methods=["GET"])
@@ -274,33 +303,32 @@ def api_casos():
     role = session.get("role")
     username = session.get("user")
     if role == "operador":
-        reportes = Reporte.query.filter_by(usuario_registro=username).order_by(Reporte.fecha_registro.desc()).all()
+        casos = Caso.query.filter_by(created_by=username).order_by(Caso.fecha_registro.desc()).all()
     else:
-        reportes = Reporte.query.order_by(Reporte.fecha_registro.desc()).all()
-    
+        casos = Caso.query.order_by(Caso.fecha_registro.desc()).all()
+
     resultados = []
-    for r in reportes:
+    for c in casos:
+        unidad_nombre = c.unidad_gaula.nombre if c.unidad_gaula else ""
+        medio = c.medios_pago[0] if c.medios_pago else None
+        rep_link = c.reportantes[0] if c.reportantes else None
+        rep = rep_link.reportante if rep_link else None
         resultados.append({
-            "id_reporte": r.id_reporte,
-            "fecha_registro": r.fecha_registro.strftime('%Y-%m-%d %H:%M') if r.fecha_registro else "",
-            "estado": r.estado,
-            "usuario_registro": r.usuario_registro,
-            "rol_usuario": r.rol_usuario,
-            "tipo_reporte": r.tipo_reporte,
-            "prioridad": r.prioridad,
-            "unidad_gaula": r.unidad_gaula,
-            "canal_recepcion": r.canal_recepcion,
-            "nombre_reportante": r.nombre_reportante,
-            "documento_reportante": r.documento_reportante,
-            "telefono_reportante": r.telefono_reportante,
-            "ubicacion": r.ubicacion,
-            "descripcion": r.descripcion,
-            "numero_extorsivo": r.numero_extorsivo,
-            "alias_sospechoso": r.alias_sospechoso,
-            "medio_pago": r.medio_pago,
-            "valor_exigido": r.valor_exigido,
-            "evidencia": r.evidencia,
-            "observaciones": r.observaciones
+            "id_reporte":          c.id_caso,
+            "fecha_registro":      c.fecha_registro.strftime('%Y-%m-%d %H:%M') if c.fecha_registro else "",
+            "estado":              c.estado,
+            "usuario_registro":    c.created_by,
+            "tipo_reporte":        c.tipo_caso,
+            "prioridad":           c.prioridad,
+            "unidad_gaula":        unidad_nombre,
+            "canal_recepcion":     c.canal_recepcion,
+            "nombre_reportante":   rep.nombre if rep else "",
+            "documento_reportante": rep.documento if rep else "",
+            "telefono_reportante": rep.telefono if rep else "",
+            "descripcion":         c.descripcion,
+            "medio_pago":          medio.tipo if medio else "",
+            "valor_exigido":       str(medio.valor_exigido) if medio else "",
+            "observaciones":       c.observaciones,
         })
     return jsonify(resultados)
 
@@ -311,17 +339,17 @@ def api_actualizar_estado(id_reporte):
     role = session.get("role")
     if role not in ["admin", "analista", "director"]:
         return jsonify({"error": "No autorizado para cambiar el estado del caso."}), 403
-        
+
     data = request.get_json() or {}
     nuevo_estado = data.get("estado", "").strip()
     if not nuevo_estado:
-        return jsonify({"error": "Debe proporcionar un estado válido."}), 400
-        
-    reporte = Reporte.query.filter_by(id_reporte=id_reporte).first()
-    if not reporte:
+        return jsonify({"error": "Debe proporcionar un estado valido."}), 400
+
+    caso = Caso.query.filter_by(id_caso=id_reporte).first()
+    if not caso:
         return jsonify({"error": "Caso no encontrado."}), 404
-        
-    reporte.estado = nuevo_estado
+
+    caso.estado = nuevo_estado
     db.session.commit()
     return jsonify({"mensaje": f"Estado actualizado a: {nuevo_estado}", "id_reporte": id_reporte})
 
@@ -329,102 +357,86 @@ def api_actualizar_estado(id_reporte):
 @nexo.route("/api/entidades", methods=["GET"])
 @login_required
 def api_entidades():
-    reportes = Reporte.query.all()
-    
     personas = [
         {"nombre": "Carlos Mendoza", "documento": "1.023.456.789", "rol": "Sospechoso", "casos_vinculados": ["147-001", "147-003"]},
         {"nombre": "Diana Restrepo", "documento": "52.345.678", "rol": "Reportante", "casos_vinculados": ["147-002"]},
-        {"nombre": "Andrés Felipe Gómez", "documento": "1.018.990.123", "rol": "Víctima", "casos_vinculados": ["147-005"]},
+        {"nombre": "Andres Felipe Gomez", "documento": "1.018.990.123", "rol": "Victima", "casos_vinculados": ["147-005"]},
     ]
     telefonos = [
         {"numero": "3124567890", "compania": "Claro", "tipo": "Extorsivo", "casos_vinculados": ["147-001", "147-004"]},
         {"numero": "3209876543", "compania": "Movistar", "tipo": "Sospechoso", "casos_vinculados": ["147-003"]},
-        {"numero": "3151112233", "compania": "Tigo", "tipo": "Víctima", "casos_vinculados": ["147-002"]},
+        {"numero": "3151112233", "compania": "Tigo", "tipo": "Victima", "casos_vinculados": ["147-002"]},
     ]
     alias = [
-        {"nombre": "El Zarco", "descripcion": "Cabecilla de banda de extorsión carcelaria", "casos_vinculados": ["147-001", "147-004"]},
+        {"nombre": "El Zarco", "descripcion": "Cabecilla de banda de extorsion carcelaria", "casos_vinculados": ["147-001", "147-004"]},
         {"nombre": "La Patrona", "descripcion": "Coordinadora de cobros en cuentas digitales", "casos_vinculados": ["147-003"]},
-        {"nombre": "El Ingeniero", "descripcion": "Encargado de estafas informáticas y phishing", "casos_vinculados": ["147-005"]},
+        {"nombre": "El Ingeniero", "descripcion": "Encargado de estafas informaticas y phishing", "casos_vinculados": ["147-005"]},
     ]
     ubicaciones = [
-        {"nombre": "Bogotá - Localidad Kennedy", "coordenadas": "4.6200, -74.1500", "tipo": "Foco delictivo", "casos_vinculados": ["147-001", "147-002"]},
-        {"nombre": "Medellín - El Poblado", "coordenadas": "6.2100, -75.5700", "tipo": "Zona de amenazas", "casos_vinculados": ["147-003"]},
-        {"nombre": "Cali - Distrito de Aguablanca", "coordenadas": "3.4200, -76.4800", "tipo": "Cobro extorsión", "casos_vinculados": ["147-004", "147-005"]},
+        {"nombre": "Bogota - Localidad Kennedy", "coordenadas": "4.6200, -74.1500", "tipo": "Foco delictivo", "casos_vinculados": ["147-001", "147-002"]},
+        {"nombre": "Medellin - El Poblado", "coordenadas": "6.2100, -75.5700", "tipo": "Zona de amenazas", "casos_vinculados": ["147-003"]},
+        {"nombre": "Cali - Distrito de Aguablanca", "coordenadas": "3.4200, -76.4800", "tipo": "Cobro extorsion", "casos_vinculados": ["147-004", "147-005"]},
     ]
-    
-    for r in reportes:
-        code_pfx = r.id_reporte[:7]
-        if r.nombre_reportante and not any(p["nombre"].lower() == r.nombre_reportante.lower() for p in personas):
-            personas.append({
-                "nombre": r.nombre_reportante,
-                "documento": r.documento_reportante or "No registra",
-                "rol": "Reportante",
-                "casos_vinculados": [code_pfx]
-            })
-        if r.telefono_reportante and not any(t["numero"] == r.telefono_reportante for t in telefonos):
-            telefonos.append({
-                "numero": r.telefono_reportante,
-                "compania": "No identificada",
-                "tipo": "Contacto",
-                "casos_vinculados": [code_pfx]
-            })
-        if r.numero_extorsivo and not any(t["numero"] == r.numero_extorsivo for t in telefonos):
-            telefonos.append({
-                "numero": r.numero_extorsivo,
-                "compania": "No identificada",
-                "tipo": "Extorsivo",
-                "casos_vinculados": [code_pfx]
-            })
-        if r.alias_sospechoso and not any(a["nombre"].lower() == r.alias_sospechoso.lower() for a in alias):
-            alias.append({
-                "nombre": r.alias_sospechoso,
-                "descripcion": "Alias reportado en llamada",
-                "casos_vinculados": [code_pfx]
-            })
-        if r.ubicacion and not any(u["nombre"].lower() == r.ubicacion.lower() for u in ubicaciones):
-            ubicaciones.append({
-                "nombre": r.ubicacion,
-                "coordenadas": "4.5708, -74.2973",
-                "tipo": "Foco delictivo",
-                "casos_vinculados": [code_pfx]
-            })
-            
+
+    casos = Caso.query.all()
+    for c in casos:
+        code_pfx = c.id_caso[:7]
+        for rep_link in c.reportantes:
+            rep = rep_link.reportante
+            if rep and rep.nombre and not any(p["nombre"].lower() == rep.nombre.lower() for p in personas):
+                personas.append({
+                    "nombre": rep.nombre,
+                    "documento": rep.documento or "No registra",
+                    "rol": "Reportante",
+                    "casos_vinculados": [code_pfx],
+                })
+            if rep and rep.telefono and not any(t["numero"] == rep.telefono for t in telefonos):
+                telefonos.append({
+                    "numero": rep.telefono,
+                    "compania": "No identificada",
+                    "tipo": "Contacto",
+                    "casos_vinculados": [code_pfx],
+                })
+        for medio in c.medios_pago:
+            if medio.referencia and not any(t["numero"] == medio.referencia for t in telefonos):
+                telefonos.append({
+                    "numero": medio.referencia,
+                    "compania": "No identificada",
+                    "tipo": "Extorsivo",
+                    "casos_vinculados": [code_pfx],
+                })
+
     return jsonify({
         "personas": personas,
         "telefonos": telefonos,
         "alias": alias,
-        "ubicaciones": ubicaciones
+        "ubicaciones": ubicaciones,
     })
 
 
 @nexo.route("/api/inteligencia/relaciones", methods=["GET"])
 @login_required
 def api_inteligencia_relaciones():
-    reportes = Reporte.query.all()
-    
     relaciones = [
         {"origen": "3124567890", "destino": "El Zarco", "tipo": "Uso", "confianza": "95%"},
         {"origen": "El Zarco", "destino": "Carlos Mendoza", "tipo": "Alias de", "confianza": "99%"},
-        {"origen": "Carlos Mendoza", "destino": "Bogotá - Localidad Kennedy", "tipo": "Ubicado en", "confianza": "85%"},
+        {"origen": "Carlos Mendoza", "destino": "Bogota - Localidad Kennedy", "tipo": "Ubicado en", "confianza": "85%"},
         {"origen": "3209876543", "destino": "La Patrona", "tipo": "Uso", "confianza": "90%"},
     ]
-    
-    for r in reportes:
-        if r.numero_extorsivo and r.alias_sospechoso:
-            relaciones.append({
-                "origen": r.numero_extorsivo,
-                "destino": r.alias_sospechoso,
-                "tipo": "Reportado contra",
-                "confianza": "90%"
-            })
-        if r.alias_sospechoso and r.nombre_reportante:
-            relaciones.append({
-                "origen": r.alias_sospechoso,
-                "destino": r.nombre_reportante,
-                "tipo": "Amenaza a",
-                "confianza": "80%"
-            })
-            
+
+    casos = Caso.query.all()
+    for c in casos:
+        medios = c.medios_pago
+        reps   = [rl.reportante for rl in c.reportantes if rl.reportante]
+        for medio in medios:
+            if medio.referencia and reps:
+                relaciones.append({
+                    "origen": medio.referencia,
+                    "destino": reps[0].nombre or "Reportante",
+                    "tipo": "Amenaza a",
+                    "confianza": "80%",
+                })
+
     return jsonify({"relaciones": relaciones})
 
 
