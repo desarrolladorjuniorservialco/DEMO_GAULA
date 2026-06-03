@@ -8,6 +8,11 @@ document.addEventListener("DOMContentLoaded", () => {
     return;
   }
 
+  // Set default Chart.js font
+  if (typeof Chart !== "undefined") {
+    Chart.defaults.font.family = "'Nunito Sans', sans-serif";
+  }
+
   // --- STATE AND HELPER GLOBALS ---
   let chartInstances = {};
   let etlInterval = null;
@@ -140,61 +145,40 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  // --- 2. GRAFO DE RELACIONES ---
-  async function fetchGrafo() {
-    const nodosBody = document.getElementById("grafo-nodos-body");
-    const aristasBody = document.getElementById("grafo-aristas-body");
-    const statsContainer = document.getElementById("grafo-stats-container");
+  // --- 2. GRAFO DE RELACIONES (Vis.js Interactive Graph) ---
+  let visNetwork = null;
+  let originalGraphData = null;
 
-    if (nodosBody) nodosBody.innerHTML = `<tr><td colspan="4" class="text-center helper-text-mono">Consultando nodos...</td></tr>`;
-    if (aristasBody) aristasBody.innerHTML = `<tr><td colspan="4" class="text-center helper-text-mono">Consultando relaciones...</td></tr>`;
+  async function fetchGrafo() {
+    const statsContainer = document.getElementById("grafo-stats-container");
+    const container = document.getElementById("grafo-canvas");
+    const loadingEl = document.getElementById("grafo-loading");
+
+    if (loadingEl) loadingEl.style.display = "flex";
 
     try {
       const response = await fetch("/api/intel/grafo");
       if (response.ok) {
         const data = await response.json();
+        originalGraphData = data;
         
-        // Render Nodos
-        if (nodosBody) {
-          nodosBody.innerHTML = data.nodos.map(n => `
-            <tr class="fade-in-row">
-              <td class="text-mono">NODE-${n.id}</td>
-              <td><span class="badge-status-table info">${n.entity_type.toUpperCase()}</span></td>
-              <td><strong>${n.label}</strong></td>
-              <td><span class="badge ${n.nivel_riesgo.toLowerCase() === "alto" || n.nivel_riesgo.toLowerCase() === "crítico" ? "alert-kpi" : ""}">${n.nivel_riesgo}</span></td>
-            </tr>
-          `).join("");
-        }
-
-        // Render Aristas
-        if (aristasBody) {
-          aristasBody.innerHTML = data.aristas.map(e => `
-            <tr class="fade-in-row">
-              <td class="text-mono">NODE-${e.source}</td>
-              <td class="text-mono">NODE-${e.target}</td>
-              <td><span class="badge">${e.tipo_relacion}</span></td>
-              <td class="text-mono font-bold color-cyan">${(e.confianza * 100).toFixed(0)}%</td>
-            </tr>
-          `).join("");
-        }
-
         // Render Stats
         if (statsContainer) {
           const density = data.nodos.length > 1 ? (data.aristas.length / (data.nodos.length * (data.nodos.length - 1))).toFixed(4) : "0.0000";
           statsContainer.innerHTML = `
-            <article class="kpi-card double-bezel">
+            <article class="kpi-card double-bezel animate-fade-in">
               <div class="inner-core">
                 <span>Nodos Totales</span>
                 <strong>${data.nodos.length}</strong>
               </div>
             </article>
-            <article class="kpi-card double-bezel alert-kpi">
+            <article class="kpi-card double-bezel alert-kpi animate-fade-in" style="animation-delay: 0.1s;">
               <div class="inner-core">
                 <span>Vínculos Enlazados</span>
                 <strong>${data.aristas.length}</strong>
               </div>
             </article>
-            <article class="kpi-card double-bezel">
+            <article class="kpi-card double-bezel animate-fade-in" style="animation-delay: 0.2s;">
               <div class="inner-core">
                 <span>Densidad de Red</span>
                 <strong>${density}</strong>
@@ -202,9 +186,246 @@ document.addEventListener("DOMContentLoaded", () => {
             </article>
           `;
         }
+
+        // Initialize network graph
+        renderVisNetwork(data.nodos, data.aristas);
       }
     } catch (err) {
       console.error("Error fetching graph data:", err);
+      if (container) {
+        container.innerHTML = `<div class="text-center error-text" style="padding: 20px;">Fallo al cargar el grafo interactivo.</div>`;
+      }
+    } finally {
+      if (loadingEl) loadingEl.style.display = "none";
+    }
+  }
+
+  function renderVisNetwork(nodos, aristas) {
+    const container = document.getElementById("grafo-canvas");
+    if (!container) return;
+
+    // Define colors for each entity type
+    const colorMap = {
+      persona: { background: "rgba(0, 229, 255, 0.12)", border: "#00e5ff" },
+      alias: { background: "rgba(255, 214, 0, 0.12)", border: "#ffd600" },
+      telefono: { background: "rgba(255, 90, 31, 0.12)", border: "#ff5a1f" },
+      ubicacion: { background: "rgba(0, 230, 118, 0.12)", border: "#00e676" },
+      cuenta: { background: "rgba(186, 104, 200, 0.12)", border: "#ba68c8" }
+    };
+
+    const visNodes = nodos.map(n => {
+      const type = n.entity_type.toLowerCase();
+      const style = colorMap[type] || { background: "rgba(255,255,255,0.06)", border: "#8b99ae" };
+      const isCritical = n.nivel_riesgo.toLowerCase() === "crítico" || n.nivel_riesgo.toLowerCase() === "critico" || n.nivel_riesgo.toLowerCase() === "alto";
+      
+      return {
+        id: n.id,
+        label: n.label,
+        entity_type: type,
+        nivel_riesgo: n.nivel_riesgo,
+        shape: "dot",
+        size: isCritical ? 18 : 12,
+        color: {
+          background: style.background,
+          border: style.border,
+          highlight: {
+            background: "rgba(0, 229, 255, 0.25)",
+            border: "#00e5ff"
+          },
+          hover: {
+            background: "rgba(0, 229, 255, 0.18)",
+            border: "#00e5ff"
+          }
+        },
+        borderWidth: isCritical ? 2.5 : 1.5,
+        shadow: isCritical ? { enabled: true, color: "#ff5a1f", size: 8, x: 0, y: 0 } : { enabled: false }
+      };
+    });
+
+    const visEdges = aristas.map(e => {
+      return {
+        id: e.id,
+        from: e.source,
+        to: e.target,
+        label: e.tipo_relacion,
+        title: `Confianza: ${(e.confianza * 100).toFixed(0)}%`,
+        font: {
+          color: "rgba(240, 244, 250, 0.6)",
+          size: 8,
+          face: "JetBrains Mono"
+        }
+      };
+    });
+
+    const data = {
+      nodes: new vis.DataSet(visNodes),
+      edges: new vis.DataSet(visEdges)
+    };
+
+    const options = {
+      nodes: {
+        font: {
+          color: "#f0f4fa",
+          size: 11,
+          face: "'Nunito Sans', sans-serif"
+        }
+      },
+      edges: {
+        color: {
+          color: "rgba(139, 153, 174, 0.2)",
+          highlight: "#00e5ff",
+          hover: "#00e5ff"
+        },
+        width: 1.5,
+        arrows: {
+          to: { enabled: true, scaleFactor: 0.4 }
+        },
+        smooth: {
+          type: "continuous"
+        }
+      },
+      interaction: {
+        hover: true,
+        tooltipDelay: 150,
+        selectConnectedEdges: false
+      },
+      physics: {
+        stabilization: {
+          iterations: 120,
+          updateInterval: 25
+        },
+        barnesHut: {
+          gravitationalConstant: -1500,
+          centralGravity: 0.25,
+          springLength: 90,
+          springConstant: 0.04
+        }
+      }
+    };
+
+    if (visNetwork) {
+      visNetwork.destroy();
+    }
+
+    visNetwork = new vis.Network(container, data, options);
+
+    // Event handlers
+    visNetwork.on("selectNode", (params) => {
+      const selectedId = params.nodes[0];
+      const detailContent = document.getElementById("grafo-detail-content");
+      if (!detailContent) return;
+
+      if (visNetwork.isCluster(selectedId)) {
+        const clusterNodes = visNetwork.getNodesInCluster(selectedId);
+        const type = selectedId.replace("cluster-", "").toUpperCase();
+        detailContent.innerHTML = `
+          <div style="text-align: left; display: flex; flex-direction: column; gap: 8px;">
+            <p><strong>Grupo de Entidades:</strong> ${type}</p>
+            <p><strong>Nodos Agrupados:</strong> ${clusterNodes.length}</p>
+            <p style="font-size: 11px; color: var(--text-muted); margin-top: 5px;">Haga doble clic para expandir este grupo.</p>
+          </div>
+        `;
+      } else {
+        const node = nodos.find(n => n.id == selectedId);
+        if (node) {
+          detailContent.innerHTML = `
+            <div style="text-align: left; display: flex; flex-direction: column; gap: 8px;">
+              <p><strong>ID Interno:</strong> NODE-${node.id}</p>
+              <p><strong>Identificador:</strong> <span class="color-cyan" style="font-weight: 700;">${node.label}</span></p>
+              <p><strong>Tipo Entidad:</strong> <span class="badge-status-table info">${node.entity_type.toUpperCase()}</span></p>
+              <p><strong>Nivel de Riesgo:</strong> <span class="badge-status-table ${node.nivel_riesgo.toLowerCase() === 'crítico' || node.nivel_riesgo.toLowerCase() === 'critico' || node.nivel_riesgo.toLowerCase() === 'alto' ? 'alert-kpi' : 'neutral'}">${node.nivel_riesgo}</span></p>
+            </div>
+          `;
+        }
+      }
+    });
+
+    visNetwork.on("deselectNode", () => {
+      const detailContent = document.getElementById("grafo-detail-content");
+      if (detailContent) {
+        detailContent.innerHTML = "Seleccione un nodo o un grupo (cluster) para ver su ficha técnica detallada.";
+      }
+    });
+
+    visNetwork.on("doubleClick", (params) => {
+      if (params.nodes.length === 1) {
+        const selectedId = params.nodes[0];
+        if (visNetwork.isCluster(selectedId)) {
+          visNetwork.openCluster(selectedId);
+          document.getElementById("btn-cluster-type").style.display = "none";
+          document.getElementById("btn-uncluster").style.display = "inline-block";
+        }
+      }
+    });
+
+    // Toolbar risk filter
+    const filterRisk = document.getElementById("graph-filter-risk");
+    if (filterRisk) {
+      const newFilterRisk = filterRisk.cloneNode(true);
+      filterRisk.parentNode.replaceChild(newFilterRisk, filterRisk);
+
+      newFilterRisk.addEventListener("change", (e) => {
+        const val = e.target.value;
+        let filteredNodes = nodos;
+        if (val === "critico-alto") {
+          filteredNodes = nodos.filter(n => n.nivel_riesgo.toLowerCase() === "crítico" || n.nivel_riesgo.toLowerCase() === "critico" || n.nivel_riesgo.toLowerCase() === "alto");
+        } else if (val === "critico") {
+          filteredNodes = nodos.filter(n => n.nivel_riesgo.toLowerCase() === "crítico" || n.nivel_riesgo.toLowerCase() === "critico");
+        }
+
+        const filteredIds = filteredNodes.map(n => n.id);
+        const filteredEdges = aristas.filter(e => filteredIds.includes(e.source) && filteredIds.includes(e.target));
+
+        renderVisNetwork(filteredNodes, filteredEdges);
+        newFilterRisk.value = val;
+      });
+    }
+
+    // Toolbar clustering
+    const btnCluster = document.getElementById("btn-cluster-type");
+    const btnUncluster = document.getElementById("btn-uncluster");
+
+    if (btnCluster && btnUncluster) {
+      const newBtnCluster = btnCluster.cloneNode(true);
+      btnCluster.parentNode.replaceChild(newBtnCluster, btnCluster);
+      const newBtnUncluster = btnUncluster.cloneNode(true);
+      btnUncluster.parentNode.replaceChild(newBtnUncluster, btnUncluster);
+
+      newBtnCluster.addEventListener("click", () => {
+        const entityTypes = ["persona", "alias", "telefono", "ubicacion", "cuenta"];
+        entityTypes.forEach(type => {
+          visNetwork.cluster({
+            joinCondition: (nodeOptions) => nodeOptions.entity_type === type,
+            clusterNodeProperties: {
+              id: `cluster-${type}`,
+              label: `Grupo: ${type.toUpperCase()}`,
+              shape: "database",
+              color: {
+                background: colorMap[type]?.background || "rgba(255,255,255,0.06)",
+                border: colorMap[type]?.border || "#8b99ae",
+                highlight: {
+                  background: "rgba(0, 229, 255, 0.25)",
+                  border: "#00e5ff"
+                }
+              },
+              allowSingleNodeCluster: false
+            }
+          });
+        });
+        newBtnCluster.style.display = "none";
+        newBtnUncluster.style.display = "inline-block";
+      });
+
+      newBtnUncluster.addEventListener("click", () => {
+        const entityTypes = ["persona", "alias", "telefono", "ubicacion", "cuenta"];
+        entityTypes.forEach(type => {
+          if (visNetwork.isCluster(`cluster-${type}`)) {
+            visNetwork.openCluster(`cluster-${type}`);
+          }
+        });
+        newBtnCluster.style.display = "inline-block";
+        newBtnUncluster.style.display = "none";
+      });
     }
   }
 
@@ -216,89 +437,192 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  // --- 3. MOTOR ETL Y CASOS PROGRESS TIMELINE ---
+  let timelineCases = [];
+  let selectedCase = null;
+
   async function fetchETLStatus() {
-    const etlStagesContainer = document.getElementById("etl-stages-container");
-    const etlMetricsContainer = document.getElementById("etl-metrics-container");
-    const etlLastRun = document.getElementById("etl-last-run");
-    const etlEstadoBadge = document.getElementById("etl-estado-badge");
+    await fetchTimelineCases();
+  }
 
+  async function fetchTimelineCases() {
     try {
-      const response = await fetch("/api/etl/status");
+      const response = await fetch("/api/casos");
       if (response.ok) {
-        const data = await response.json();
+        timelineCases = await response.json();
+        
+        // Populate selector
+        const selector = document.getElementById("etl-case-selector");
+        if (selector) {
+          const newSelector = selector.cloneNode(true);
+          selector.parentNode.replaceChild(newSelector, selector);
 
-        // 1. Update stages flowchart (Capture -> Gestion -> Transac -> ETL -> DW -> Datamart -> Dashboard IA -> Decisiones)
-        if (etlStagesContainer) {
-          let flowHTML = `<div class="etl-flow-line"></div>`;
-          flowHTML += data.etapas.map((etapa, idx) => {
-            let statusClass = "neutral";
-            if (etapa.estado === "completado") statusClass = "ok";
-            if (etapa.estado === "en_proceso") statusClass = "warning";
+          if (timelineCases.length === 0) {
+            newSelector.innerHTML = `<option value="">No hay casos registrados</option>`;
+            selectedCase = null;
+            renderTimelineForCase(null);
+            return;
+          }
 
-            return `
-              <div class="etl-stage-step ${statusClass} slide-up-item" style="animation-delay: ${idx * 0.05}s;">
-                <div class="etl-step-number">${idx + 1}</div>
-                <div class="etl-step-card double-bezel">
-                  <div class="inner-core">
-                    <h4>${etapa.nombre}</h4>
-                    <div class="etl-step-info">
-                      <span class="text-mono">${etapa.registros} reg.</span>
-                      <span class="text-mono font-bold color-cyan">${etapa.porcentaje}%</span>
-                    </div>
-                    <div class="etl-step-progress-bar">
-                      <div class="etl-step-fill" style="width: ${etapa.porcentaje}%"></div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            `;
+          newSelector.innerHTML = timelineCases.map(c => {
+            const code = c.id_reporte.substring(0, 8).toUpperCase();
+            return `<option value="${c.id_reporte}">${code} - ${c.tipo_reporte} (${c.estado})</option>`;
           }).join("");
-          etlStagesContainer.innerHTML = flowHTML;
+
+          if (!selectedCase || !timelineCases.some(c => c.id_reporte === selectedCase.id_reporte)) {
+            selectedCase = timelineCases[0];
+          } else {
+            selectedCase = timelineCases.find(c => c.id_reporte === selectedCase.id_reporte);
+          }
+
+          newSelector.value = selectedCase.id_reporte;
+
+          newSelector.addEventListener("change", (e) => {
+            const id = e.target.value;
+            selectedCase = timelineCases.find(c => c.id_reporte === id);
+            renderTimelineForCase(selectedCase);
+          });
         }
 
-        // 2. Update processing metrics
-        if (etlMetricsContainer) {
-          etlMetricsContainer.innerHTML = `
-            <div class="etl-metric-box double-bezel">
-              <div class="inner-core">
-                <span>Casos Capturados</span>
-                <strong>${data.metricas.casos}</strong>
-              </div>
-            </div>
-            <div class="etl-metric-box double-bezel">
-              <div class="inner-core">
-                <span>Entidades Correlacionadas</span>
-                <strong>${data.metricas.personas + data.metricas.alias + data.metricas.telefonos}</strong>
-              </div>
-            </div>
-            <div class="etl-metric-box double-bezel">
-              <div class="inner-core">
-                <span>Nodos en Data Warehouse</span>
-                <strong>${data.metricas.nodos_grafo}</strong>
-              </div>
-            </div>
-            <div class="etl-metric-box double-bezel">
-              <div class="inner-core">
-                <span>Alertas en Analytics</span>
-                <strong>${data.metricas.indicadores_riesgo}</strong>
-              </div>
-            </div>
-          `;
-        }
-
-        // 3. Update footer elements
-        if (etlLastRun) etlLastRun.textContent = data.ultima_ejecucion;
-        if (etlEstadoBadge) {
-          etlEstadoBadge.textContent = data.estado_general === "nominal" ? "NOMINAL" : "SIN DATOS";
-          etlEstadoBadge.className = `badge-status-table ${data.estado_general === "nominal" ? "ok" : "neutral"}`;
-        }
+        renderTimelineForCase(selectedCase);
       }
     } catch (err) {
-      console.error("Error fetching ETL status:", err);
-      if (etlStagesContainer) {
-        etlStagesContainer.innerHTML = `<div class="text-center error-text">Error al consultar el estado del motor ETL.</div>`;
-      }
+      console.error("Error fetching timeline cases:", err);
     }
+  }
+
+  // Hook refresh button
+  const btnRefreshTrazabilidad = document.getElementById("btn-refresh-trazabilidad");
+  if (btnRefreshTrazabilidad) {
+    const newBtn = btnRefreshTrazabilidad.cloneNode(true);
+    btnRefreshTrazabilidad.parentNode.replaceChild(newBtn, btnRefreshTrazabilidad);
+    newBtn.addEventListener("click", fetchTimelineCases);
+  }
+
+  function renderTimelineForCase(caso) {
+    if (!caso) {
+      document.getElementById("timeline-case-code").innerText = "CASE-0000";
+      document.getElementById("timeline-case-gaula").innerText = "GAULA Responsable";
+      document.getElementById("timeline-case-status").innerText = "SIN DATOS";
+      document.getElementById("timeline-case-status").className = "badge-status-table neutral";
+      document.getElementById("timeline-line-progress").style.transform = "scaleX(0)";
+      document.getElementById("timeline-detail-table-body").innerHTML = `<tr><td colspan="2" class="text-center">No hay datos de caso disponibles.</td></tr>`;
+      return;
+    }
+
+    let activeStep = 1;
+    const estado = (caso.estado || "").toLowerCase().trim();
+    if (estado === "recibido") {
+      activeStep = 1;
+    } else if (estado === "en análisis" || estado === "en analisis") {
+      activeStep = 2;
+    } else if (estado === "asignado") {
+      const isCritical = (caso.prioridad || "").toLowerCase() === "crítica" || (caso.prioridad || "").toLowerCase() === "critica";
+      activeStep = isCritical ? 4 : 3;
+    } else if (estado === "cerrado") {
+      activeStep = 5;
+    }
+
+    document.getElementById("timeline-case-code").innerText = caso.id_reporte.substring(0, 13).toUpperCase();
+    document.getElementById("timeline-case-gaula").innerText = caso.unidad_gaula || "No asignado";
+    document.getElementById("timeline-case-status").innerText = caso.estado.toUpperCase();
+    
+    let stateBadge = "info";
+    if (caso.estado === "Asignado") stateBadge = "ok";
+    if (caso.estado === "Cerrado") stateBadge = "neutral";
+    if (caso.estado === "En análisis") stateBadge = "warning";
+    document.getElementById("timeline-case-status").className = `badge-status-table ${stateBadge}`;
+
+    const scaleXVal = (activeStep - 1) / 4;
+    document.getElementById("timeline-line-progress").style.transform = `scaleX(${scaleXVal})`;
+
+    const steps = document.querySelectorAll(".timeline-steps .timeline-step");
+    steps.forEach((step) => {
+      const stepNum = parseInt(step.getAttribute("data-step"));
+      step.classList.remove("active", "completed");
+      if (stepNum < activeStep) {
+        step.classList.add("completed");
+      } else if (stepNum === activeStep) {
+        step.classList.add("active");
+      }
+      
+      const newStep = step.cloneNode(true);
+      step.parentNode.replaceChild(newStep, step);
+      
+      newStep.addEventListener("click", () => {
+        document.querySelectorAll(".timeline-steps .timeline-step").forEach(s => s.style.transform = "");
+        newStep.style.transform = "scale(1.08)";
+        showStepDetails(stepNum, caso);
+      });
+    });
+
+    showStepDetails(activeStep, caso);
+  }
+
+  function showStepDetails(stepNum, caso) {
+    if (!caso) return;
+
+    const phases = {
+      1: {
+        title: "Inicio del Caso - Línea 147",
+        desc: "El reporte telefónico fue recibido e ingresado al sistema NEXO-147 por el operador de turno.",
+        fields: (c) => [
+          { label: "Código de Registro", value: c.id_reporte.toUpperCase() },
+          { label: "Canal de Entrada", value: c.canal_recepcion || "Línea 147" },
+          { label: "Fecha y Hora de Ingreso", value: c.fecha_registro },
+          { label: "Registrado por", value: `Operador: @${c.usuario_registro || "operador"}` }
+        ]
+      },
+      2: {
+        title: "Recolección de Información Inicial",
+        desc: "Se documenta la narrativa de los hechos y la clasificación preliminar del delito/criticidad.",
+        fields: (c) => [
+          { label: "Tipología del Hecho", value: c.tipo_reporte },
+          { label: "Prioridad del Caso", value: c.prioridad },
+          { label: "Relato Inicial", value: c.descripcion || "Sin descripción de hechos" }
+        ]
+      },
+      3: {
+        title: "Investigación y Enlaces de Inteligencia",
+        desc: "Análisis cruzado del número extorsivo y alias del sospechoso contra la base de datos de inteligencia criminal.",
+        fields: (c) => [
+          { label: "Teléfono Extorsivo", value: c.telefono_reportante || "No registra" },
+          { label: "Alias del Sospechoso", value: c.observaciones && c.observaciones.toLowerCase().includes("alias") ? c.observaciones : "En análisis relacional" },
+          { label: "Cuenta / Medio Exigido", value: c.medio_pago ? `${c.medio_pago} (${c.valor_exigido} COP)` : "No registra" }
+        ]
+      },
+      4: {
+        title: "Operaciones en Campo y Despliegue",
+        desc: "Despliegue táctico del GAULA militar o policial asignado para operaciones en el territorio y labores investigativas.",
+        fields: (c) => [
+          { label: "Unidad Operativa Asignada", value: c.unidad_gaula || "No asignada" },
+          { label: "Zona de Despliegue", value: c.nombre_reportante ? "Verificada" : "En verificación geográfica" },
+          { label: "Estatus de Comisión", value: c.estado === "Cerrado" ? "Operación finalizada" : "Despliegue activo" }
+        ]
+      },
+      5: {
+        title: "Autoridades Aliadas / Judicialización y Cierre",
+        desc: "Coordinación con fiscalía y cierre operacional formal tras capturas o neutralización de la extorsión.",
+        fields: (c) => [
+          { label: "Estado de Cierre", value: c.estado },
+          { label: "Observaciones del Cierre", value: c.observaciones || "Caso finalizado nominalmente." }
+        ]
+      }
+    };
+
+    const phase = phases[stepNum];
+    if (!phase) return;
+
+    document.getElementById("timeline-detail-title").innerText = phase.title;
+    document.getElementById("timeline-detail-desc").innerText = phase.desc;
+
+    const fields = phase.fields(caso);
+    document.getElementById("timeline-detail-table-body").innerHTML = fields.map(f => `
+      <tr>
+        <td style="width: 220px; padding: 8px 12px; color: var(--text-muted); font-family: var(--font-mono); text-transform: uppercase; font-size: 10px; border-bottom: 1px solid rgba(255,255,255,0.03);">${f.label}</td>
+        <td style="padding: 8px 12px; font-weight: 600; border-bottom: 1px solid rgba(255,255,255,0.03);">${f.value || "No registra"}</td>
+      </tr>
+    `).join("");
   }
 
   // --- 4. DATA MART DE INTELIGENCIA (IA / GIS / ANALÍTICA) ---
@@ -450,7 +774,7 @@ document.addEventListener("DOMContentLoaded", () => {
               position: "right",
               labels: {
                 color: "#8b99ae",
-                font: { family: "Montserrat", size: 11 }
+                font: { family: "Nunito Sans", size: 11 }
               }
             }
           }
@@ -518,7 +842,7 @@ document.addEventListener("DOMContentLoaded", () => {
             },
             x: {
               grid: { display: false },
-              ticks: { color: "#8b99ae", font: { family: "Montserrat", size: 10 } }
+              ticks: { color: "#8b99ae", font: { family: "Nunito Sans", size: 10 } }
             }
           },
           plugins: {
@@ -561,7 +885,7 @@ document.addEventListener("DOMContentLoaded", () => {
             r: {
               grid: { color: "rgba(255, 255, 255, 0.07)" },
               angleLines: { color: "rgba(255, 255, 255, 0.07)" },
-              pointLabels: { color: "#8b99ae", font: { family: "Montserrat", size: 10 } },
+              pointLabels: { color: "#8b99ae", font: { family: "Nunito Sans", size: 10 } },
               ticks: { display: false }
             }
           },

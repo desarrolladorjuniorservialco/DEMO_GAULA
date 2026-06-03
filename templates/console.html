@@ -9,7 +9,16 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='styles_media.css') }}">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap" rel="stylesheet">
+  <style>
+    body {
+      background-color: #07080c;
+      color: #f0f4fa;
+      font-family: 'Nunito Sans', sans-serif;
+    }
+  </style>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
 </head>
 <body class="console-body">
   <div class="bg-scanline"></div>
@@ -179,7 +188,7 @@
             <!-- KPIs Generales de Actividad -->
             <div class="dashboard-card double-bezel col-span-8">
               <div class="inner-core">
-                <h3>Estado Operativo GAULA - Actividad de Turno</h3>
+                <h2>Estado Operativo GAULA - Actividad de Turno</h2>
                 <div class="table-wrap">
                   <table id="table-recent-activities">
                     <thead>
@@ -201,7 +210,7 @@
             <!-- Resumen Rápido -->
             <div class="dashboard-card double-bezel col-span-4">
               <div class="inner-core flex-center-col">
-                <h3>Resumen de Roles</h3>
+                <h2>Resumen de Roles</h2>
                 <div class="role-desc-list">
                   <div class="role-desc-item">
                     <span class="dot op"></span>
@@ -454,7 +463,7 @@
 
                 <div class="detail-scroll-content">
                   <div class="detail-section">
-                    <h4>Clasificación Operativa</h4>
+                    <h3>Clasificación Operativa</h3>
                     <p><strong>Tipo:</strong> <span id="detail-case-tipo">N/A</span></p>
                     <p><strong>Prioridad:</strong> <span class="badge" id="detail-case-prioridad">N/A</span></p>
                     <p><strong>Estado Actual:</strong> <span class="badge" id="detail-case-estado">N/A</span></p>
@@ -462,7 +471,7 @@
                   </div>
 
                   <div class="detail-section">
-                    <h4>Datos del Hecho</h4>
+                    <h3>Datos del Hecho</h3>
                     <p><strong>Número Extorsivo:</strong> <span id="detail-case-telefono-ext">No registra</span></p>
                     <p><strong>Alias del Sospechoso:</strong> <span id="detail-case-alias">No registra</span></p>
                     <p><strong>Monto Exigido:</strong> <span id="detail-case-monto">No registra</span></p>
@@ -470,12 +479,12 @@
                   </div>
 
                   <div class="detail-section">
-                    <h4>Hechos Reportados</h4>
+                    <h3>Hechos Reportados</h3>
                     <div class="text-box-raw" id="detail-case-descripcion">Sin hechos registrados.</div>
                   </div>
 
                   <div class="detail-section">
-                    <h4>Gestión Operativa</h4>
+                    <h3>Gestión Operativa</h3>
                     <label for="detail-change-status">Cambiar Estado Operativo</label>
                     <select id="detail-change-status" class="select-tactical">
                       <option value="Recibido">Recibido</option>
@@ -742,7 +751,7 @@
           <div class="dashboard-grid">
             <div class="dashboard-card double-bezel col-span-8">
               <div class="inner-core">
-                <h3>Hallazgos Registrados — HallazgoIntel</h3>
+                <h2>Hallazgos Registrados: HallazgoIntel</h2>
                 <div class="table-wrap">
                   <table id="table-hallazgos">
                     <thead>
@@ -775,41 +784,47 @@
         <!-- PANEL GRAFO DE RELACIONES (DATA WAREHOUSE INTEL) -->
         <section class="panel-section" id="panel-grafo">
           <div class="section-header-tactical">
-            <h2>Grafo de Relaciones — Data Warehouse Intel</h2>
+            <h2>Grafo de Relaciones: Data Warehouse Intel</h2>
             <p>Nodos (IntelNode) y aristas (IntelEdge) del motor de correlación cruzada. Vínculos detectados por el Motor ETL entre entidades de intel.db.</p>
           </div>
           <div class="dashboard-grid">
-            <div class="dashboard-card double-bezel col-span-6">
-              <div class="inner-core">
-                <h3>Nodos del Grafo — IntelNode</h3>
-                <p class="helper-text-mono">Entidades indexadas en el motor relacional:</p>
-                <div class="table-wrap">
-                  <table>
-                    <thead><tr><th>ID</th><th>Tipo</th><th>Etiqueta</th><th>Nivel Riesgo</th></tr></thead>
-                    <tbody id="grafo-nodos-body">
-                      <tr><td colspan="4" class="text-center helper-text-mono">Cargando grafo...</td></tr>
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            </div>
-            <div class="dashboard-card double-bezel col-span-6">
-              <div class="inner-core">
-                <h3>Aristas / Relaciones — IntelEdge</h3>
-                <p class="helper-text-mono">Vínculos detectados entre entidades:</p>
-                <div class="table-wrap">
-                  <table>
-                    <thead><tr><th>Origen</th><th>Destino</th><th>Tipo Relación</th><th>Confianza</th></tr></thead>
-                    <tbody id="grafo-aristas-body">
-                      <tr><td colspan="4" class="text-center helper-text-mono">—</td></tr>
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            </div>
             <div class="dashboard-card double-bezel col-span-12">
               <div class="inner-core">
-                <h3>Estadísticas del Grafo de Relaciones</h3>
+                <div class="graph-toolbar" style="margin-bottom: 15px; display: flex; gap: 10px; flex-wrap: wrap; align-items: center;">
+                  <span class="helper-text-mono" style="margin: 0;">Filtro de Riesgo:</span>
+                  <select id="graph-filter-risk" class="select-tactical" style="padding: 6px 12px; border-radius: 6px; font-size: 12px;">
+                    <option value="todos">Todos los Nodos</option>
+                    <option value="critico-alto">Crítico & Alto</option>
+                    <option value="critico">Solo Crítico</option>
+                  </select>
+                  
+                  <span class="helper-text-mono" style="margin: 0; margin-left: 10px;">Agrupar:</span>
+                  <button id="btn-cluster-type" class="btn btn-secondary-tactical" style="padding: 6px 12px; font-size: 12px; border-radius: 6px;">Agrupar por Tipo</button>
+                  <button id="btn-uncluster" class="btn btn-secondary-tactical" style="padding: 6px 12px; font-size: 12px; border-radius: 6px; display: none;">Desagrupar</button>
+                </div>
+                
+                <div class="graph-layout-container" style="display: flex; gap: 20px; height: 500px;">
+                  <!-- Contenedor del Grafo -->
+                  <div id="grafo-canvas" style="flex: 1; height: 100%; background-color: rgba(4, 13, 25, 0.4); border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.08); position: relative; padding: 12px;">
+                    <div id="grafo-loading" style="position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; background: rgba(7, 8, 12, 0.8); z-index: 10; font-family: var(--font-mono); color: var(--accent-cyan);">Cargando Grafo Interactivo...</div>
+                  </div>
+                  
+                  <!-- Panel Lateral de Detalles -->
+                  <div id="grafo-detail-sidebar" class="double-bezel" style="width: 320px; height: 100%; display: flex; flex-direction: column;">
+                    <div class="inner-core" style="padding: 16px; display: flex; flex-direction: column; height: 100%; overflow-y: auto;">
+                       <h2 style="font-size: 18px; margin-bottom: 12px; border-left: 2px solid var(--accent-cyan); padding-left: 8px;">Detalle de Selección</h2>
+                      <div id="grafo-detail-content" style="flex: 1; display: flex; flex-direction: column; justify-content: center; text-align: center; color: var(--text-muted); font-size: 12px;">
+                        Seleccione un nodo o un grupo (cluster) para ver su ficha técnica detallada.
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div class="dashboard-card double-bezel col-span-12">
+              <div class="inner-core">
+                <h2>Estadísticas del Grafo de Relaciones</h2>
                 <div id="grafo-stats-container" class="kpi-grid" style="margin-top: 0;"></div>
               </div>
             </div>
@@ -820,35 +835,102 @@
         <!-- PANEL MOTOR ETL Y CORRELACIÓN -->
         <section class="panel-section" id="panel-etl">
           <div class="section-header-tactical">
-            <h2>Motor ETL y Flujo de Datos — Arquitectura NEXO-147</h2>
-            <p>Pipeline de procesamiento desde captura hasta toma de decisiones. Captura → Gestión → Base Transaccional → ETL → Data Warehouse → Data Mart → Dashboard IA / GIS → Decisiones.</p>
+            <h2>Trazabilidad de Investigaciones y Avance de Casos</h2>
+            <p>Monitoreo del ciclo de vida y avance operacional de cada caso registrado en la Línea 147.</p>
           </div>
-          <div class="etl-pipeline-container double-bezel">
-            <div class="inner-core">
-              <div class="etl-pipeline-flow" id="etl-stages-container">
-                <div class="etl-loading-msg">Consultando estado del motor ETL...</div>
-              </div>
-            </div>
-          </div>
-          <div class="dashboard-grid" style="margin-top: 24px;">
+          
+          <div class="dashboard-grid">
             <div class="dashboard-card double-bezel col-span-12">
               <div class="inner-core">
-                <h3>Métricas de Procesamiento por Capa</h3>
-                <div class="etl-metrics-grid" id="etl-metrics-container"></div>
+                <div style="display: flex; gap: 15px; align-items: center; margin-bottom: 20px; flex-wrap: wrap;">
+                  <span class="helper-text-mono" style="margin:0;">Seleccionar Caso:</span>
+                  <select id="etl-case-selector" class="select-tactical" style="padding: 8px 16px; border-radius: 8px; min-width: 250px; font-family: var(--font-mono);">
+                    <!-- Carga dinámica de casos -->
+                  </select>
+                  <button id="btn-refresh-trazabilidad" class="btn btn-secondary-tactical" style="padding: 8px 16px; border-radius: 8px;">↻ Recargar Datos</button>
+                </div>
+                
+                <!-- Contenedor del Flow de Trazabilidad Horizontal -->
+                <div class="timeline-wrapper" style="padding: 40px 10px; overflow-x: auto; background-color: rgba(4,13,25,0.4); border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.08); margin-bottom: 25px;">
+                             <!-- Contexto del Caso (Izquierda) -->
+                    <div class="timeline-context" style="width: 180px; flex-shrink: 0; padding: 10px 20px 10px 0; border-right: 1px solid rgba(255,255,255,0.1);">
+                      <h3 id="timeline-case-code" style="font-size: 28px; font-weight: 800; color: #fff; margin-bottom: 4px;">CASE-0000</h3>
+                      <p id="timeline-case-gaula" style="font-size: 12px; color: var(--text-muted); margin-bottom: 8px;">GAULA Militar</p>
+                      <span id="timeline-case-status" class="badge-status-table info">RECIBIDO</span>
+                    </div>
+                    
+                    <!-- Línea y Pasos de la Línea de Tiempo -->
+                    <div class="timeline-steps" style="display: flex; flex: 1; justify-content: space-between; position: relative; padding: 10px 40px;">
+                      
+                      <!-- Línea de Conexión Gris de Fondo -->
+                      <div class="timeline-line-bg" style="position: absolute; top: 42px; left: 50px; right: 50px; height: 3px; background-color: rgba(255,255,255,0.1); z-index: 1;"></div>
+                      
+                      <!-- Línea de Progreso Activo -->
+                      <div id="timeline-line-progress" style="position: absolute; top: 42px; left: 50px; width: calc(100% - 100px); height: 3px; background-color: var(--accent-cyan); transform-origin: left; transform: scaleX(0); transition: transform 0.8s ease; z-index: 2;"></div>
+                      
+                      <!-- Paso 1: Inicio -->
+                      <div class="timeline-step active" data-step="1" style="position: relative; z-index: 3; display: flex; flex-direction: column; align-items: center; width: 120px;">
+                        <span style="font-size: 12px; font-family: var(--font-mono); color: var(--text-muted); text-align: center; height: 30px; display: flex; align-items: flex-end; justify-content: center; margin-bottom: 10px;">Inicio del Caso<br>Línea 147</span>
+                        <div class="step-circle" style="width: 44px; height: 44px; border-radius: 50%; background-color: var(--bg-deep); border: 2px solid var(--accent-cyan); display: flex; align-items: center; justify-content: center; color: var(--accent-cyan); cursor: pointer; transition: all 0.3s ease;">
+                          <i data-lucide="phone-call" style="width: 18px; height: 18px;"></i>
+                        </div>
+                      </div>
+                      
+                      <!-- Paso 2: Recolección de información inicial -->
+                      <div class="timeline-step" data-step="2" style="position: relative; z-index: 3; display: flex; flex-direction: column; align-items: center; width: 120px;">
+                        <span style="font-size: 12px; font-family: var(--font-mono); color: var(--text-muted); text-align: center; height: 30px; display: flex; align-items: flex-end; justify-content: center; margin-bottom: 10px;">Recolección de<br>info inicial</span>
+                        <div class="step-circle" style="width: 44px; height: 44px; border-radius: 50%; background-color: var(--bg-deep); border: 2px solid rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center; color: var(--text-muted); cursor: pointer; transition: all 0.3s ease;">
+                          <i data-lucide="clipboard-list" style="width: 18px; height: 18px;"></i>
+                        </div>
+                      </div>
+                      
+                      <!-- Paso 3: Investigación inteligencia -->
+                      <div class="timeline-step" data-step="3" style="position: relative; z-index: 3; display: flex; flex-direction: column; align-items: center; width: 120px;">
+                        <span style="font-size: 12px; font-family: var(--font-mono); color: var(--text-muted); text-align: center; height: 30px; display: flex; align-items: flex-end; justify-content: center; margin-bottom: 10px;">Investigación<br>Inteligencia</span>
+                        <div class="step-circle" style="width: 44px; height: 44px; border-radius: 50%; background-color: var(--bg-deep); border: 2px solid rgba(255, 255, 255, 0.2); display: flex; align-items: center; justify-content: center; color: var(--text-muted); cursor: pointer; transition: all 0.3s ease;">
+                          <i data-lucide="user-search" style="width: 18px; height: 18px;"></i>
+                        </div>
+                      </div>
+                      
+                      <!-- Paso 4: Operaciones en campo -->
+                      <div class="timeline-step" data-step="4" style="position: relative; z-index: 3; display: flex; flex-direction: column; align-items: center; width: 120px;">
+                        <span style="font-size: 12px; font-family: var(--font-mono); color: var(--text-muted); text-align: center; height: 30px; display: flex; align-items: flex-end; justify-content: center; margin-bottom: 10px;">Operaciones<br>en campo</span>
+                        <div class="step-circle" style="width: 44px; height: 44px; border-radius: 50%; background-color: var(--bg-deep); border: 2px solid rgba(255, 255, 255, 0.2); display: flex; align-items: center; justify-content: center; color: var(--text-muted); cursor: pointer; transition: all 0.3s ease;">
+                          <i data-lucide="map-pin" style="width: 18px; height: 18px;"></i>
+                        </div>
+                      </div>
+                      
+                      <!-- Paso 5: Autoridades aliadas -->
+                      <div class="timeline-step" data-step="5" style="position: relative; z-index: 3; display: flex; flex-direction: column; align-items: center; width: 120px;">
+                        <span style="font-size: 12px; font-family: var(--font-mono); color: var(--text-muted); text-align: center; height: 30px; display: flex; align-items: flex-end; justify-content: center; margin-bottom: 10px;">Autoridades<br>aliadas / Cierre</span>
+                        <div class="step-circle" style="width: 44px; height: 44px; border-radius: 50%; background-color: var(--bg-deep); border: 2px solid rgba(255, 255, 255, 0.2); display: flex; align-items: center; justify-content: center; color: var(--text-muted); cursor: pointer; transition: all 0.3s ease;">
+                          <i data-lucide="shield" style="width: 18px; height: 18px;"></i>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+                <!-- Panel de Detalles de la Tapa Seleccionada -->
+                <div id="timeline-step-detail-card" class="double-bezel" style="margin-top: 20px;">
+                  <div class="inner-core" style="padding: 20px;">
+                    <h2 id="timeline-detail-title" style="font-size: 18px; margin-bottom: 8px; color: var(--accent-cyan); border-left: none; padding-left: 0;">Inicio del Caso Línea 147</h2>
+                    <p id="timeline-detail-desc" style="font-size: 12px; color: var(--text-muted); line-height: 1.5; margin-bottom: 15px;">El caso ha sido reportado en la línea telefónica nacional 147 y los datos del reportante han sido capturados.</p>
+                    
+                    <div style="border-top: 1px solid rgba(255,255,255,0.06); padding-top: 15px;">
+                      <span class="helper-text-mono" style="display: block; margin-bottom: 8px;">Detalles Operacionales del Caso:</span>
+                      <div class="table-wrap">
+                        <table style="width: 100%; font-size: 12px;">
+                          <tbody id="timeline-detail-table-body">
+                            <!-- Datos del caso cargados vía JS -->
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
               </div>
-            </div>
-          </div>
-          <div class="dashboard-card double-bezel" style="margin-top: 16px;">
-            <div class="inner-core flex-row-space">
-              <div>
-                <span class="helper-text-mono">Última ejecución del motor:</span>
-                <strong id="etl-last-run" class="color-cyan" style="margin-left:8px;font-family:var(--font-mono);font-size:13px;">—</strong>
-              </div>
-              <div>
-                <span class="helper-text-mono">Estado general:</span>
-                <span id="etl-estado-badge" class="badge-status-table neutral" style="margin-left:8px;">Consultando...</span>
-              </div>
-              <button class="btn btn-secondary-tactical" id="btn-refresh-etl">↻ Actualizar Estado</button>
             </div>
           </div>
         </section>
@@ -857,7 +939,7 @@
         <!-- PANEL DATA MART IA / GIS / ANALÍTICA -->
         <section class="panel-section" id="panel-datamart">
           <div class="section-header-tactical">
-            <h2>Data Mart de Inteligencia — IA / GIS / Analítica</h2>
+            <h2>Data Mart de Inteligencia: IA / GIS / Analítica</h2>
             <p>Visualización estratégica consolidada para soporte a la toma de decisiones operacionales GAULA. Datos sincronizados desde las tres bases de datos.</p>
           </div>
           <div class="tabs-tactical-header" id="datamart-tabs">
@@ -894,7 +976,7 @@
               <div class="dashboard-grid">
                 <div class="dashboard-card double-bezel col-span-12">
                   <div class="inner-core">
-                    <h3>Georreferenciación Táctica de Entidades — intel.db</h3>
+                    <h2>Georreferenciación Táctica de Entidades: intel.db</h2>
                     <div class="map-grid-console gis-enhanced">
                       <div class="map-grid-lines"></div>
                       <div class="map-target z1">BOGOTÁ</div>
@@ -904,7 +986,7 @@
                       <div class="map-pulse-c c1"></div>
                       <div class="map-pulse-c c2"></div>
                       <div class="map-pulse-c c3"></div>
-                      <span class="map-disclaimer">NEXO-147 GIS: Ubicaciones de interés operacional desde intel.db — Coordenadas georreferenciadas.</span>
+                      <span class="map-disclaimer">NEXO-147 GIS: Ubicaciones de interés operacional desde intel.db: Coordenadas georreferenciadas.</span>
                     </div>
                   </div>
                 </div>

@@ -26,7 +26,7 @@
   --text-muted: #8b99ae;        /* Texto descriptivo / secundario */
   
   /* Fuentes */
-  --font-display: 'Montserrat', sans-serif;
+  --font-display: 'Nunito Sans', sans-serif;
   --font-mono: 'JetBrains Mono', monospace;
   
   /* Radios de borde */
@@ -558,12 +558,12 @@ body, html {
 .col-span-6 { grid-column: span 6; }
 .col-span-4 { grid-column: span 4; }
 
-.dashboard-card h3 {
+.dashboard-card h2 {
   font-size: 14px;
   font-weight: 700;
   color: #fff;
   margin-bottom: 16px;
-  border-left: 3px solid var(--accent-cyan);
+  border-left: 1px solid var(--accent-cyan);
   padding-left: 10px;
   letter-spacing: 0.5px;
 }
@@ -949,7 +949,7 @@ tr:hover td {
   margin-bottom: 20px;
 }
 
-.detail-section h4 {
+.detail-section h3 {
   font-size: 11px;
   font-family: var(--font-mono);
   text-transform: uppercase;
@@ -1632,10 +1632,12 @@ tr:hover td {
 }
 
 .etl-step-fill {
+  width: 100%;
   height: 100%;
   background: linear-gradient(90deg, var(--accent-cyan), #00b0ff);
   border-radius: 2px;
-  transition: width 0.8s ease;
+  transform-origin: left;
+  transition: transform 0.8s ease;
 }
 
 .etl-stage-step.ok .etl-step-fill {
@@ -1813,4 +1815,110 @@ tr:hover td {
   border: 1px solid rgba(255, 255, 255, 0.06);
   border-radius: var(--radius-inner);
   background-color: rgba(0, 0, 0, 0.3) !important;
+}
+
+/* Lucide Icon override in shortcuts */
+.shortcut-card .icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--accent-cyan);
+}
+
+.shortcut-card .icon svg {
+  width: 24px;
+  height: 24px;
+  stroke: var(--accent-cyan);
+  stroke-width: 2px;
+}
+
+/* Vis.js Network Canvas and controls */
+.select-tactical {
+  background-color: rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: #fff;
+  outline: none;
+  font-family: var(--font-display);
+}
+.select-tactical:focus {
+  border-color: var(--accent-cyan);
+}
+
+/* Timeline Custom Styles */
+.timeline-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  width: 120px;
+}
+
+.timeline-step span {
+  font-size: 10px;
+  font-family: var(--font-mono);
+  color: var(--text-muted);
+  text-align: center;
+  line-height: 1.3;
+}
+
+.timeline-step.active span {
+  color: var(--accent-cyan);
+  font-weight: 700;
+}
+
+.step-circle {
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.step-circle:hover {
+  transform: scale(1.1);
+  background-color: var(--accent-cyan-soft) !important;
+}
+
+/* Vis.js interactive graph styles */
+#grafo-canvas {
+  background-color: rgba(4, 13, 25, 0.4) !important;
+  border: 1px solid rgba(0, 229, 255, 0.15) !important;
+  box-shadow: inset 0 0 20px rgba(0, 229, 255, 0.05), 0 8px 32px rgba(0, 0, 0, 0.3) !important;
+  border-radius: 12px;
+}
+
+#grafo-detail-sidebar .inner-core {
+  background-color: var(--bg-card);
+  border: 1px solid rgba(0, 229, 255, 0.15);
+  box-shadow: inset 0 0 15px rgba(0, 229, 255, 0.03);
+}
+
+/* Interactive Timeline Styles */
+.timeline-step {
+  cursor: pointer;
+}
+
+.timeline-step .step-circle {
+  border-color: rgba(255, 255, 255, 0.2);
+  color: var(--text-muted);
+}
+
+.timeline-step.active .step-circle {
+  border-color: var(--accent-cyan) !important;
+  color: var(--accent-cyan) !important;
+  box-shadow: 0 0 15px rgba(0, 229, 255, 0.3) !important;
+}
+
+.timeline-step.completed .step-circle {
+  border-color: var(--state-green) !important;
+  color: var(--state-green) !important;
+  box-shadow: 0 0 15px rgba(0, 230, 118, 0.2) !important;
+}
+
+.timeline-step span {
+  transition: color 0.3s ease;
+}
+
+.timeline-step.active span {
+  color: var(--accent-cyan) !important;
+}
+
+.timeline-step.completed span {
+  color: var(--state-green) !important;
 }

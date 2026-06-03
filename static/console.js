@@ -88,14 +88,14 @@ document.addEventListener("DOMContentLoaded", () => {
       shortcutsHTML = `
         <button class="shortcut-card double-bezel" data-target="panel-formulario">
           <div class="inner-core">
-            <span class="icon">📞</span>
+            <span class="icon"><i class="shortcut-icon" data-lucide="phone"></i></span>
             <strong>Nuevo Reporte 147</strong>
             <p>Registrar una llamada de extorsión activa</p>
           </div>
         </button>
         <button class="shortcut-card double-bezel" id="btn-shortcut-mis-reportes">
           <div class="inner-core">
-            <span class="icon">📁</span>
+            <span class="icon"><i class="shortcut-icon" data-lucide="folder"></i></span>
             <strong>Mis Reportes</strong>
             <p>Ver histórico de llamadas ingresadas por ti</p>
           </div>
@@ -105,21 +105,21 @@ document.addEventListener("DOMContentLoaded", () => {
       shortcutsHTML = `
         <button class="shortcut-card double-bezel" data-target="panel-casos">
           <div class="inner-core">
-            <span class="icon">🛡️</span>
+            <span class="icon"><i class="shortcut-icon" data-lucide="shield"></i></span>
             <strong>Bandeja de Casos</strong>
             <p>Analizar denuncias y cambiar su estado operativo</p>
           </div>
         </button>
         <button class="shortcut-card double-bezel" data-target="panel-entidades">
           <div class="inner-core">
-            <span class="icon">🔎</span>
+            <span class="icon"><i class="shortcut-icon" data-lucide="search"></i></span>
             <strong>Buscador de Entidades</strong>
             <p>Explorar teléfonos, alias y vinculaciones cruzadas</p>
           </div>
         </button>
         <button class="shortcut-card double-bezel" data-target="panel-inteligencia">
           <div class="inner-core">
-            <span class="icon">🕸️</span>
+            <span class="icon"><i class="shortcut-icon" data-lucide="network"></i></span>
             <strong>Correlaciones y OSINT</strong>
             <p>Vincular celdas y auditar brechas externas</p>
           </div>
@@ -129,21 +129,21 @@ document.addEventListener("DOMContentLoaded", () => {
       shortcutsHTML = `
         <button class="shortcut-card double-bezel" data-target="panel-dashboard">
           <div class="inner-core">
-            <span class="icon">📊</span>
+            <span class="icon"><i class="shortcut-icon" data-lucide="bar-chart-2"></i></span>
             <strong>Centro de Mando</strong>
             <p>Monitorear KPIs, radar táctico y mapas de calor</p>
           </div>
         </button>
         <button class="shortcut-card double-bezel" data-target="panel-casos">
           <div class="inner-core">
-            <span class="icon">📂</span>
+            <span class="icon"><i class="shortcut-icon" data-lucide="folder-open"></i></span>
             <strong>Casos Recientes</strong>
             <p>Ver asignaciones operacionales activas</p>
           </div>
         </button>
         <button class="shortcut-card double-bezel" data-target="panel-inteligencia">
           <div class="inner-core">
-            <span class="icon">🌐</span>
+            <span class="icon"><i class="shortcut-icon" data-lucide="globe"></i></span>
             <strong>OSINT e Inteligencia</strong>
             <p>Escanear brechas de seguridad externas</p>
           </div>
@@ -152,6 +152,9 @@ document.addEventListener("DOMContentLoaded", () => {
     }
     
     shortcutsContainer.innerHTML = shortcutsHTML;
+    if (typeof lucide !== "undefined") {
+      lucide.createIcons();
+    }
 
     // Asignar listeners a los accesos directos
     shortcutsContainer.querySelectorAll("button").forEach(btn => {
