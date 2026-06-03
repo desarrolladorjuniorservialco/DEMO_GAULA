@@ -1366,6 +1366,12 @@ const _OG_TYPE_LABELS = {
   location:'Ubicación', platform:'Plataforma', url:'URL',
 };
 
+const _OG_CLUSTER_LABELS = {
+  person:'Personas', alias:'Alias', email:'Correos', organization:'Organizaciones',
+  domain:'Dominios', ip:'IPs', repository:'Repositorios', social_profile:'Perfiles Sociales',
+  location:'Ubicaciones', platform:'Plataformas', url:'URLs',
+};
+
 const _OG_RISK_ORDER = {Crítico:4, Alto:3, Medio:2, Bajo:1, Info:0};
 
 function _ogSpinner(show) {
@@ -1468,6 +1474,151 @@ function _ogRenderFindings(findings) {
   wrap.style.display = '';
 }
 
+// ── Radial seed positions (BFS from target) ───────────────────────────────────
+function _ogComputeRadialPositions(elements, targetId) {
+  const adj = {};
+  elements
+    .filter(el => el.data.source !== undefined)
+    .forEach(el => {
+      const { source, target } = el.data;
+      if (!adj[source]) adj[source] = [];
+      if (!adj[target]) adj[target] = [];
+      adj[source].push(target);
+      adj[target].push(source);
+    });
+
+  const levels  = { [targetId]: 0 };
+  const queue   = [targetId];
+  const visited = new Set([targetId]);
+  while (queue.length) {
+    const cur = queue.shift();
+    (adj[cur] || []).forEach(nb => {
+      if (!visited.has(nb)) {
+        visited.add(nb);
+        levels[nb] = levels[cur] + 1;
+        queue.push(nb);
+      }
+    });
+  }
+  elements
+    .filter(el => el.data.source === undefined && el.data.id !== targetId)
+    .forEach(el => { if (levels[el.data.id] === undefined) levels[el.data.id] = 3; });
+
+  const byLevel = {};
+  Object.entries(levels).forEach(([id, lv]) => {
+    if (!byLevel[lv]) byLevel[lv] = [];
+    byLevel[lv].push(id);
+  });
+
+  const BASE_RADII = [0, 230, 460, 660, 840];
+  const positions  = {};
+  Object.entries(byLevel).forEach(([lv, ids]) => {
+    const level  = parseInt(lv);
+    if (level === 0) { positions[targetId] = { x: 0, y: 0 }; return; }
+    const radius = (BASE_RADII[Math.min(level, BASE_RADII.length - 1)] || 0)
+                 + (level > BASE_RADII.length - 1 ? (level - BASE_RADII.length + 1) * 180 : 0);
+    ids.sort();
+    ids.forEach((id, i) => {
+      const angle  = (2 * Math.PI * i / ids.length) - Math.PI / 2;
+      const jitter = (Math.random() - 0.5) * 55;
+      positions[id] = {
+        x: Math.cos(angle) * (radius + jitter),
+        y: Math.sin(angle) * (radius + Math.abs(jitter) * 0.4),
+      };
+    });
+  });
+  return positions;
+}
+
+// ── Cluster halos (drawn after layoutstop) ────────────────────────────────────
+function _ogDrawClusterHalos(cy, typeColors) {
+  cy.remove('.og-cluster-halo');
+
+  const clusters = {};
+  cy.nodes('.data-node').forEach(node => {
+    const t = node.data('type');
+    if (node.data('is_target')) return;
+    if (!clusters[t]) clusters[t] = [];
+    clusters[t].push(node);
+  });
+
+  Object.entries(clusters).forEach(([type, nodes]) => {
+    if (nodes.length < 2) return;
+
+    let sx = 0, sy = 0;
+    nodes.forEach(n => { sx += n.position('x'); sy += n.position('y'); });
+    const cx    = sx / nodes.length;
+    const cy_p  = sy / nodes.length;
+
+    let maxR = 0;
+    nodes.forEach(n => {
+      const dx   = n.position('x') - cx;
+      const dy   = n.position('y') - cy_p;
+      const dist = Math.sqrt(dx * dx + dy * dy) + (n.data('size') || 28) * 0.7;
+      maxR = Math.max(maxR, dist);
+    });
+    maxR = Math.max(maxR + 68, 100);
+
+    const color  = typeColors[type] || '#2a3a4a';
+    const label  = _OG_CLUSTER_LABELS[type] || type;
+    const haloId = `__og_halo_${type}`;
+
+    cy.add({
+      group:    'nodes',
+      data:     { id: haloId, label, isHalo: true },
+      position: { x: cx, y: cy_p },
+      classes:  'og-cluster-halo',
+    });
+
+    const halo = cy.getElementById(haloId);
+    halo.style({
+      'width':                   maxR * 2,
+      'height':                  maxR * 1.72,
+      'background-color':        color,
+      'background-opacity':      0,
+      'border-color':            color,
+      'border-opacity':          0,
+      'border-width':            1.5,
+      'border-style':            'dashed',
+      'shape':                   'ellipse',
+      'color':                   color,
+      'label':                   label,
+      'font-size':               '11px',
+      'font-family':             '"JetBrains Mono", monospace',
+      'text-valign':             'top',
+      'text-halign':             'center',
+      'text-margin-y':           String(-(maxR * 0.87 + 16)),
+      'text-background-color':   '#07080c',
+      'text-background-opacity': 0,
+      'text-background-padding': '4px',
+      'events':                  'no',
+      'selectable':              false,
+      'z-index':                 0,
+      'opacity':                 0,
+    });
+    halo.ungrabify();
+    halo.unselectify();
+    halo.animate({
+      style: {
+        'background-opacity':      0.06,
+        'border-opacity':          0.22,
+        'text-background-opacity': 0.75,
+        'opacity':                 1,
+      }
+    }, { duration: 700, easing: 'ease-in-out' });
+  });
+}
+
+// ── Zoom-responsive labels ────────────────────────────────────────────────────
+function _ogApplyZoomLabels(cy, zoom) {
+  cy.nodes('.data-node').forEach(node => {
+    let show = true;
+    if      (zoom < 0.35) show = !!node.data('is_target');
+    else if (zoom < 0.60) show = !!node.data('is_target') || node.data('degree') >= 3;
+    node.style('label', show ? node.data('label') : '');
+  });
+}
+
 function osintLoadGraph() {
   const q    = (document.getElementById('osint-graph-q').value||'').trim();
   const info = document.getElementById('osint-graph-info');
@@ -1490,7 +1641,7 @@ function osintLoadGraph() {
         return;
       }
 
-      // Degree map for sizing
+      // Degree map
       const degree = {};
       nodes.forEach(n => { degree[n.id] = 0; });
       links.forEach(l => {
@@ -1498,92 +1649,138 @@ function osintLoadGraph() {
         if (degree[l.target] !== undefined) degree[l.target]++;
       });
 
+      // Type→color map for cluster halos
+      const typeColors = {};
+      nodes.forEach(n => { typeColors[n.type] = n.color; });
+
       // Build Cytoscape elements
       const elements = [];
       nodes.forEach(n => {
-        const sz = Math.min(Math.max(n.base_size + (degree[n.id]||0) * 4, n.base_size), 68);
-        elements.push({ data: {
-          id:             n.id,
-          label:          n.label,
-          type:           n.type,
-          color:          n.color,
-          shape:          n.shape,
-          size:           sz,
-          confidence:     n.confidence,
-          risk_level:     n.risk_level,
-          source_evidence:n.source_evidence,
-          discovered_at:  n.discovered_at,
-          metadata:       n.metadata || {},
-          is_target:      n.is_target || false,
-        }});
+        const deg = degree[n.id] || 1;
+        const sz  = n.is_target
+          ? 56
+          : Math.min(Math.max(n.base_size + deg * 3, n.base_size), 52);
+        elements.push({
+          data: {
+            id:              n.id,
+            label:           n.label,
+            type:            n.type,
+            color:           n.color,
+            shape:           n.shape,
+            size:            sz,
+            degree:          deg,
+            confidence:      n.confidence,
+            risk_level:      n.risk_level,
+            source_evidence: n.source_evidence,
+            discovered_at:   n.discovered_at,
+            metadata:        n.metadata || {},
+            is_target:       n.is_target || false,
+          },
+          classes: 'data-node',
+        });
       });
       links.forEach(l => {
         const conf = l.confidence || 0.75;
-        const w    = Math.max(1, Math.round(conf * 3));
-        const col  = conf >= 0.8 ? '#2a6a5a' : conf >= 0.6 ? '#5a5a20' : '#3a3040';
+        const w    = Math.max(1, Math.round(conf * 2.5));
+        const col  = conf >= 0.8 ? '#2a5a4a' : conf >= 0.6 ? '#4a4a1a' : '#2a2838';
         elements.push({ data: {
-          source:       l.source,
-          target:       l.target,
-          label:        l.label || (l.relation_type||'').replace(/_/g,' '),
-          relation_type:l.relation_type || '',
-          confidence:   conf,
-          edgeWidth:    w,
-          edgeColor:    col,
+          source:          l.source,
+          target:          l.target,
+          label:           l.label || (l.relation_type||'').replace(/_/g,' '),
+          relation_type:   l.relation_type || '',
+          confidence:      conf,
+          edgeWidth:       w,
+          edgeColor:       col,
           source_evidence: l.source_evidence || '',
         }});
       });
 
+      // Find target node and compute radial seed positions
+      const targetNode = nodes.find(n => n.is_target) || nodes[0];
+      const targetId   = targetNode.id;
+      const radialPos  = _ogComputeRadialPositions(elements, targetId);
+
       _osintCy = cytoscape({
         container: document.getElementById('osint-graph-canvas'),
-        elements: elements,
+        elements,
         style: [
           {
-            selector: 'node',
+            selector: 'node.data-node',
             style: {
-              'background-color':   'data(color)',
-              'shape':              'data(shape)',
-              'width':              'data(size)',
-              'height':             'data(size)',
-              'label':              'data(label)',
-              'color':              '#c8d8e8',
-              'font-size':          '9px',
-              'font-family':        '"JetBrains Mono", monospace',
-              'text-valign':        'bottom',
-              'text-halign':        'center',
-              'text-margin-y':      '5px',
-              'text-wrap':          'wrap',
-              'text-max-width':     '90px',
-              'text-overflow-wrap': 'anywhere',
-              'border-width':       '0px',
+              'background-color':           'data(color)',
+              'shape':                      'data(shape)',
+              'width':                      'data(size)',
+              'height':                     'data(size)',
+              'label':                      'data(label)',
+              'color':                      '#c8d8e8',
+              'font-size':                  '9px',
+              'font-family':                '"JetBrains Mono", monospace',
+              'text-valign':                'bottom',
+              'text-halign':                'center',
+              'text-margin-y':              '6px',
+              'text-wrap':                  'ellipsis',
+              'text-max-width':             '90px',
+              'text-background-color':      '#07080c',
+              'text-background-opacity':    0.72,
+              'text-background-padding':    '2px',
+              'text-background-shape':      'roundrectangle',
+              'border-width':               '2px',
+              'border-color':               'data(color)',
+              'border-opacity':             0.55,
+              'shadow-blur':                9,
+              'shadow-color':               'data(color)',
+              'shadow-opacity':             0.4,
+              'shadow-offset-x':            0,
+              'shadow-offset-y':            0,
+              'transition-property':        'shadow-opacity, border-opacity, opacity',
+              'transition-duration':        '0.2s',
+              'z-index':                    10,
+              'cursor':                     'pointer',
             },
           },
           {
-            selector: 'node[?is_target]',
+            selector: 'node.data-node[?is_target]',
             style: {
-              'border-width': '2px',
-              'border-color': '#c8a84b',
-              'border-style': 'solid',
+              'border-width':   '3px',
+              'border-color':   '#e8c870',
+              'border-opacity': 1,
+              'shadow-blur':    22,
+              'shadow-color':   '#c8a84b',
+              'shadow-opacity': 0.82,
+              'font-size':      '11px',
+              'font-weight':    '600',
+              'z-index':        20,
             },
           },
           {
-            selector: 'node:selected',
+            selector: 'node.data-node:selected',
             style: {
-              'border-width': '2.5px',
-              'border-color': '#ffffff',
-              'border-style': 'solid',
-              'background-color': 'data(color)',
+              'border-width':    '3px',
+              'border-color':    '#ffffff',
+              'border-opacity':  1,
+              'shadow-blur':     26,
+              'shadow-opacity':  0.95,
+              'overlay-color':   '#ffffff',
+              'overlay-opacity': 0.07,
+              'overlay-padding': 8,
             },
           },
           {
-            selector: 'node[type="repository"]',
-            style: { opacity: 0.75 },
+            selector: 'node.og-hover',
+            style: { 'shadow-blur': 16, 'shadow-opacity': 0.82, 'border-opacity': 1 },
           },
           {
-            selector: 'node[type="platform"]',
+            selector: 'node.og-dimmed',
+            style: { 'opacity': 0.16 },
+          },
+          {
+            selector: 'node.data-node[type="repository"]',
+            style: { 'opacity': 0.82 },
+          },
+          {
+            selector: 'node.data-node[type="platform"]',
             style: {
-              'background-opacity': 0.35,
-              'border-width':       '1px',
-              'border-color':       'data(color)',
+              'background-opacity': 0.38,
               'border-style':       'dashed',
               'color':              '#6b8aaa',
               'font-size':          '8px',
@@ -1592,49 +1789,119 @@ function osintLoadGraph() {
           {
             selector: 'edge',
             style: {
-              'line-color':           'data(edgeColor)',
-              'target-arrow-color':   'data(edgeColor)',
-              'target-arrow-shape':   'triangle',
-              'arrow-scale':          0.7,
-              'curve-style':          'bezier',
-              'width':                'data(edgeWidth)',
-              'label':                'data(label)',
-              'font-size':            '7px',
-              'color':                '#374757',
-              'font-family':          '"JetBrains Mono", monospace',
-              'text-rotation':        'autorotate',
-              'text-background-color':'#07080c',
+              'line-color':              'data(edgeColor)',
+              'target-arrow-color':      'data(edgeColor)',
+              'target-arrow-shape':      'triangle',
+              'arrow-scale':             0.72,
+              'curve-style':             'bezier',
+              'control-point-step-size': 40,
+              'width':                   'data(edgeWidth)',
+              'label':                   '',
+              'font-size':               '8px',
+              'color':                   '#374757',
+              'font-family':             '"JetBrains Mono", monospace',
+              'text-rotation':           'autorotate',
+              'text-margin-y':           '-8px',
+              'text-background-color':   '#07080c',
               'text-background-opacity': 0.8,
-              'text-background-padding': '1px',
-              'opacity':              0.85,
+              'text-background-padding': '2px',
+              'opacity':                 0.58,
+              'transition-property':     'opacity, width, line-color',
+              'transition-duration':     '0.2s',
             },
           },
           {
-            selector: 'edge:selected',
-            style: { 'line-color': '#4bc8a8', 'target-arrow-color': '#4bc8a8', 'opacity': 1 },
+            selector: 'edge.og-edge-hover, edge:selected',
+            style: {
+              'label':              'data(label)',
+              'opacity':            0.96,
+              'line-color':         '#4bc8a8',
+              'target-arrow-color': '#4bc8a8',
+            },
+          },
+          {
+            selector: 'edge.og-dimmed',
+            style: { 'opacity': 0.05 },
+          },
+          {
+            selector: 'node.og-cluster-halo',
+            style: { 'events': 'no', 'selectable': false },
           },
         ],
         layout: {
-          name:            'cose',
-          animate:         false,
-          padding:         32,
-          randomize:       true,
-          nodeRepulsion:   function(){ return 6000; },
-          nodeOverlap:     14,
-          idealEdgeLength: function(){ return 100; },
-          edgeElasticity:  function(){ return 0.35; },
-          nestingFactor:   0.1,
-          gravity:         0.25,
-          numIter:         1000,
-          coolingFactor:   0.97,
+          name:      'preset',
+          positions: el => radialPos[el.id()] || { x: (Math.random()-0.5)*200, y: (Math.random()-0.5)*200 },
+          fit:       false,
         },
-        minZoom: 0.15,
-        maxZoom: 4.0,
+        minZoom: 0.07,
+        maxZoom: 4.5,
         wheelSensitivity: 0.3,
       });
 
-      // Click handler → detail panel
-      _osintCy.on('tap', 'node', evt => {
+      // Lock target at center during force layout
+      const targetElem = _osintCy.getElementById(targetId);
+      if (targetElem.length) {
+        targetElem.lock();
+        targetElem.position({ x: 0, y: 0 });
+      }
+
+      // Force-directed refinement from radial seed
+      const layout = _osintCy.layout({
+        name:             'cose',
+        animate:          true,
+        randomize:        false,
+        nodeRepulsion:    70000,
+        idealEdgeLength:  190,
+        edgeElasticity:   0.35,
+        gravity:          0.25,
+        numIter:          1800,
+        initialTemp:      160,
+        coolingFactor:    0.992,
+        minTemp:          1.0,
+        fit:              true,
+        padding:          80,
+        componentSpacing: 190,
+        nodeOverlap:      20,
+      });
+
+      layout.on('layoutstop', () => {
+        if (targetElem.length) targetElem.unlock();
+        _ogDrawClusterHalos(_osintCy, typeColors);
+        _ogApplyZoomLabels(_osintCy, _osintCy.zoom());
+        _osintCy.fit(80);
+      });
+
+      layout.run();
+
+      // Zoom → progressive labels
+      _osintCy.on('zoom', () => _ogApplyZoomLabels(_osintCy, _osintCy.zoom()));
+
+      // Node hover: illuminate neighbourhood
+      _osintCy.on('mouseover', 'node.data-node', evt => {
+        const node = evt.target;
+        node.addClass('og-hover');
+        const neighbourhood = node.neighborhood().add(node);
+        _osintCy.elements('.data-node, edge').not(neighbourhood).addClass('og-dimmed');
+        neighbourhood.removeClass('og-dimmed');
+        node.connectedEdges().addClass('og-edge-hover');
+      });
+
+      _osintCy.on('mouseout', 'node.data-node', evt => {
+        evt.target.removeClass('og-hover');
+        _osintCy.elements().removeClass('og-dimmed');
+        evt.target.connectedEdges().forEach(e => {
+          if (!e.selected()) e.removeClass('og-edge-hover');
+        });
+      });
+
+      // Edge hover: reveal label
+      _osintCy.on('mouseover', 'edge', evt => evt.target.addClass('og-edge-hover'));
+      _osintCy.on('mouseout',  'edge', evt => {
+        if (!evt.target.selected()) evt.target.removeClass('og-edge-hover');
+      });
+
+      // Node tap → detail panel
+      _osintCy.on('tap', 'node.data-node', evt => {
         _osintCy.nodes().unselect();
         evt.target.select();
         _ogRenderDetail(evt.target);
