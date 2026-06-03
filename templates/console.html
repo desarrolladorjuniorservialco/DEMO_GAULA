@@ -4,29 +4,21 @@
   <meta charset="UTF-8">
   <title>NEXO-147 | Centro de Operaciones e Inteligencia GAULA</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  
+
   <link rel="stylesheet" href="{{ url_for('static', filename='styles_pc.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='styles_media.css') }}">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap" rel="stylesheet">
-  <style>
-    body {
-      background-color: #07080c;
-      color: #f0f4fa;
-      font-family: 'Nunito Sans', sans-serif;
-    }
-  </style>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@400;600;700;800;900&family=JetBrains+Mono:wght@400;600;700;800&display=swap" rel="stylesheet">
   <script src="https://unpkg.com/lucide@latest"></script>
-  <script src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
 </head>
+
 <body class="console-body">
   <div class="bg-scanline"></div>
   <div class="glow-orb orb-one"></div>
   <div class="glow-orb orb-two"></div>
 
   <div class="console-layout">
-    <!-- SIDEBAR PERSISTENTE -->
     <aside class="console-sidebar" id="sidebar">
       <div class="sidebar-header">
         <div class="brand-tactical">
@@ -38,114 +30,85 @@
             <span>SISTEMA OPERATIVO GAULA</span>
           </div>
         </div>
-        <button class="btn-sidebar-toggle" id="sidebar-toggle-close" aria-label="Cerrar panel lateral">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
-        </button>
       </div>
 
       <nav class="sidebar-nav" id="sidebar-nav">
         <span class="nav-category">OPERACIONES</span>
-        
-        <!-- Vista para todos los roles (Redirigido según rol a su pantalla principal) -->
-        <a href="#inicio" class="nav-item active" data-panel="panel-inicio">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
-          <span>Consola Central</span>
+        <a href="#inicio" class="nav-item active" data-panel="panel-inicio" data-title="Consola Central">
+          <i data-lucide="layout-dashboard"></i><span>Consola Central</span>
         </a>
 
         {% if session.get("role") in ["admin", "operador"] %}
-        <a href="#nuevo-reporte" class="nav-item" data-panel="panel-formulario">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
-          <span>Registrar Reporte</span>
+        <a href="#nuevo-reporte" class="nav-item" data-panel="panel-formulario" data-title="Registrar Reporte">
+          <i data-lucide="phone-call"></i><span>Registrar Reporte</span>
         </a>
         {% endif %}
 
         {% if session.get("role") in ["admin", "analista", "director"] %}
-        <a href="#casos" class="nav-item" data-panel="panel-casos">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
-          <span>Bandeja de Casos</span>
+        <a href="#casos" class="nav-item" data-panel="panel-casos" data-title="Bandeja de Casos">
+          <i data-lucide="file-text"></i><span>Bandeja de Casos</span>
         </a>
         {% endif %}
 
-        <!-- SECCIÓN INTELIGENCIA (Solo Analista, Director y Admin) -->
         {% if session.get("role") in ["admin", "analista", "director"] %}
         <span class="nav-category">INTELIGENCIA TÁCTICA</span>
-        <a href="#entidades" class="nav-item" data-panel="panel-entidades">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-          <span>Base de Entidades</span>
+        <a href="#entidades" class="nav-item" data-panel="panel-entidades" data-title="Base de Entidades">
+          <i data-lucide="users"></i><span>Base de Entidades</span>
         </a>
-        <a href="#analisis-red" class="nav-item" data-panel="panel-inteligencia">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
-          <span>Correlaciones e OSINT</span>
+        <a href="#analisis-red" class="nav-item" data-panel="panel-inteligencia" data-title="Correlaciones e OSINT">
+          <i data-lucide="network"></i><span>Correlaciones e OSINT</span>
         </a>
-        <a href="#hallazgos" class="nav-item" data-panel="panel-hallazgos">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 12h6m-6 4h6m2 5H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5.586a1 1 0 0 1 .707.293l5.414 5.414a1 1 0 0 1 .293.707V19a2 2 0 0 1-2 2z"/></svg>
-          <span>Hallazgos Intel</span>
+        <a href="#hallazgos" class="nav-item" data-panel="panel-hallazgos" data-title="Hallazgos Intel">
+          <i data-lucide="clipboard-list"></i><span>Hallazgos Intel</span>
         </a>
-        <a href="#grafo" class="nav-item" data-panel="panel-grafo">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="5" cy="12" r="2"/><circle cx="19" cy="5" r="2"/><circle cx="19" cy="19" r="2"/><line x1="6.48" y1="10.74" x2="17.52" y2="6.26"/><line x1="6.48" y1="13.26" x2="17.52" y2="17.74"/></svg>
-          <span>Grafo de Relaciones</span>
+        <a href="#grafo" class="nav-item" data-panel="panel-grafo" data-title="Grafo de Relaciones">
+          <i data-lucide="share-2"></i><span>Grafo de Relaciones</span>
         </a>
         {% endif %}
 
-        <!-- DATOS Y ANALÍTICA -->
         {% if session.get("role") in ["admin", "director", "analista"] %}
         <span class="nav-category">DATOS Y ANALÍTICA</span>
-        <a href="#etl" class="nav-item" data-panel="panel-etl">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
-          <span>Motor ETL</span>
+        <a href="#etl" class="nav-item" data-panel="panel-etl" data-title="Motor ETL">
+          <i data-lucide="activity"></i><span>Motor ETL</span>
         </a>
-        <a href="#datamart" class="nav-item" data-panel="panel-datamart">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
-          <span>Data Mart IA</span>
+        <a href="#datamart" class="nav-item" data-panel="panel-datamart" data-title="Data Mart IA">
+          <i data-lucide="monitor"></i><span>Data Mart IA</span>
         </a>
         {% endif %}
 
-        <!-- DASHBOARD (Director y Admin, lectura restringida para Analista) -->
         <span class="nav-category">ESTADÍSTICAS</span>
-        <a href="#dashboard" class="nav-item" data-panel="panel-dashboard">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
-          <span>Dashboard Ejecutivo</span>
+        <a href="#dashboard" class="nav-item" data-panel="panel-dashboard" data-title="Dashboard Ejecutivo">
+          <i data-lucide="bar-chart-3"></i><span>Dashboard Ejecutivo</span>
         </a>
 
-        <!-- ADMINISTRACIÓN Y CONFIGURACIÓN -->
         <span class="nav-category">ADMINISTRACIÓN</span>
         {% if session.get("role") == "admin" %}
-        <a href="#gestion-usuarios" class="nav-item" data-panel="panel-administracion">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-          <span>Administración</span>
+        <a href="#administracion" class="nav-item" data-panel="panel-administracion" data-title="Administración">
+          <i data-lucide="settings"></i><span>Administración</span>
         </a>
         {% endif %}
-        <a href="#configuracion" class="nav-item" data-panel="panel-configuracion">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
-          <span>Configuración</span>
+        <a href="#configuracion" class="nav-item" data-panel="panel-configuracion" data-title="Configuración">
+          <i data-lucide="info"></i><span>Configuración</span>
         </a>
       </nav>
 
       <div class="sidebar-footer">
         <div class="user-pill">
-          <div class="user-avatar">
-            {{ session.get("user")[0].upper() if session.get("user") else 'U' }}
-          </div>
+          <div class="user-avatar">{{ session.get("user")[0].upper() if session.get("user") else 'U' }}</div>
           <div class="user-info">
             <strong>{{ session.get("name", "Usuario GAULA") }}</strong>
             <span>Rol: {{ session.get("role", "invitado").capitalize() }}</span>
           </div>
         </div>
         <a href="{{ url_for('logout') }}" class="btn-logout" aria-label="Cerrar sesión">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></svg>
+          <i data-lucide="log-out"></i>
         </a>
       </div>
     </aside>
 
-    <!-- WRAPPER PRINCIPAL -->
     <div class="console-main">
-      
-      <!-- TOP BAR PERSISTENTE -->
       <header class="console-topbar">
         <div class="topbar-left">
-          <button class="btn-sidebar-toggle" id="sidebar-toggle-open" aria-label="Abrir panel lateral">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
-          </button>
           <div class="breadcrumb-tactical">
             <span class="active-category">NEXO-147</span>
             <span class="divider">/</span>
@@ -154,1048 +117,289 @@
         </div>
 
         <div class="topbar-right">
-          <!-- Alertas rápidas -->
           <div class="topbar-alert-indicator" id="alert-indicator" title="Alertas operacionales críticas">
             <span class="pulse-red"></span>
             <span class="alert-count" id="alert-count-val">0</span>
-            <svg class="icon-topbar" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+            <i data-lucide="bell"></i>
           </div>
-          
-          <div class="topbar-system-time" id="system-time">
-            00:00:00 UTC
-          </div>
+          <div class="topbar-system-time" id="system-time">00:00:00 UTC</div>
         </div>
       </header>
 
-      <!-- ÁREA DE TRABAJO DINÁMICA -->
       <main class="console-workspace" id="workspace">
-
-        <!-- PANEL DE INICIO GENERAL -->
         <section class="panel-section active" id="panel-inicio">
           <div class="welcome-banner double-bezel">
             <div class="inner-core">
               <span class="badge-eyebrow">Demo Operativa Privada</span>
               <h1>Bienvenido al Centro de Control, {{ session.get("name") }}</h1>
-              <p>Has iniciado sesión con el rol de <strong>{{ session.get("role").upper() }}</strong>. Tu espacio de trabajo y funciones clave se han habilitado en base a tus credenciales.</p>
-              
-              <div class="panel-shortcuts-grid" id="shortcuts-container">
-                <!-- Se inyecta dinámicamente por JS según el rol -->
+              <p>Has iniciado sesión con el rol de <strong>{{ session.get("role").upper() }}</strong>. Tu espacio de trabajo y funciones clave se han habilitado con base en tus credenciales.</p>
+
+              <div class="panel-shortcuts-grid">
+                <button class="shortcut-card double-bezel" type="button" data-go-panel="panel-dashboard">
+                  <div class="inner-core"><span class="icon"><i data-lucide="bar-chart-3"></i></span><strong>Centro de Mando</strong><p>Monitorear KPIs, radar táctico y mapas de calor.</p></div>
+                </button>
+                <button class="shortcut-card double-bezel" type="button" data-go-panel="panel-casos">
+                  <div class="inner-core"><span class="icon"><i data-lucide="folder-open"></i></span><strong>Casos Recientes</strong><p>Ver asignaciones operacionales activas.</p></div>
+                </button>
+                <button class="shortcut-card double-bezel" type="button" data-go-panel="panel-inteligencia">
+                  <div class="inner-core"><span class="icon"><i data-lucide="globe"></i></span><strong>OSINT e Inteligencia</strong><p>Consultar correlaciones y brechas externas.</p></div>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div class="dashboard-card double-bezel" id="chatbot-estados" style="margin-bottom: 24px;">
+            <div class="inner-core">
+              <span class="badge-eyebrow">ASISTENTE INTERNO</span>
+              <h2>Chatbot de Consulta de Estados</h2>
+              <p class="helper-text-mono">Consulta rápida sobre casos registrados, estados, prioridades, unidades GAULA y reportes recientes.</p>
+
+              <div class="chatbot-box">
+                <div id="chatbot-mensajes" class="chatbot-mensajes">
+                  <div class="bot-message">Hola. Puedes preguntarme por estados, casos críticos, prioridades, unidades GAULA o últimos reportes registrados.</div>
+                </div>
+
+                <div class="chatbot-sugerencias">
+                  <button type="button" class="chat-suggestion" data-question="¿Cuántos casos hay?">Total de casos</button>
+                  <button type="button" class="chat-suggestion" data-question="Casos por estado">Por estado</button>
+                  <button type="button" class="chat-suggestion" data-question="Casos por prioridad">Por prioridad</button>
+                  <button type="button" class="chat-suggestion" data-question="¿Cuántos casos críticos hay?">Críticos</button>
+                  <button type="button" class="chat-suggestion" data-question="Casos por unidad GAULA">Por unidad GAULA</button>
+                  <button type="button" class="chat-suggestion" data-question="Últimos casos registrados">Últimos casos</button>
+                </div>
+
+                <div class="chatbot-input">
+                  <input type="text" id="chatbot-pregunta" placeholder="Ejemplo: ¿Cuántos casos críticos hay?" autocomplete="off">
+                  <button type="button" id="chatbot-enviar" class="btn-primary-tactical">Consultar</button>
+                </div>
               </div>
             </div>
           </div>
 
           <div class="dashboard-grid">
-            <!-- KPIs Generales de Actividad -->
             <div class="dashboard-card double-bezel col-span-8">
               <div class="inner-core">
                 <h2>Estado Operativo GAULA - Actividad de Turno</h2>
                 <div class="table-wrap">
                   <table id="table-recent-activities">
-                    <thead>
-                      <tr>
-                        <th>Acción</th>
-                        <th>Detalle</th>
-                        <th>Operador</th>
-                        <th>Hora</th>
-                      </tr>
-                    </thead>
+                    <thead><tr><th>Acción</th><th>Detalle</th><th>Operador</th><th>Hora</th></tr></thead>
                     <tbody id="activity-log-body">
-                      <!-- Mock logs de auditoría en vivo -->
+                      <tr><td><span class="badge-status-table info">Ingreso Reporte</span></td><td>Llamada 147 registrada desde Bogotá</td><td>operador</td><td>08:14</td></tr>
+                      <tr><td><span class="badge-status-table info">Asignación Caso</span></td><td>Caso reasignado a GAULA Medellín</td><td>analista</td><td>08:21</td></tr>
+                      <tr><td><span class="badge-status-table warning">Actualización</span></td><td>Número marcado como extorsivo</td><td>analista</td><td>08:45</td></tr>
+                      <tr><td><span class="badge-status-table ok">Análisis OSINT</span></td><td>Escaneo de brechas de seguridad ejecutado</td><td>director</td><td>09:12</td></tr>
                     </tbody>
                   </table>
                 </div>
               </div>
             </div>
 
-            <!-- Resumen Rápido -->
             <div class="dashboard-card double-bezel col-span-4">
               <div class="inner-core flex-center-col">
                 <h2>Resumen de Roles</h2>
                 <div class="role-desc-list">
-                  <div class="role-desc-item">
-                    <span class="dot op"></span>
-                    <strong>Operador:</strong> Registra denuncias de extorsión y secuestro.
-                  </div>
-                  <div class="role-desc-item">
-                    <span class="dot an"></span>
-                    <strong>Analista:</strong> Filtra casos, vincula entidades y evalúa brechas OSINT.
-                  </div>
-                  <div class="role-desc-item">
-                    <span class="dot di"></span>
-                    <strong>Director:</strong> Visualiza el panel ejecutivo, KPIs e indicadores críticos.
-                  </div>
-                  <div class="role-desc-item">
-                    <span class="dot ad"></span>
-                    <strong>Administrador:</strong> Configuración, auditoría y control total del sistema.
-                  </div>
+                  <div class="role-desc-item"><strong>Operador:</strong> Registra denuncias de extorsión y secuestro.</div>
+                  <div class="role-desc-item"><strong>Analista:</strong> Filtra casos, vincula entidades y evalúa brechas OSINT.</div>
+                  <div class="role-desc-item"><strong>Director:</strong> Visualiza el panel ejecutivo, KPIs e indicadores críticos.</div>
+                  <div class="role-desc-item"><strong>Administrador:</strong> Configuración, auditoría y control total del sistema.</div>
                 </div>
               </div>
             </div>
           </div>
         </section>
 
-
-        <!-- PANEL FORMULARIO REGISTRO (LÍNEA 147) -->
         <section class="panel-section" id="panel-formulario">
           <div class="section-header-tactical">
             <h2>Recepción de Llamada y Denuncia - Línea 147</h2>
-            <p>Formulario estructurado de registro de hechos punibles para el despliegue rápido del GAULA.</p>
+            <p>Formulario estructurado de registro de hechos para el despliegue rápido del GAULA.</p>
           </div>
 
           <div class="grid-form-container">
-            <form id="formulario-registro-reporte" class="form-tactical-layout">
-              <!-- SECCIÓN 1: TIPICIDAD -->
+            <form id="formulario-inicial" class="form-tactical-layout">
               <div class="form-card double-bezel">
                 <div class="inner-core">
                   <h3>1. Clasificación Preliminar</h3>
-                  <div class="form-group">
-                    <label for="tipo_reporte">Tipo de Reporte *</label>
-                    <select id="tipo_reporte" name="tipo_reporte" required>
-                      <option value="" disabled selected>-- Seleccione Tipo --</option>
-                      <option value="Extorsión">Extorsión</option>
-                      <option value="Secuestro">Secuestro</option>
-                      <option value="Hurto">Hurto</option>
-                      <option value="Amenaza">Amenaza</option>
-                      <option value="Fraude digital">Fraude digital</option>
-                      <option value="Desaparición asociada">Desaparición asociada</option>
-                      <option value="Información de inteligencia">Información de inteligencia</option>
-                      <option value="Otro">Otro</option>
-                    </select>
-                  </div>
-
+                  <div class="form-group"><label for="tipo_reporte">Tipo de Reporte *</label><select id="tipo_reporte" name="tipo_reporte" required><option value="" disabled selected>-- Seleccione Tipo --</option><option value="Extorsión">Extorsión</option><option value="Secuestro">Secuestro</option><option value="Hurto">Hurto</option><option value="Amenaza">Amenaza</option><option value="Fraude digital">Fraude digital</option><option value="Desaparición asociada">Desaparición asociada</option><option value="Información de inteligencia">Información de inteligencia</option><option value="Otro">Otro</option></select></div>
                   <div class="form-row">
-                    <div class="form-group">
-                      <label for="prioridad">Prioridad *</label>
-                      <select id="prioridad" name="prioridad" required>
-                        <option value="" disabled selected>-- Prioridad --</option>
-                        <option value="Crítica">Crítica</option>
-                        <option value="Alta">Alta</option>
-                        <option value="Media">Media</option>
-                        <option value="Baja">Baja</option>
-                      </select>
-                    </div>
-
-                    <div class="form-group">
-                      <label for="canal_recepcion">Canal *</label>
-                      <select id="canal_recepcion" name="canal_recepcion" required>
-                        <option value="" disabled selected>-- Canal --</option>
-                        <option value="Línea 147">Línea 147</option>
-                        <option value="Reporte presencial">Reporte presencial</option>
-                        <option value="Unidad territorial">Unidad territorial</option>
-                        <option value="Correo institucional">Correo de Emergencia</option>
-                      </select>
-                    </div>
+                    <div class="form-group"><label for="prioridad">Prioridad *</label><select id="prioridad" name="prioridad" required><option value="" disabled selected>-- Prioridad --</option><option value="Crítica">Crítica</option><option value="Alta">Alta</option><option value="Media">Media</option><option value="Baja">Baja</option></select></div>
+                    <div class="form-group"><label for="canal_recepcion">Canal *</label><select id="canal_recepcion" name="canal_recepcion" required><option value="" disabled selected>-- Canal --</option><option value="Línea 147">Línea 147</option><option value="Reporte presencial">Reporte presencial</option><option value="Unidad territorial">Unidad territorial</option><option value="Correo institucional">Correo institucional</option><option value="Otro canal">Otro canal</option></select></div>
                   </div>
-
-                  <div class="form-group">
-                    <label for="unidad_gaula">Unidad GAULA Receptora *</label>
-                    <select name="unidad_gaula" id="unidad_gaula" required>
-                      <option value="" disabled selected>-- Seleccione GAULA Responsable --</option>
-                      <optgroup label="Zonas Principales">
-                        <option value="GAULA Policía Bogotá">GAULA Policía Bogotá</option>
-                        <option value="GAULA Militar Bogotá">GAULA Militar Bogotá</option>
-                        <option value="GAULA Policía Antioquia">GAULA Policía Antioquia</option>
-                        <option value="GAULA Metropolitana de Medellín">GAULA Metropolitana Medellín</option>
-                        <option value="GAULA Policía Valle">GAULA Policía Valle del Cauca</option>
-                        <option value="GAULA Metropolitana de Cali">GAULA Metropolitana Cali</option>
-                        <option value="GAULA Policía Atlántico">GAULA Policía Barranquilla</option>
-                      </optgroup>
-                      <optgroup label="Otras Regiones">
-                        <option value="GAULA Policía Cundinamarca">GAULA Policía Cundinamarca</option>
-                        <option value="GAULA Policía Tolima">GAULA Policía Tolima</option>
-                        <option value="GAULA Policía Huila">GAULA Policía Huila</option>
-                        <option value="GAULA Policía Meta">GAULA Policía Meta</option>
-                        <option value="GAULA Policía Arauca">GAULA Policía Arauca</option>
-                      </optgroup>
-                    </select>
-                  </div>
+                  <div class="form-group"><label for="unidad_gaula">Unidad GAULA Receptora *</label><select name="unidad_gaula" id="unidad_gaula" required><option value="" disabled selected>-- Seleccione GAULA Responsable --</option><option value="GAULA Policía Bogotá">GAULA Policía Bogotá</option><option value="GAULA Militar Bogotá">GAULA Militar Bogotá</option><option value="GAULA Policía Cundinamarca">GAULA Policía Cundinamarca</option><option value="GAULA Policía Antioquia">GAULA Policía Antioquia</option><option value="GAULA Metropolitana de Medellín">GAULA Metropolitana Medellín</option><option value="GAULA Policía Valle del Cauca">GAULA Policía Valle del Cauca</option><option value="GAULA Metropolitana de Cali">GAULA Metropolitana Cali</option><option value="GAULA Policía Barranquilla">GAULA Policía Barranquilla</option><option value="GAULA Policía Meta">GAULA Policía Meta</option></select></div>
                 </div>
               </div>
 
-              <!-- SECCIÓN 2: DENUNCIANTE -->
               <div class="form-card double-bezel">
                 <div class="inner-core">
                   <h3>2. Datos del Reportante</h3>
-                  <div class="form-group">
-                    <label for="nombre_reportante">Nombre Completo</label>
-                    <input type="text" id="nombre_reportante" name="nombre_reportante" placeholder="Escriba nombres y apellidos">
-                  </div>
-
-                  <div class="form-row">
-                    <div class="form-group">
-                      <label for="documento_reportante">Identificación</label>
-                      <input type="text" id="documento_reportante" name="documento_reportante" placeholder="CC / NIT / Pasaporte">
-                    </div>
-                    <div class="form-group">
-                      <label for="telefono_reportante">Teléfono</label>
-                      <input type="text" id="telefono_reportante" name="telefono_reportante" placeholder="Nro de contacto">
-                    </div>
-                  </div>
-
-                  <div class="form-group">
-                    <label for="ubicacion">Ubicación del Suceso</label>
-                    <input type="text" id="ubicacion" name="ubicacion" placeholder="Ciudad, Barrio o Coordenadas">
-                  </div>
+                  <div class="form-group"><label for="nombre_reportante">Nombre Completo</label><input type="text" id="nombre_reportante" name="nombre_reportante" placeholder="Escriba nombres y apellidos"></div>
+                  <div class="form-row"><div class="form-group"><label for="documento_reportante">Identificación</label><input type="text" id="documento_reportante" name="documento_reportante" placeholder="CC / NIT / Pasaporte"></div><div class="form-group"><label for="telefono_reportante">Teléfono</label><input type="text" id="telefono_reportante" name="telefono_reportante" placeholder="Número de contacto"></div></div>
+                  <div class="form-group"><label for="ubicacion">Ubicación del Suceso</label><input type="text" id="ubicacion" name="ubicacion" placeholder="Ciudad, barrio o coordenadas"></div>
                 </div>
               </div>
 
-              <!-- SECCIÓN 3: DETALLE DEL CASO -->
               <div class="form-card double-bezel col-span-2">
                 <div class="inner-core">
                   <h3>3. Hechos y Evidencia del Delito</h3>
-                  
-                  <div class="form-group">
-                    <label for="descripcion">Descripción Breve de los Hechos *</label>
-                    <textarea id="descripcion" name="descripcion" rows="4" placeholder="¿Qué ocurrió? Escriba detalles temporales y de amenaza..." required></textarea>
-                  </div>
-
-                  <div class="form-row">
-                    <div class="form-group">
-                      <label for="numero_extorsivo">Número Telefónico Extorsivo</label>
-                      <input type="text" id="numero_extorsivo" name="numero_extorsivo" placeholder="Ej. 315XXXXXXX">
-                    </div>
-                    <div class="form-group">
-                      <label for="alias_sospechoso">Alias del Sospechoso</label>
-                      <input type="text" id="alias_sospechoso" name="alias_sospechoso" placeholder="Ej. 'El Mugre' / 'Sombra'">
-                    </div>
-                  </div>
-
-                  <div class="form-row">
-                    <div class="form-group">
-                      <label for="medio_pago">Medio / Cuenta de Pago</label>
-                      <input type="text" id="medio_pago" name="medio_pago" placeholder="Ej. Cuenta Nequi/Daviplata/Banco">
-                    </div>
-                    <div class="form-group">
-                      <label for="valor_exigido">Monto Exigido (COP)</label>
-                      <input type="text" id="valor_exigido" name="valor_exigido" placeholder="Monto estimado">
-                    </div>
-                  </div>
-
-                  <div class="form-row">
-                    <div class="form-group">
-                      <label for="evidencia">Evidencias Físicas / Enlaces</label>
-                      <textarea id="evidencia" name="evidencia" rows="2" placeholder="Notas sobre capturas de WhatsApp, audios, documentos entregados..."></textarea>
-                    </div>
-                    <div class="form-group">
-                      <label for="observaciones">Observaciones del Operador</label>
-                      <textarea id="observaciones" name="observaciones" rows="2" placeholder="Observaciones internas..."></textarea>
-                    </div>
-                  </div>
-
-                  <div id="feedback-reporte-console" class="feedback-indicator hidden"></div>
-                  
-                  <div class="form-actions-right">
-                    <button class="btn btn-secondary-tactical" type="reset">Limpiar Formulario</button>
-                    <button class="btn btn-primary-tactical" type="button" id="btn-enviar-reporte">
-                      <span>Registrar Caso</span>
-                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
-                    </button>
-                  </div>
+                  <div class="form-group"><label for="descripcion">Descripción Breve de los Hechos *</label><textarea id="descripcion" name="descripcion" rows="4" placeholder="¿Qué ocurrió? Escriba detalles temporales y de amenaza..." required></textarea></div>
+                  <div class="form-row"><div class="form-group"><label for="numero_extorsivo">Número Telefónico Asociado</label><input type="text" id="numero_extorsivo" name="numero_extorsivo" placeholder="Ej. 315XXXXXXX"></div><div class="form-group"><label for="alias_sospechoso">Alias del Sospechoso</label><input type="text" id="alias_sospechoso" name="alias_sospechoso" placeholder="Alias o identificador"></div></div>
+                  <div class="form-row"><div class="form-group"><label for="medio_pago">Medio / Cuenta de Pago</label><input type="text" id="medio_pago" name="medio_pago" placeholder="Nequi, Daviplata, banco, cuenta"></div><div class="form-group"><label for="valor_exigido">Monto Exigido o Pérdida Estimada</label><input type="text" id="valor_exigido" name="valor_exigido" placeholder="Monto estimado"></div></div>
+                  <div class="form-row"><div class="form-group"><label for="evidencia">Evidencias</label><textarea id="evidencia" name="evidencia" rows="2" placeholder="Audios, capturas, enlaces o documentos entregados"></textarea></div><div class="form-group"><label for="observaciones">Observaciones del Operador</label><textarea id="observaciones" name="observaciones" rows="2" placeholder="Observaciones internas"></textarea></div></div>
+                  <div id="feedback-reporte" class="feedback-indicator hidden alert" style="display:none;"></div>
+                  <div class="form-actions-right"><button class="btn btn-secondary-tactical" type="reset">Limpiar Formulario</button><button class="btn btn-primary-tactical" type="button" id="guardar_reporte"><span>Registrar Caso</span><i data-lucide="check"></i></button></div>
                 </div>
               </div>
             </form>
           </div>
         </section>
 
-
-        <!-- PANEL BANDEJA DE CASOS (ANALISTA / DIRECTOR) -->
         <section class="panel-section" id="panel-casos">
-          <div class="section-header-tactical">
-            <h2>Bandeja de Reportes y Casos Asignados</h2>
-            <p>Monitoree y cambie el estado operacional de los reportes. Vincule y asigne unidades tácticas.</p>
-          </div>
-
-          <div class="table-actions-bar">
-            <div class="search-box-tactical">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-              <input type="text" id="search-casos" placeholder="Buscar por ID, reportante, alias o unidad...">
-            </div>
-            
-            <div class="filters-box-tactical">
-              <select id="filter-prioridad">
-                <option value="">-- Prioridad --</option>
-                <option value="Crítica">Crítica</option>
-                <option value="Alta">Alta</option>
-                <option value="Media">Media</option>
-                <option value="Baja">Baja</option>
-              </select>
-              <select id="filter-estado">
-                <option value="">-- Estado --</option>
-                <option value="Recibido">Recibido</option>
-                <option value="En análisis">En análisis</option>
-                <option value="Asignado">Asignado</option>
-                <option value="Cerrado">Cerrado</option>
-              </select>
-            </div>
-          </div>
-
-          <div class="cases-panel-split">
-            <!-- Tabla de casos -->
-            <div class="cases-list-container double-bezel">
-              <div class="inner-core">
-                <div class="table-wrap">
-                  <table id="table-cases-list">
-                    <thead>
-                      <tr>
-                        <th>Código / Fecha</th>
-                        <th>Delito</th>
-                        <th>Prioridad</th>
-                        <th>GAULA</th>
-                        <th>Estado</th>
-                        <th>Acción</th>
-                      </tr>
-                    </thead>
-                    <tbody id="cases-table-body">
-                      <!-- Se carga vía AJAX -->
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            </div>
-
-            <!-- Panel de detalles en la derecha -->
-            <div class="case-detail-sidebar double-bezel hidden" id="case-detail-panel">
-              <div class="inner-core">
-                <div class="detail-header">
-                  <span class="detail-badge-id" id="detail-case-id">CASE-000</span>
-                  <button class="btn-close-detail" id="btn-close-detail-panel">&times;</button>
-                </div>
-
-                <div class="detail-scroll-content">
-                  <div class="detail-section">
-                    <h3>Clasificación Operativa</h3>
-                    <p><strong>Tipo:</strong> <span id="detail-case-tipo">N/A</span></p>
-                    <p><strong>Prioridad:</strong> <span class="badge" id="detail-case-prioridad">N/A</span></p>
-                    <p><strong>Estado Actual:</strong> <span class="badge" id="detail-case-estado">N/A</span></p>
-                    <p><strong>Unidad GAULA:</strong> <span id="detail-case-gaula">N/A</span></p>
-                  </div>
-
-                  <div class="detail-section">
-                    <h3>Datos del Hecho</h3>
-                    <p><strong>Número Extorsivo:</strong> <span id="detail-case-telefono-ext">No registra</span></p>
-                    <p><strong>Alias del Sospechoso:</strong> <span id="detail-case-alias">No registra</span></p>
-                    <p><strong>Monto Exigido:</strong> <span id="detail-case-monto">No registra</span></p>
-                    <p><strong>Cuenta de Cobro:</strong> <span id="detail-case-pago">No registra</span></p>
-                  </div>
-
-                  <div class="detail-section">
-                    <h3>Hechos Reportados</h3>
-                    <div class="text-box-raw" id="detail-case-descripcion">Sin hechos registrados.</div>
-                  </div>
-
-                  <div class="detail-section">
-                    <h3>Gestión Operativa</h3>
-                    <label for="detail-change-status">Cambiar Estado Operativo</label>
-                    <select id="detail-change-status" class="select-tactical">
-                      <option value="Recibido">Recibido</option>
-                      <option value="En análisis">En análisis</option>
-                      <option value="Asignado">Asignado</option>
-                      <option value="Cerrado">Cerrado</option>
-                    </select>
-                    <button class="btn btn-primary-tactical w-full mt-2" id="btn-save-case-status">Actualizar Estado</button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
+          <div class="section-header-tactical"><h2>Bandeja de Reportes y Casos Asignados</h2><p>Monitoree y cambie el estado operacional de los reportes.</p></div>
+          <div class="table-actions-bar"><div class="search-box-tactical"><i data-lucide="search"></i><input type="text" id="search-casos" placeholder="Buscar por ID, reportante, delito o unidad..."></div><div class="filters-box-tactical"><select id="filter-prioridad"><option value="">-- Prioridad --</option><option value="Crítica">Crítica</option><option value="Alta">Alta</option><option value="Media">Media</option><option value="Baja">Baja</option></select><select id="filter-estado"><option value="">-- Estado --</option><option value="Recibido">Recibido</option><option value="En análisis">En análisis</option><option value="Asignado">Asignado</option><option value="Cerrado">Cerrado</option></select></div></div>
+          <div class="dashboard-card double-bezel"><div class="inner-core"><div class="table-wrap"><table id="table-cases-list"><thead><tr><th>Código / Fecha</th><th>Delito</th><th>Prioridad</th><th>GAULA</th><th>Estado</th><th>Usuario</th></tr></thead><tbody id="cases-table-body"><tr><td colspan="6">Cargando casos registrados...</td></tr></tbody></table></div></div></div>
         </section>
 
+        <section class="panel-section" id="panel-entidades"><div class="section-header-tactical"><h2>Base de Datos de Inteligencia y Entidades</h2><p>Consulte personas, teléfonos, alias, organizaciones, vehículos y cuentas vinculadas.</p></div><div class="dashboard-card double-bezel"><div class="inner-core"><h2>Entidades de Inteligencia</h2><p class="helper-text-mono">Módulo preparado para consulta de entidades.</p><div class="table-wrap"><table><thead><tr><th>Tipo</th><th>Elemento</th><th>Detalle</th><th>Estado</th></tr></thead><tbody><tr><td>Persona</td><td>Reportantes / objetivos</td><td>Disponible desde la base de entidades</td><td><span class="badge-status-table info">Activo</span></td></tr><tr><td>Teléfono</td><td>Líneas asociadas</td><td>Disponible desde registros y correlaciones</td><td><span class="badge-status-table info">Activo</span></td></tr><tr><td>Alias</td><td>Identificadores sospechosos</td><td>Disponible para análisis</td><td><span class="badge-status-table warning">Validación</span></td></tr></tbody></table></div></div></div></section>
 
-        <!-- PANEL BASE DE ENTIDADES (INTELIGENCIA) -->
-        <section class="panel-section" id="panel-entidades">
-          <div class="section-header-tactical">
-            <h2>Base de Datos de Inteligencia y Entidades</h2>
-            <p>Consulte personas, teléfonos, alias y ubicaciones vinculadas a redes extorsivas.</p>
-          </div>
+        <section class="panel-section" id="panel-inteligencia"><div class="section-header-tactical"><h2>Correlaciones de Redes Extorsivas y OSINT</h2><p>Visualización de relaciones entre teléfonos, alias, reportantes y eventos asociados.</p></div><div class="dashboard-grid"><div class="dashboard-card double-bezel col-span-6"><div class="inner-core"><h2>Relaciones Detectadas</h2><p class="helper-text-mono">Correlación cruzada de elementos operacionales.</p><div class="table-wrap"><table><thead><tr><th>Origen</th><th>Destino</th><th>Vínculo</th><th>Confianza</th></tr></thead><tbody id="intel-relations-body"><tr><td>3124567890</td><td>Alias operativo</td><td>Uso telefónico</td><td>95%</td></tr></tbody></table></div></div></div><div class="dashboard-card double-bezel col-span-6"><div class="inner-core"><h2>OSINT: Brechas Externas</h2><p class="helper-text-mono">Consulta controlada de fuentes externas configuradas.</p><button class="btn btn-secondary-tactical" type="button" id="btn-cargar-brechas">Consultar brechas</button><div class="table-wrap" style="margin-top: 16px;"><table><thead><tr><th>Nombre</th><th>Dominio</th><th>Fecha</th><th>Afectados</th></tr></thead><tbody id="brechas-body"><tr><td colspan="4">Sin consulta ejecutada.</td></tr></tbody></table></div></div></div></div></section>
 
-          <div class="tabs-tactical-header">
-            <button class="tab-btn active" data-tab="tab-personas">Personas</button>
-            <button class="tab-btn" data-tab="tab-telefonos">Teléfonos</button>
-            <button class="tab-btn" data-tab="tab-alias">Alias</button>
-            <button class="tab-btn" data-tab="tab-ubicaciones">Ubicaciones</button>
-            <button class="tab-btn" data-tab="tab-organizaciones">Organizaciones</button>
-            <button class="tab-btn" data-tab="tab-vehiculos">Vehículos</button>
-            <button class="tab-btn" data-tab="tab-cuentas">Cuentas</button>
-          </div>
+        <section class="panel-section" id="panel-hallazgos"><div class="section-header-tactical"><h2>Hallazgos de Inteligencia</h2><p>Registro de hallazgos relevantes para análisis operacional.</p></div><div class="dashboard-card double-bezel"><div class="inner-core"><div class="hallazgos-mini-list"><div class="hallazgo-mini-item"><strong>Red extorsiva activa</strong><p>Patrón detectado mediante correlación de datos operativos y reportes registrados.</p><span class="badge-status-table info">Activo</span></div><div class="hallazgo-mini-item"><strong>Alias asociado a múltiples casos</strong><p>Se identificó coincidencia de alias en registros internos y reportes recientes.</p><span class="badge-status-table warning">En análisis</span></div></div></div></div></section>
 
-          <div class="tabs-tactical-content">
-            <!-- PERSONAS -->
-            <div class="tab-panel active" id="tab-personas">
-              <div class="dashboard-card double-bezel">
-                <div class="inner-core">
-                  <div class="table-wrap">
-                    <table>
-                      <thead>
-                        <tr>
-                          <th>Nombre completo</th>
-                          <th>Identificación</th>
-                          <th>Rol de Caso</th>
-                          <th>Casos Vinculados</th>
-                        </tr>
-                      </thead>
-                      <tbody id="entities-personas-body">
-                        <!-- Carga dinámica -->
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
-              </div>
-            </div>
+        <section class="panel-section" id="panel-grafo"><div class="section-header-tactical"><h2>Grafo de Relaciones</h2><p>Representación visual de vínculos entre entidades, teléfonos, cuentas y casos.</p></div><div class="dashboard-card double-bezel"><div class="inner-core"><h2>Grafo Operacional</h2><p class="helper-text-mono">Módulo preparado para visualización con vis-network.</p><div id="grafo-canvas" style="height: 420px;"></div></div></div></section>
 
-            <!-- TELÉFONOS -->
-            <div class="tab-panel" id="tab-telefonos">
-              <div class="dashboard-card double-bezel">
-                <div class="inner-core">
-                  <div class="table-wrap">
-                    <table>
-                      <thead>
-                        <tr>
-                          <th>Número de Línea</th>
-                          <th>Operador</th>
-                          <th>Tipo de Uso</th>
-                          <th>Casos Vinculados</th>
-                        </tr>
-                      </thead>
-                      <tbody id="entities-telefonos-body">
-                        <!-- Carga dinámica -->
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
-              </div>
-            </div>
+        <section class="panel-section" id="panel-etl"><div class="section-header-tactical"><h2>Motor ETL y Correlación</h2><p>Estado de procesamiento de datos entre captura, base transaccional, data warehouse y dashboard.</p></div><div class="dashboard-card double-bezel"><div class="inner-core"><h2>Estado del Pipeline</h2><div class="etl-pipeline-flow"><div class="etl-flow-line"></div><div class="etl-stage-step ok"><div class="etl-step-number">1</div><div class="etl-step-card double-bezel"><div class="inner-core"><h4>Captura / Línea 147</h4><div class="etl-step-info"><span>Registros recibidos</span><span>100%</span></div><div class="etl-step-progress-bar"><div class="etl-step-fill" style="transform: scaleX(1);"></div></div></div></div></div><div class="etl-stage-step warning"><div class="etl-step-number">2</div><div class="etl-step-card double-bezel"><div class="inner-core"><h4>Correlación de Inteligencia</h4><div class="etl-step-info"><span>Proceso demostrativo</span><span>60%</span></div><div class="etl-step-progress-bar"><div class="etl-step-fill" style="transform: scaleX(.6);"></div></div></div></div></div></div></div></div></section>
 
-            <!-- ALIAS -->
-            <div class="tab-panel" id="tab-alias">
-              <div class="dashboard-card double-bezel">
-                <div class="inner-core">
-                  <div class="table-wrap">
-                    <table>
-                      <thead>
-                        <tr>
-                          <th>Alias / Seudónimo</th>
-                          <th>Descripción de Perfil</th>
-                          <th>Casos Vinculados</th>
-                        </tr>
-                      </thead>
-                      <tbody id="entities-alias-body">
-                        <!-- Carga dinámica -->
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
-              </div>
-            </div>
+        <section class="panel-section" id="panel-datamart"><div class="section-header-tactical"><h2>Data Mart IA</h2><p>Vista ejecutiva de indicadores agregados para apoyo a la toma de decisiones.</p></div><div class="dm-kpi-row"><div class="dm-kpi-card double-bezel"><div class="inner-core"><span>Casos registrados</span><strong id="dm-casos">0</strong></div></div><div class="dm-kpi-card double-bezel"><div class="inner-core"><span>Prioridad crítica</span><strong id="dm-criticos">0</strong></div></div><div class="dm-kpi-card double-bezel"><div class="inner-core"><span>Alertas OSINT</span><strong id="dm-alertas">0</strong></div></div></div></section>
 
-            <!-- UBICACIONES -->
-            <div class="tab-panel" id="tab-ubicaciones">
-              <div class="dashboard-card double-bezel">
-                <div class="inner-core">
-                  <div class="table-wrap">
-                    <table>
-                      <thead>
-                        <tr>
-                          <th>Lugar / Región</th>
-                          <th>Coordenadas</th>
-                          <th>Tipo de Zona</th>
-                          <th>Casos Vinculados</th>
-                        </tr>
-                      </thead>
-                      <tbody id="entities-ubicaciones-body">
-                        <!-- Carga dinámica -->
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
-              </div>
-            </div>
+        <section class="panel-section" id="panel-dashboard"><div class="section-header-tactical"><h2>Dashboard Ejecutivo</h2><p>Indicadores generales para dirección, análisis de operación y seguimiento de estados.</p></div><div class="analitica-summary-grid"><div class="summary-card double-bezel"><div class="inner-core"><h4>Casos activos</h4><strong id="kpi-casos-activos">0</strong><span>Casos no cerrados</span></div></div><div class="summary-card double-bezel"><div class="inner-core"><h4>Casos críticos</h4><strong id="kpi-casos-criticos">0</strong><span>Prioridad crítica</span></div></div><div class="summary-card double-bezel"><div class="inner-core"><h4>GAULAs conectados</h4><strong>34</strong><span>Cobertura demostrativa</span></div></div></div></section>
 
-            <!-- ORGANIZACIONES -->
-            <div class="tab-panel" id="tab-organizaciones">
-              <div class="dashboard-card double-bezel">
-                <div class="inner-core">
-                  <div class="table-wrap">
-                    <table>
-                      <thead>
-                        <tr>
-                          <th>Organización</th>
-                          <th>Tipo</th>
-                          <th>Estado</th>
-                          <th>Descripción</th>
-                        </tr>
-                      </thead>
-                      <tbody id="entities-organizaciones-body">
-                        <!-- Carga dinámica -->
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
-              </div>
-            </div>
+        <section class="panel-section" id="panel-administracion"><div class="section-header-tactical"><h2>Administración del Sistema</h2><p>Control de usuarios, auditoría, conexión de bases y reglas de acceso.</p></div><div class="dashboard-card double-bezel"><div class="inner-core"><h2>Estado de Bases de Datos</h2><div class="db-status-bar"><div class="db-status-item"><span class="status-indicator-green"></span><span>nexo147.db</span></div><div class="db-status-item"><span class="status-indicator-green"></span><span>intel.db</span></div><div class="db-status-item"><span class="status-indicator-green"></span><span>osint.db</span></div></div></div></div></section>
 
-            <!-- VEHÍCULOS -->
-            <div class="tab-panel" id="tab-vehiculos">
-              <div class="dashboard-card double-bezel">
-                <div class="inner-core">
-                  <div class="table-wrap">
-                    <table>
-                      <thead>
-                        <tr>
-                          <th>Placa</th>
-                          <th>Tipo / Marca</th>
-                          <th>Año</th>
-                          <th>Color</th>
-                        </tr>
-                      </thead>
-                      <tbody id="entities-vehiculos-body">
-                        <!-- Carga dinámica -->
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <!-- CUENTAS BANCARIAS -->
-            <div class="tab-panel" id="tab-cuentas">
-              <div class="dashboard-card double-bezel">
-                <div class="inner-core">
-                  <div class="table-wrap">
-                    <table>
-                      <thead>
-                        <tr>
-                          <th>Número</th>
-                          <th>Entidad</th>
-                          <th>Tipo</th>
-                          <th>Titular Declarado</th>
-                        </tr>
-                      </thead>
-                      <tbody id="entities-cuentas-body">
-                        <!-- Carga dinámica -->
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-
-        <!-- PANEL CORRELACIONES E OSINT (INTELIGENCIA TÁCTICA) -->
-        <section class="panel-section" id="panel-inteligencia">
-          <div class="section-header-tactical">
-            <h2>Correlaciones de Redes Extorsivas y OSINT</h2>
-            <p>Visualización de enlaces entre delincuentes y verificación de brechas de seguridad externa en tiempo real.</p>
-          </div>
-
-          <div class="dashboard-grid">
-            <!-- Simulación de Redes de Enlace -->
-            <div class="dashboard-card double-bezel col-span-6">
-              <div class="inner-core">
-                <h3>Relaciones Detectadas por Correlación Cruzada</h3>
-                <p class="helper-text-mono">Algoritmo de vinculación telefónica y alias:</p>
-                <div class="table-wrap">
-                  <table>
-                    <thead>
-                      <tr>
-                        <th>Origen</th>
-                        <th>Destino</th>
-                        <th>Vínculo</th>
-                        <th>Nivel Confianza</th>
-                      </tr>
-                    </thead>
-                    <tbody id="intel-relations-body">
-                      <!-- Carga dinámica -->
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            </div>
-
-            <!-- Módulo OSINT: Brechas externas -->
-            <div class="dashboard-card double-bezel col-span-6">
-              <div class="inner-core">
-                <h3>OSINT: Brechas de Seguridad Ajenas</h3>
-                <p class="helper-text-mono">Verificación externa de filtración de datos de interés:</p>
-                <button class="btn btn-secondary-tactical mb-2" id="btn-load-osint">Escanear Brechas Activas</button>
-                <div class="table-wrap text-small-wrap" style="max-height: 300px; overflow-y: auto;">
-                  <table>
-                    <thead>
-                      <tr>
-                        <th>Nombre</th>
-                        <th>Dominio</th>
-                        <th>Fecha</th>
-                        <th>Expuestos</th>
-                      </tr>
-                    </thead>
-                    <tbody id="intel-osint-body">
-                      <tr>
-                        <td colspan="4" class="text-center">Presione "Escanear" para consultar la base de datos externa.</td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-
-        <!-- PANEL HALLAZGOS INTEL + OSINT INDICADORES -->
-        <section class="panel-section" id="panel-hallazgos">
-          <div class="section-header-tactical">
-            <h2>Hallazgos de Inteligencia y Riesgo OSINT</h2>
-            <p>Findings catalogados del análisis cruzado entre intel.db, osint.db y nexo147. Datos clasificados según nivel de acceso del operador.</p>
-          </div>
-          <div class="dashboard-grid">
-            <div class="dashboard-card double-bezel col-span-8">
-              <div class="inner-core">
-                <h2>Hallazgos Registrados: HallazgoIntel</h2>
-                <div class="table-wrap">
-                  <table id="table-hallazgos">
-                    <thead>
-                      <tr>
-                        <th>Título / Descripción</th>
-                        <th>Clasificación</th>
-                        <th>Estado</th>
-                        <th>Fecha</th>
-                      </tr>
-                    </thead>
-                    <tbody id="hallazgos-body">
-                      <tr><td colspan="4" class="text-center helper-text-mono">Cargando hallazgos...</td></tr>
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            </div>
-            <div class="dashboard-card double-bezel col-span-4">
-              <div class="inner-core">
-                <h3>Indicadores OSINT Activos</h3>
-                <div id="indicadores-osint-list" class="indicadores-list">
-                  <div class="helper-text-mono text-center">Cargando indicadores...</div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-
-        <!-- PANEL GRAFO DE RELACIONES (DATA WAREHOUSE INTEL) -->
-        <section class="panel-section" id="panel-grafo">
-          <div class="section-header-tactical">
-            <h2>Grafo de Relaciones: Data Warehouse Intel</h2>
-            <p>Nodos (IntelNode) y aristas (IntelEdge) del motor de correlación cruzada. Vínculos detectados por el Motor ETL entre entidades de intel.db.</p>
-          </div>
-          <div class="dashboard-grid">
-            <div class="dashboard-card double-bezel col-span-12">
-              <div class="inner-core">
-                <div class="graph-toolbar" style="margin-bottom: 15px; display: flex; gap: 10px; flex-wrap: wrap; align-items: center;">
-                  <span class="helper-text-mono" style="margin: 0;">Filtro de Riesgo:</span>
-                  <select id="graph-filter-risk" class="select-tactical" style="padding: 6px 12px; border-radius: 6px; font-size: 12px;">
-                    <option value="todos">Todos los Nodos</option>
-                    <option value="critico-alto">Crítico & Alto</option>
-                    <option value="critico">Solo Crítico</option>
-                  </select>
-                  
-                  <span class="helper-text-mono" style="margin: 0; margin-left: 10px;">Agrupar:</span>
-                  <button id="btn-cluster-type" class="btn btn-secondary-tactical" style="padding: 6px 12px; font-size: 12px; border-radius: 6px;">Agrupar por Tipo</button>
-                  <button id="btn-uncluster" class="btn btn-secondary-tactical" style="padding: 6px 12px; font-size: 12px; border-radius: 6px; display: none;">Desagrupar</button>
-                </div>
-                
-                <div class="graph-layout-container" style="display: flex; gap: 20px; height: 500px;">
-                  <!-- Contenedor del Grafo -->
-                  <div id="grafo-canvas" style="flex: 1; height: 100%; background-color: rgba(4, 13, 25, 0.4); border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.08); position: relative; padding: 12px;">
-                    <div id="grafo-loading" style="position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; background: rgba(7, 8, 12, 0.8); z-index: 10; font-family: var(--font-mono); color: var(--accent-cyan);">Cargando Grafo Interactivo...</div>
-                  </div>
-                  
-                  <!-- Panel Lateral de Detalles -->
-                  <div id="grafo-detail-sidebar" class="double-bezel" style="width: 320px; height: 100%; display: flex; flex-direction: column;">
-                    <div class="inner-core" style="padding: 16px; display: flex; flex-direction: column; height: 100%; overflow-y: auto;">
-                       <h2 style="font-size: 18px; margin-bottom: 12px; border-left: 2px solid var(--accent-cyan); padding-left: 8px;">Detalle de Selección</h2>
-                      <div id="grafo-detail-content" style="flex: 1; display: flex; flex-direction: column; justify-content: center; text-align: center; color: var(--text-muted); font-size: 12px;">
-                        Seleccione un nodo o un grupo (cluster) para ver su ficha técnica detallada.
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            
-            <div class="dashboard-card double-bezel col-span-12">
-              <div class="inner-core">
-                <h2>Estadísticas del Grafo de Relaciones</h2>
-                <div id="grafo-stats-container" class="kpi-grid" style="margin-top: 0;"></div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-
-        <!-- PANEL MOTOR ETL Y CORRELACIÓN -->
-        <section class="panel-section" id="panel-etl">
-          <div class="section-header-tactical">
-            <h2>Trazabilidad de Investigaciones y Avance de Casos</h2>
-            <p>Monitoreo del ciclo de vida y avance operacional de cada caso registrado en la Línea 147.</p>
-          </div>
-          
-          <div class="dashboard-grid">
-            <div class="dashboard-card double-bezel col-span-12">
-              <div class="inner-core">
-                <div style="display: flex; gap: 15px; align-items: center; margin-bottom: 20px; flex-wrap: wrap;">
-                  <span class="helper-text-mono" style="margin:0;">Seleccionar Caso:</span>
-                  <select id="etl-case-selector" class="select-tactical" style="padding: 8px 16px; border-radius: 8px; min-width: 250px; font-family: var(--font-mono);">
-                    <!-- Carga dinámica de casos -->
-                  </select>
-                  <button id="btn-refresh-trazabilidad" class="btn btn-secondary-tactical" style="padding: 8px 16px; border-radius: 8px;">↻ Recargar Datos</button>
-                </div>
-                
-                <!-- Contenedor del Flow de Trazabilidad Horizontal -->
-                <div class="timeline-wrapper" style="padding: 40px 10px; overflow-x: auto; background-color: rgba(4,13,25,0.4); border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.08); margin-bottom: 25px;">
-                             <!-- Contexto del Caso (Izquierda) -->
-                    <div class="timeline-context" style="width: 180px; flex-shrink: 0; padding: 10px 20px 10px 0; border-right: 1px solid rgba(255,255,255,0.1);">
-                      <h3 id="timeline-case-code" style="font-size: 28px; font-weight: 800; color: #fff; margin-bottom: 4px;">CASE-0000</h3>
-                      <p id="timeline-case-gaula" style="font-size: 12px; color: var(--text-muted); margin-bottom: 8px;">GAULA Militar</p>
-                      <span id="timeline-case-status" class="badge-status-table info">RECIBIDO</span>
-                    </div>
-                    
-                    <!-- Línea y Pasos de la Línea de Tiempo -->
-                    <div class="timeline-steps" style="display: flex; flex: 1; justify-content: space-between; position: relative; padding: 10px 40px;">
-                      
-                      <!-- Línea de Conexión Gris de Fondo -->
-                      <div class="timeline-line-bg" style="position: absolute; top: 42px; left: 50px; right: 50px; height: 3px; background-color: rgba(255,255,255,0.1); z-index: 1;"></div>
-                      
-                      <!-- Línea de Progreso Activo -->
-                      <div id="timeline-line-progress" style="position: absolute; top: 42px; left: 50px; width: calc(100% - 100px); height: 3px; background-color: var(--accent-cyan); transform-origin: left; transform: scaleX(0); transition: transform 0.8s ease; z-index: 2;"></div>
-                      
-                      <!-- Paso 1: Inicio -->
-                      <div class="timeline-step active" data-step="1" style="position: relative; z-index: 3; display: flex; flex-direction: column; align-items: center; width: 120px;">
-                        <span style="font-size: 12px; font-family: var(--font-mono); color: var(--text-muted); text-align: center; height: 30px; display: flex; align-items: flex-end; justify-content: center; margin-bottom: 10px;">Inicio del Caso<br>Línea 147</span>
-                        <div class="step-circle" style="width: 44px; height: 44px; border-radius: 50%; background-color: var(--bg-deep); border: 2px solid var(--accent-cyan); display: flex; align-items: center; justify-content: center; color: var(--accent-cyan); cursor: pointer; transition: all 0.3s ease;">
-                          <i data-lucide="phone-call" style="width: 18px; height: 18px;"></i>
-                        </div>
-                      </div>
-                      
-                      <!-- Paso 2: Recolección de información inicial -->
-                      <div class="timeline-step" data-step="2" style="position: relative; z-index: 3; display: flex; flex-direction: column; align-items: center; width: 120px;">
-                        <span style="font-size: 12px; font-family: var(--font-mono); color: var(--text-muted); text-align: center; height: 30px; display: flex; align-items: flex-end; justify-content: center; margin-bottom: 10px;">Recolección de<br>info inicial</span>
-                        <div class="step-circle" style="width: 44px; height: 44px; border-radius: 50%; background-color: var(--bg-deep); border: 2px solid rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center; color: var(--text-muted); cursor: pointer; transition: all 0.3s ease;">
-                          <i data-lucide="clipboard-list" style="width: 18px; height: 18px;"></i>
-                        </div>
-                      </div>
-                      
-                      <!-- Paso 3: Investigación inteligencia -->
-                      <div class="timeline-step" data-step="3" style="position: relative; z-index: 3; display: flex; flex-direction: column; align-items: center; width: 120px;">
-                        <span style="font-size: 12px; font-family: var(--font-mono); color: var(--text-muted); text-align: center; height: 30px; display: flex; align-items: flex-end; justify-content: center; margin-bottom: 10px;">Investigación<br>Inteligencia</span>
-                        <div class="step-circle" style="width: 44px; height: 44px; border-radius: 50%; background-color: var(--bg-deep); border: 2px solid rgba(255, 255, 255, 0.2); display: flex; align-items: center; justify-content: center; color: var(--text-muted); cursor: pointer; transition: all 0.3s ease;">
-                          <i data-lucide="user-search" style="width: 18px; height: 18px;"></i>
-                        </div>
-                      </div>
-                      
-                      <!-- Paso 4: Operaciones en campo -->
-                      <div class="timeline-step" data-step="4" style="position: relative; z-index: 3; display: flex; flex-direction: column; align-items: center; width: 120px;">
-                        <span style="font-size: 12px; font-family: var(--font-mono); color: var(--text-muted); text-align: center; height: 30px; display: flex; align-items: flex-end; justify-content: center; margin-bottom: 10px;">Operaciones<br>en campo</span>
-                        <div class="step-circle" style="width: 44px; height: 44px; border-radius: 50%; background-color: var(--bg-deep); border: 2px solid rgba(255, 255, 255, 0.2); display: flex; align-items: center; justify-content: center; color: var(--text-muted); cursor: pointer; transition: all 0.3s ease;">
-                          <i data-lucide="map-pin" style="width: 18px; height: 18px;"></i>
-                        </div>
-                      </div>
-                      
-                      <!-- Paso 5: Autoridades aliadas -->
-                      <div class="timeline-step" data-step="5" style="position: relative; z-index: 3; display: flex; flex-direction: column; align-items: center; width: 120px;">
-                        <span style="font-size: 12px; font-family: var(--font-mono); color: var(--text-muted); text-align: center; height: 30px; display: flex; align-items: flex-end; justify-content: center; margin-bottom: 10px;">Autoridades<br>aliadas / Cierre</span>
-                        <div class="step-circle" style="width: 44px; height: 44px; border-radius: 50%; background-color: var(--bg-deep); border: 2px solid rgba(255, 255, 255, 0.2); display: flex; align-items: center; justify-content: center; color: var(--text-muted); cursor: pointer; transition: all 0.3s ease;">
-                          <i data-lucide="shield" style="width: 18px; height: 18px;"></i>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                
-                <!-- Panel de Detalles de la Tapa Seleccionada -->
-                <div id="timeline-step-detail-card" class="double-bezel" style="margin-top: 20px;">
-                  <div class="inner-core" style="padding: 20px;">
-                    <h2 id="timeline-detail-title" style="font-size: 18px; margin-bottom: 8px; color: var(--accent-cyan); border-left: none; padding-left: 0;">Inicio del Caso Línea 147</h2>
-                    <p id="timeline-detail-desc" style="font-size: 12px; color: var(--text-muted); line-height: 1.5; margin-bottom: 15px;">El caso ha sido reportado en la línea telefónica nacional 147 y los datos del reportante han sido capturados.</p>
-                    
-                    <div style="border-top: 1px solid rgba(255,255,255,0.06); padding-top: 15px;">
-                      <span class="helper-text-mono" style="display: block; margin-bottom: 8px;">Detalles Operacionales del Caso:</span>
-                      <div class="table-wrap">
-                        <table style="width: 100%; font-size: 12px;">
-                          <tbody id="timeline-detail-table-body">
-                            <!-- Datos del caso cargados vía JS -->
-                          </tbody>
-                        </table>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                
-              </div>
-            </div>
-          </div>
-        </section>
-
-
-        <!-- PANEL DATA MART IA / GIS / ANALÍTICA -->
-        <section class="panel-section" id="panel-datamart">
-          <div class="section-header-tactical">
-            <h2>Data Mart de Inteligencia: IA / GIS / Analítica</h2>
-            <p>Visualización estratégica consolidada para soporte a la toma de decisiones operacionales GAULA. Datos sincronizados desde las tres bases de datos.</p>
-          </div>
-          <div class="tabs-tactical-header" id="datamart-tabs">
-            <button class="tab-btn active" data-tab="tab-dm-ia">Dashboard IA</button>
-            <button class="tab-btn" data-tab="tab-dm-gis">GIS / Georreferenciación</button>
-            <button class="tab-btn" data-tab="tab-dm-analitica">Analítica</button>
-          </div>
-          <div class="tabs-tactical-content">
-            <!-- DASHBOARD IA -->
-            <div class="tab-panel active" id="tab-dm-ia">
-              <div class="dashboard-grid">
-                <div class="dashboard-card double-bezel col-span-12">
-                  <div class="inner-core">
-                    <h3>Indicadores de Inteligencia Operacional</h3>
-                    <div class="dm-kpi-row" id="dm-ia-kpis"></div>
-                  </div>
-                </div>
-                <div class="dashboard-card double-bezel col-span-6">
-                  <div class="inner-core">
-                    <h3>Distribución de Riesgo por Entidad</h3>
-                    <div id="dm-risk-distribution" class="distribution-bars-container dm-chart-area"></div>
-                  </div>
-                </div>
-                <div class="dashboard-card double-bezel col-span-6">
-                  <div class="inner-core">
-                    <h3>Hallazgos Recientes</h3>
-                    <div id="dm-recent-hallazgos" class="hallazgos-mini-list"></div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <!-- GIS -->
-            <div class="tab-panel" id="tab-dm-gis">
-              <div class="dashboard-grid">
-                <div class="dashboard-card double-bezel col-span-12">
-                  <div class="inner-core">
-                    <h2>Georreferenciación Táctica de Entidades: intel.db</h2>
-                    <div class="map-grid-console gis-enhanced">
-                      <div class="map-grid-lines"></div>
-                      <div class="map-target z1">BOGOTÁ</div>
-                      <div class="map-target z2">ANTIOQUIA</div>
-                      <div class="map-target z3">VALLE DEL CAUCA</div>
-                      <div class="map-target z4">META</div>
-                      <div class="map-pulse-c c1"></div>
-                      <div class="map-pulse-c c2"></div>
-                      <div class="map-pulse-c c3"></div>
-                      <span class="map-disclaimer">NEXO-147 GIS: Ubicaciones de interés operacional desde intel.db: Coordenadas georreferenciadas.</span>
-                    </div>
-                  </div>
-                </div>
-                <div class="dashboard-card double-bezel col-span-12">
-                  <div class="inner-core">
-                    <h3>Tabla de Ubicaciones Registradas</h3>
-                    <div class="table-wrap">
-                      <table>
-                        <thead><tr><th>Descripción</th><th>Latitud</th><th>Longitud</th><th>Fuente</th><th>Fecha Captura</th></tr></thead>
-                        <tbody id="gis-table-body"><tr><td colspan="5" class="text-center">Sin ubicaciones registradas.</td></tr></tbody>
-                      </table>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <!-- ANALÍTICA -->
-            <div class="tab-panel" id="tab-dm-analitica">
-              <div class="dashboard-grid">
-                <div class="dashboard-card double-bezel col-span-6">
-                  <div class="inner-core">
-                    <h3>Distribución de Casos por Tipología</h3>
-                    <div id="analitica-tipos-chart" class="distribution-bars-container"></div>
-                  </div>
-                </div>
-                <div class="dashboard-card double-bezel col-span-6">
-                  <div class="inner-core">
-                    <h3>Tipos de Indicadores OSINT</h3>
-                    <div id="analitica-osint-chart" class="distribution-bars-container"></div>
-                  </div>
-                </div>
-                <div class="dashboard-card double-bezel col-span-12">
-                  <div class="inner-core">
-                    <h3>Resumen Ejecutivo del Data Mart</h3>
-                    <div id="analitica-summary" class="analitica-summary-grid"></div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-
-        <!-- PANEL DASHBOARD EJECUTIVO (DIRECTOR / ADMIN) -->
-        <section class="panel-section" id="panel-dashboard">
-          <div class="section-header-tactical">
-            <h2>Centro de Mando Operacional - Estadísticas</h2>
-            <p>KPIs consolidados para la toma de decisiones estratégicas a nivel nacional.</p>
-          </div>
-
-          <div class="kpi-grid">
-            <article class="kpi-card double-bezel">
-              <div class="inner-core">
-                <span>Casos Activos</span>
-                <strong id="kpi-active-cases">48</strong>
-              </div>
-            </article>
-            <article class="kpi-card double-bezel alert-kpi">
-              <div class="inner-core">
-                <span>Casos Críticos</span>
-                <strong id="kpi-critical-cases">12</strong>
-              </div>
-            </article>
-            <article class="kpi-card double-bezel">
-              <div class="inner-core">
-                <span>GAULAs Conectados</span>
-                <strong>34</strong>
-              </div>
-            </article>
-            <article class="kpi-card double-bezel">
-              <div class="inner-core">
-                <span>Respuesta Promedio</span>
-                <strong>08m</strong>
-              </div>
-            </article>
-          </div>
-
-          <div class="dashboard-grid">
-            <!-- Gráfica Tipo Reporte -->
-            <div class="dashboard-card double-bezel col-span-6">
-              <div class="inner-core">
-                <h3>Tipología de Delito - Distribución</h3>
-                <div class="distribution-bars-container" id="kpi-distribution-bars">
-                  <!-- Se inyecta dinámicamente -->
-                </div>
-              </div>
-            </div>
-
-            <!-- Radar Tactico -->
-            <div class="dashboard-card double-bezel col-span-6">
-              <div class="inner-core flex-center">
-                <h3>Radar de Criticidad Activo</h3>
-                <div class="radar-box-tactical">
-                  <div class="radar-circle r1"></div>
-                  <div class="radar-circle r2"></div>
-                  <div class="radar-circle r3"></div>
-                  <div class="radar-sweep"></div>
-                  <div class="radar-dot d1"></div>
-                  <div class="radar-dot d2"></div>
-                  <div class="radar-dot d3"></div>
-                  <div class="radar-center">147</div>
-                </div>
-              </div>
-            </div>
-
-            <!-- Mapa Nacional -->
-            <div class="dashboard-card double-bezel col-span-12">
-              <div class="inner-core">
-                <h3>Georreferenciación Operacional (Proyección de Mapa Nacional)</h3>
-                <div class="map-grid-console">
-                  <div class="map-grid-lines"></div>
-                  <div class="map-target z1">BOGOTÁ</div>
-                  <div class="map-target z2">ANTIOQUIA</div>
-                  <div class="map-target z3">VALLE DEL CAUCA</div>
-                  <div class="map-target z4">META</div>
-                  
-                  <div class="map-pulse-c c1"></div>
-                  <div class="map-pulse-c c2"></div>
-                  <div class="map-pulse-c c3"></div>
-                  
-                  <span class="map-disclaimer">NEXO-147: Visualización táctica de nodos GAULA activos y alertas reportadas.</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-
-        <!-- PANEL ADMINISTRACIÓN (SOLO ADMIN) -->
-        <section class="panel-section" id="panel-administracion">
-          <div class="section-header-tactical">
-            <h2>Módulo Administrativo y Auditoría del Sistema</h2>
-            <p>Supervisión de accesos, estados de red e integraciones activas.</p>
-          </div>
-
-          <div class="dashboard-grid">
-            <div class="dashboard-card double-bezel col-span-12">
-              <div class="inner-core">
-                <h3>Auditoría de Actividad e Integración Base de Datos</h3>
-                <p class="helper-text-mono">Conexión con SQLAlchemy binds (intel.db, osint.db, nexo147.db):</p>
-                <div class="db-status-bar">
-                  <div class="db-status-item">
-                    <span class="status-indicator-green"></span>
-                    <span>Database: <strong>nexo147.db</strong> (Online)</span>
-                  </div>
-                  <div class="db-status-item">
-                    <span class="status-indicator-green"></span>
-                    <span>Database: <strong>intel.db</strong> (Online)</span>
-                  </div>
-                  <div class="db-status-item">
-                    <span class="status-indicator-green"></span>
-                    <span>Database: <strong>osint.db</strong> (Online)</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <!-- PANEL CONFIGURACIÓN -->
-        <section class="panel-section" id="panel-configuracion">
-          <div class="section-header-tactical">
-            <h2>Configuraciones de Usuario y Preferencias del Sistema</h2>
-            <p>Administre sus configuraciones locales, temas de visualización e identidad.</p>
-          </div>
-
-          <div class="dashboard-card double-bezel">
-            <div class="inner-core">
-              <h3>Información del Agente</h3>
-              <p><strong>Identificador:</strong> <span class="helper-text-mono">{{ session.get("user") }}</span></p>
-              <p><strong>Nombre Completo:</strong> <span>{{ session.get("name") }}</span></p>
-              <p><strong>Rol en el Sistema:</strong> <span class="badge">{{ session.get("role") }}</span></p>
-              <hr class="divider-light">
-              <h3>Ajustes de Interfaz</h3>
-              <div class="form-group-checkbox">
-                <input type="checkbox" id="pref-sounds" checked>
-                <label for="pref-sounds">Habilitar alarmas audibles para casos Críticos</label>
-              </div>
-              <div class="form-group-checkbox">
-                <input type="checkbox" id="pref-reload" checked>
-                <label for="pref-reload">Auto-recargar bandeja de casos en segundo plano (30s)</label>
-              </div>
-            </div>
-          </div>
-        </section>
-
+        <section class="panel-section" id="panel-configuracion"><div class="section-header-tactical"><h2>Configuración Operativa</h2><p>Parámetros generales de visualización y comportamiento de la demo.</p></div><div class="dashboard-card double-bezel"><div class="inner-core"><h2>Preferencias del Módulo</h2><div class="form-group-checkbox"><input type="checkbox" checked disabled><label>Modo demo privado activo</label></div><div class="form-group-checkbox"><input type="checkbox" checked disabled><label>Consulta controlada del chatbot</label></div><div class="form-group-checkbox"><input type="checkbox" checked disabled><label>Roles y permisos aplicados por sesión</label></div></div></div></section>
       </main>
 
-      <!-- STATUS BAR INFERIOR -->
       <footer class="console-statusbar">
-        <div class="statusbar-left">
-          <span class="system-status-indicator"><span class="pulse-green"></span> SISTEMA NOMINAL</span>
-          <span class="separator">|</span>
-          <span>NODO: GAULA COLOMBIA</span>
-          <span class="separator">|</span>
-          <span>ROUTING BIND: SQLITE</span>
-        </div>
-        <div class="statusbar-right">
-          <span>SECURE SEC: SHA256</span>
-          <span class="separator">|</span>
-          <span>V.2.1.0-DEMO</span>
-        </div>
+        <div class="statusbar-left"><span class="system-status-indicator"><span class="pulse-green"></span>SISTEMA NOMINAL</span><span class="separator">|</span><span>NODO: GAULA COLOMBIA</span></div>
+        <div class="statusbar-right"><span>ROUTING BIND: SQLITE</span><span class="separator">|</span><span>SEC: SHA256</span><span class="separator">|</span><span>V.2.1.0-DEMO</span></div>
       </footer>
-
     </div>
   </div>
 
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script src="{{ url_for('static', filename='console.js') }}"></script>
-  <script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+  <script src="{{ url_for('static', filename='scripts.js') }}"></script>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      if (window.lucide) {
+        lucide.createIcons();
+      }
+
+      const navItems = document.querySelectorAll(".nav-item[data-panel]");
+      const panels = document.querySelectorAll(".panel-section");
+      const title = document.getElementById("current-panel-title");
+
+      function openPanel(panelId, label) {
+        panels.forEach(panel => panel.classList.remove("active"));
+        const target = document.getElementById(panelId);
+        if (target) target.classList.add("active");
+
+        navItems.forEach(item => item.classList.remove("active"));
+        const activeItem = document.querySelector(`.nav-item[data-panel="${panelId}"]`);
+        if (activeItem) activeItem.classList.add("active");
+
+        if (title) title.textContent = label || "Consola Central";
+
+        if (panelId === "panel-casos" || panelId === "panel-dashboard" || panelId === "panel-datamart") {
+          cargarCasosConsola();
+        }
+      }
+
+      navItems.forEach(item => {
+        item.addEventListener("click", function (event) {
+          event.preventDefault();
+          openPanel(item.dataset.panel, item.dataset.title || item.innerText.trim());
+        });
+      });
+
+      document.querySelectorAll("[data-go-panel]").forEach(btn => {
+        btn.addEventListener("click", function () {
+          openPanel(btn.dataset.goPanel, btn.innerText.trim().split("\n")[0]);
+        });
+      });
+
+      function updateTime() {
+        const el = document.getElementById("system-time");
+        if (!el) return;
+        const now = new Date();
+        el.textContent = now.toISOString().replace("T", " ").substring(0, 19) + " UTC";
+      }
+      updateTime();
+      setInterval(updateTime, 1000);
+
+      async function cargarCasosConsola() {
+        const body = document.getElementById("cases-table-body");
+        if (!body) return;
+
+        try {
+          const response = await fetch("/api/casos");
+          const casos = await response.json();
+
+          if (!Array.isArray(casos) || casos.length === 0) {
+            body.innerHTML = '<tr><td colspan="6">No hay casos registrados todavía.</td></tr>';
+            actualizarKPIs([]);
+            return;
+          }
+
+          body.innerHTML = casos.map(caso => `
+            <tr>
+              <td><span class="text-mono">${caso.id_reporte || ""}</span><br><small>${caso.fecha_registro || ""}</small></td>
+              <td>${caso.tipo_reporte || "Sin tipo"}</td>
+              <td><span class="badge ${caso.prioridad === "Crítica" ? "alert-kpi" : ""}">${caso.prioridad || "Sin prioridad"}</span></td>
+              <td>${caso.unidad_gaula || "Sin unidad"}</td>
+              <td><span class="badge-status-table info">${caso.estado || "Sin estado"}</span></td>
+              <td>${caso.usuario_registro || ""}</td>
+            </tr>
+          `).join("");
+
+          actualizarKPIs(casos);
+        } catch (error) {
+          console.error("Error cargando casos:", error);
+          body.innerHTML = '<tr><td colspan="6">Error cargando casos registrados.</td></tr>';
+        }
+      }
+
+      function actualizarKPIs(casos) {
+        const activos = casos.filter(c => (c.estado || "").toLowerCase() !== "cerrado").length;
+        const criticos = casos.filter(c => (c.prioridad || "").toLowerCase() === "crítica" || (c.prioridad || "").toLowerCase() === "critica").length;
+
+        const kpiActivos = document.getElementById("kpi-casos-activos");
+        const kpiCriticos = document.getElementById("kpi-casos-criticos");
+        const dmCasos = document.getElementById("dm-casos");
+        const dmCriticos = document.getElementById("dm-criticos");
+        const alertCount = document.getElementById("alert-count-val");
+
+        if (kpiActivos) kpiActivos.textContent = activos;
+        if (kpiCriticos) kpiCriticos.textContent = criticos;
+        if (dmCasos) dmCasos.textContent = casos.length;
+        if (dmCriticos) dmCriticos.textContent = criticos;
+        if (alertCount) alertCount.textContent = criticos;
+      }
+
+      const btnBrechas = document.getElementById("btn-cargar-brechas");
+      if (btnBrechas) {
+        btnBrechas.addEventListener("click", async function () {
+          const body = document.getElementById("brechas-body");
+          body.innerHTML = '<tr><td colspan="4">Consultando...</td></tr>';
+          try {
+            const response = await fetch("/api/osint/brechas");
+            const data = await response.json();
+            body.innerHTML = data.slice(0, 10).map(b => `<tr><td>${b.Nombre || ""}</td><td>${b.Dominio || ""}</td><td>${b.Fecha || ""}</td><td>${b.Cantidad_afectados || ""}</td></tr>`).join("");
+          } catch (e) {
+            body.innerHTML = '<tr><td colspan="4">Error consultando brechas.</td></tr>';
+          }
+        });
+      }
+
+      cargarCasosConsola();
+    });
+  </script>
 </body>
 </html>
