@@ -1,0 +1,204 @@
+<style>
+.osint-frag{font-family:'JetBrains Mono',monospace;color:#d0d8e8;font-size:.82rem}
+.osint-frag .result-section{margin-bottom:1.5rem;border-top:1px solid #1e2535;padding-top:1rem}
+.osint-frag .section-title{display:flex;align-items:center;gap:.5rem;font-size:.85rem;font-weight:600;margin-bottom:.75rem;color:#a0b4cc}
+.osint-frag .section-tag{background:#0d1a2e;border:1px solid #2a4060;color:#4bc8a8;padding:2px 8px;border-radius:3px;font-size:.72rem;letter-spacing:.05em}
+.osint-frag .badge{background:#0d1a2e;border:1px solid #2a4060;color:#8ab4cc;padding:1px 7px;border-radius:3px;font-size:.7rem;margin-right:.3rem}
+.osint-frag .badge-x{color:#1DA1F2;border-color:#1a3a5c}
+.osint-frag .badge-tiktok{color:#ff0050;border-color:#5c001a}
+.osint-frag .badge-dork{color:#a855f7;border-color:#3a1a5c}
+.osint-frag .badge-demo{color:#f59e0b;border-color:#5c3a00}
+.osint-frag .data-table{width:100%;border-collapse:collapse;margin-bottom:.75rem}
+.osint-frag .data-table td,.osint-frag .data-table th{padding:4px 8px;border-bottom:1px solid #1e2535;vertical-align:top}
+.osint-frag .data-table th{color:#6b8aaa;font-weight:500;text-align:left;font-size:.75rem}
+.osint-frag .col-key{color:#6b8aaa;width:140px;white-space:nowrap}
+.osint-frag .col-desc{max-width:260px;word-break:break-word}
+.osint-frag .ext-link{color:#4bc8a8;text-decoration:none}
+.osint-frag .ext-link:hover{text-decoration:underline}
+.osint-frag .table-wrap{overflow-x:auto;max-height:280px;overflow-y:auto}
+.osint-frag .error-block{background:#1a0a0a;border:1px solid #5c1a1a;border-radius:4px;padding:.5rem .75rem;margin-bottom:1rem}
+.osint-frag .error-line{color:#f87171;margin:2px 0;font-size:.78rem}
+.osint-frag .profile-card{display:flex;gap:1rem;margin-bottom:.75rem}
+.osint-frag .profile-avatar{width:64px;height:64px;border-radius:4px;object-fit:cover;border:1px solid #2a4060;flex-shrink:0}
+.osint-frag .dork-notice{background:#0a0d1a;border-left:3px solid #4b6ac8;padding:.4rem .75rem;font-size:.77rem;color:#8ab4cc;margin-bottom:.75rem}
+.osint-frag .subsection-title{color:#6b8aaa;font-size:.78rem;font-weight:600;margin:.75rem 0 .4rem;text-transform:uppercase;letter-spacing:.05em}
+.osint-frag .empty-state{text-align:center;padding:2rem;color:#4a5a6a;font-size:.85rem}
+.osint-frag .results-meta{margin-bottom:.5rem;font-size:.77rem;color:#6b8aaa}
+</style>
+
+<div class="osint-frag">
+  <div class="results-meta">
+    Objetivo: <strong>{{ username }}</strong> —
+    Fuente:
+    {% if source == 'github' %}<span class="badge">GitHub</span>
+    {% elif source == 'reddit' %}<span class="badge">Reddit</span>
+    {% elif source == 'facebook' %}<span class="badge">Facebook</span>
+    {% elif source == 'x' %}<span class="badge badge-x">X</span>
+    {% elif source == 'tiktok' %}<span class="badge badge-tiktok">TikTok</span>
+    {% elif source == 'both' %}<span class="badge">GitHub</span><span class="badge">Reddit</span>
+    {% elif source == 'deep_all' %}<span class="badge badge-x">X</span><span class="badge badge-tiktok">TikTok</span><span class="badge">Facebook</span>
+    {% elif source == 'all' %}<span class="badge">GitHub</span><span class="badge">Reddit</span><span class="badge">Facebook</span><span class="badge badge-x">X</span><span class="badge badge-tiktok">TikTok</span>
+    {% endif %}
+  </div>
+
+  {% if errors %}
+  <div class="error-block">
+    {% for err in errors %}<p class="error-line">⚠ {{ err }}</p>{% endfor %}
+  </div>
+  {% endif %}
+
+  {% if github_profile %}
+  <section class="result-section">
+    <h3 class="section-title"><span class="section-tag">GITHUB</span> Perfil</h3>
+    <div class="profile-card">
+      {% if github_profile.avatar_url %}
+      <img src="{{ github_profile.avatar_url }}" alt="avatar" class="profile-avatar">
+      {% endif %}
+      <div>
+        <table class="data-table">
+          <tbody>
+            <tr><td class="col-key">Nombre</td><td>{{ github_profile.name or '—' }}</td></tr>
+            <tr><td class="col-key">Login</td><td>{{ github_profile.login }}</td></tr>
+            <tr><td class="col-key">Correo</td><td>{{ github_profile.email or '—' }}</td></tr>
+            <tr><td class="col-key">Empresa</td><td>{{ github_profile.company or '—' }}</td></tr>
+            <tr><td class="col-key">Ubicación</td><td>{{ github_profile.location or '—' }}</td></tr>
+            <tr><td class="col-key">Bio</td><td>{{ github_profile.bio or '—' }}</td></tr>
+            <tr><td class="col-key">Twitter</td><td>{{ github_profile.twitter_username or '—' }}</td></tr>
+            <tr><td class="col-key">Repos públicos</td><td>{{ github_profile.public_repos }}</td></tr>
+            <tr><td class="col-key">Seguidores</td><td>{{ github_profile.followers }}</td></tr>
+            <tr><td class="col-key">URL</td><td><a href="{{ github_profile.html_url }}" target="_blank" rel="noopener" class="ext-link">{{ github_profile.html_url }}</a></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+  {% endif %}
+
+  {% if github_repos %}
+  <section class="result-section">
+    <h3 class="section-title"><span class="section-tag">GITHUB</span> Repos ({{ github_repos|length }})</h3>
+    <div class="table-wrap">
+      <table class="data-table">
+        <thead><tr><th>Repositorio</th><th>Lenguaje</th><th>Stars</th><th>Actualizado</th></tr></thead>
+        <tbody>
+          {% for repo in github_repos %}
+          <tr>
+            <td><a href="{{ repo.html_url }}" target="_blank" rel="noopener" class="ext-link">{{ repo.name }}</a></td>
+            <td>{{ repo.language or '—' }}</td>
+            <td>{{ repo.stargazers_count }}</td>
+            <td>{{ repo.updated_at[:10] if repo.updated_at else '—' }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </section>
+  {% endif %}
+
+  {% if reddit_profile %}
+  <section class="result-section">
+    <h3 class="section-title"><span class="section-tag">REDDIT</span> Perfil</h3>
+    <table class="data-table">
+      <tbody>
+        <tr><td class="col-key">Username</td><td>{{ reddit_profile.name }}</td></tr>
+        <tr><td class="col-key">Karma (total)</td><td>{{ (reddit_profile.total_karma or 0)|int }}</td></tr>
+        <tr><td class="col-key">Karma (posts)</td><td>{{ (reddit_profile.link_karma or 0)|int }}</td></tr>
+        <tr><td class="col-key">URL</td><td><a href="https://reddit.com/u/{{ reddit_profile.name }}" target="_blank" rel="noopener" class="ext-link">reddit.com/u/{{ reddit_profile.name }}</a></td></tr>
+      </tbody>
+    </table>
+  </section>
+  {% endif %}
+
+  {% if reddit_posts %}
+  <section class="result-section">
+    <h3 class="section-title"><span class="section-tag">REDDIT</span> Posts ({{ reddit_posts|length }})</h3>
+    <div class="table-wrap">
+      <table class="data-table">
+        <thead><tr><th>Título</th><th>Subreddit</th><th>Score</th></tr></thead>
+        <tbody>
+          {% for post in reddit_posts %}
+          <tr>
+            <td><a href="https://reddit.com{{ post.permalink }}" target="_blank" rel="noopener" class="ext-link">{{ post.title[:70] }}{% if post.title|length > 70 %}…{% endif %}</a></td>
+            <td>r/{{ post.subreddit }}</td>
+            <td>{{ post.score }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </section>
+  {% endif %}
+
+  {% if facebook_data %}
+  <section class="result-section">
+    <h3 class="section-title"><span class="section-tag">FACEBOOK</span> Perfil {% if facebook_data.is_mock %}<span class="badge badge-demo">DEMO</span>{% endif %}</h3>
+    {% if facebook_data.intel %}
+    <table class="data-table">
+      <tbody>
+        <tr><td class="col-key">Ubicación</td><td>{{ facebook_data.intel.ubicacion_actual }}</td></tr>
+        <tr><td class="col-key">Trabajo</td><td>{{ facebook_data.intel.trabajo }}</td></tr>
+        <tr><td class="col-key">Educación</td><td>{{ facebook_data.intel.educacion }}</td></tr>
+        <tr><td class="col-key">Bio</td><td>{{ facebook_data.intel.bio }}</td></tr>
+      </tbody>
+    </table>
+    {% endif %}
+    {% if facebook_data.email_hints %}
+    <p style="font-size:.77rem;color:#4bc8a8">Correos detectados: {{ facebook_data.email_hints|join(', ') }}</p>
+    {% endif %}
+    {% if facebook_data.saved_nodes %}<p style="font-size:.75rem;color:#4bc87a">{{ facebook_data.saved_nodes }} nodos guardados en grafo.</p>{% endif %}
+  </section>
+  {% endif %}
+
+  {% if x_data %}
+  <section class="result-section">
+    <h3 class="section-title"><span class="section-tag" style="color:#1DA1F2">X/TWITTER</span> <span class="badge badge-dork">DuckDuckGo Dork</span></h3>
+    <p class="dork-notice">site:x.com "{{ username }}" → {{ x_data.total_found }} perfiles en {{ x_data.raw_count }} resultados.</p>
+    {% if x_data.profiles %}
+    <div class="table-wrap">
+      <table class="data-table">
+        <thead><tr><th>Username</th><th>URL</th><th>Bio</th><th>Confianza</th></tr></thead>
+        <tbody>
+          {% for p in x_data.profiles %}
+          <tr>
+            <td style="color:#1DA1F2">@{{ p.username }}</td>
+            <td><a href="{{ p.url }}" target="_blank" rel="noopener" class="ext-link">{{ p.url }}</a></td>
+            <td class="col-desc">{{ p.bio_snippet or '—' }}</td>
+            <td>{{ p.confianza }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}<p style="color:#4a5a6a;font-size:.77rem">Sin perfiles identificados.</p>{% endif %}
+    {% if x_data.saved_nodes %}<p style="font-size:.75rem;color:#4bc87a">{{ x_data.saved_nodes }} nodos guardados.</p>{% endif %}
+  </section>
+  {% endif %}
+
+  {% if tiktok_data %}
+  <section class="result-section">
+    <h3 class="section-title"><span class="section-tag" style="color:#ff0050">TIKTOK</span> <span class="badge badge-dork">DuckDuckGo Dork</span></h3>
+    <p class="dork-notice">site:tiktok.com "{{ username }}" → {{ tiktok_data.total_found }} perfiles en {{ tiktok_data.raw_count }} resultados.</p>
+    {% if tiktok_data.profiles %}
+    <div class="table-wrap">
+      <table class="data-table">
+        <thead><tr><th>Username</th><th>URL</th><th>Stats</th></tr></thead>
+        <tbody>
+          {% for p in tiktok_data.profiles %}
+          <tr>
+            <td style="color:#ff0050">@{{ p.username }}</td>
+            <td><a href="{{ p.url }}" target="_blank" rel="noopener" class="ext-link">{{ p.url }}</a></td>
+            <td>{{ p.stats_hint or '—' }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}<p style="color:#4a5a6a;font-size:.77rem">Sin perfiles identificados.</p>{% endif %}
+    {% if tiktok_data.saved_nodes %}<p style="font-size:.75rem;color:#4bc87a">{{ tiktok_data.saved_nodes }} nodos guardados.</p>{% endif %}
+  </section>
+  {% endif %}
+
+  {% if not github_profile and not reddit_profile and not facebook_data and not x_data and not tiktok_data and not errors %}
+  <div class="empty-state"><p>Sin resultados para <strong>{{ username }}</strong>.</p></div>
+  {% endif %}
+</div>

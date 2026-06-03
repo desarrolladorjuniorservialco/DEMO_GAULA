@@ -1,0 +1,104 @@
+<style>
+.osint-frag{font-family:'JetBrains Mono',monospace;color:#d0d8e8;font-size:.82rem}
+.osint-frag .result-section{margin-bottom:1.5rem;border-top:1px solid #1e2535;padding-top:1rem}
+.osint-frag .section-title{display:flex;align-items:center;gap:.5rem;font-size:.85rem;font-weight:600;margin-bottom:.75rem;color:#a0b4cc}
+.osint-frag .section-tag{background:#0d1a2e;border:1px solid #2a4060;color:#4bc8a8;padding:2px 8px;border-radius:3px;font-size:.72rem;letter-spacing:.05em}
+.osint-frag .data-table{width:100%;border-collapse:collapse;margin-bottom:.75rem}
+.osint-frag .data-table td,.osint-frag .data-table th{padding:4px 8px;border-bottom:1px solid #1e2535;vertical-align:top}
+.osint-frag .data-table th{color:#6b8aaa;font-weight:500;text-align:left;font-size:.75rem}
+.osint-frag .col-key{color:#6b8aaa;width:140px;white-space:nowrap}
+.osint-frag .mono-cell{font-family:'JetBrains Mono',monospace;font-size:.77rem}
+.osint-frag .col-desc{max-width:260px;word-break:break-word}
+.osint-frag .table-wrap{overflow-x:auto;max-height:280px;overflow-y:auto}
+.osint-frag .error-block{background:#1a0a0a;border:1px solid #5c1a1a;border-radius:4px;padding:.5rem .75rem;margin-bottom:1rem}
+.osint-frag .error-line{color:#f87171;margin:2px 0;font-size:.78rem}
+.osint-frag .badge{background:#0d1a2e;border:1px solid #2a4060;color:#8ab4cc;padding:1px 7px;border-radius:3px;font-size:.7rem;margin-right:.3rem}
+.osint-frag .subsection-title{color:#6b8aaa;font-size:.78rem;font-weight:600;margin:.75rem 0 .4rem;text-transform:uppercase;letter-spacing:.05em}
+.osint-frag .empty-state{text-align:center;padding:2rem;color:#4a5a6a;font-size:.85rem}
+.osint-frag .results-meta{margin-bottom:.5rem;font-size:.77rem;color:#6b8aaa}
+</style>
+
+<div class="osint-frag">
+  <div class="results-meta">
+    Consulta: <strong>{{ query }}</strong> —
+    Fuente:
+    {% if source == 'ip' %}<span class="badge">Geoloc. IP</span>
+    {% elif source == 'domain' %}<span class="badge">RDAP</span><span class="badge">crt.sh</span>
+    {% else %}<span class="badge">IP</span><span class="badge">RDAP</span><span class="badge">crt.sh</span>{% endif %}
+  </div>
+
+  {% if errors %}
+  <div class="error-block">
+    {% for err in errors %}<p class="error-line">⚠ {{ err }}</p>{% endfor %}
+  </div>
+  {% endif %}
+
+  {% if ip_data %}
+  <section class="result-section">
+    <h3 class="section-title"><span class="section-tag">IP-API</span> Geolocalización</h3>
+    <table class="data-table">
+      <tbody>
+        <tr><td class="col-key">IP</td><td>{{ ip_data.query }}</td></tr>
+        <tr><td class="col-key">País</td><td>{{ ip_data.country }} ({{ ip_data.countryCode }})</td></tr>
+        <tr><td class="col-key">Región</td><td>{{ ip_data.regionName }}</td></tr>
+        <tr><td class="col-key">Ciudad</td><td>{{ ip_data.city }}</td></tr>
+        <tr><td class="col-key">Coordenadas</td><td>{{ ip_data.lat }}, {{ ip_data.lon }}</td></tr>
+        <tr><td class="col-key">Zona horaria</td><td>{{ ip_data.timezone }}</td></tr>
+        <tr><td class="col-key">ISP</td><td>{{ ip_data.isp }}</td></tr>
+        <tr><td class="col-key">Organización</td><td>{{ ip_data.org }}</td></tr>
+        <tr><td class="col-key">AS</td><td>{{ ip_data.as }}</td></tr>
+      </tbody>
+    </table>
+  </section>
+  {% endif %}
+
+  {% if rdap_data and rdap_data.ldhName %}
+  <section class="result-section">
+    <h3 class="section-title"><span class="section-tag">RDAP</span> Registro de dominio</h3>
+    <table class="data-table">
+      <tbody>
+        <tr><td class="col-key">Dominio</td><td>{{ rdap_data.ldhName }}</td></tr>
+        <tr><td class="col-key">Handle</td><td>{{ rdap_data.handle or '—' }}</td></tr>
+        <tr><td class="col-key">Estado</td><td>{{ rdap_data.status|join(', ') if rdap_data.status else '—' }}</td></tr>
+        {% for ev in rdap_data.events %}
+        <tr><td class="col-key">{{ ev.action }}</td><td>{{ ev.date }}</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% if rdap_data.nameservers %}
+    <p class="subsection-title">Nameservers</p>
+    <table class="data-table"><tbody>{% for ns in rdap_data.nameservers %}<tr><td>{{ ns }}</td></tr>{% endfor %}</tbody></table>
+    {% endif %}
+    {% if rdap_data.entities %}
+    <p class="subsection-title">Entidades</p>
+    <table class="data-table"><thead><tr><th>Nombre</th><th>Roles</th></tr></thead>
+    <tbody>{% for ent in rdap_data.entities %}<tr><td>{{ ent.name or '—' }}</td><td>{{ ent.roles|join(', ') }}</td></tr>{% endfor %}</tbody></table>
+    {% endif %}
+  </section>
+  {% endif %}
+
+  {% if crt_data %}
+  <section class="result-section">
+    <h3 class="section-title"><span class="section-tag">CRT.SH</span> Certificados ({{ crt_data|length }})</h3>
+    <div class="table-wrap">
+      <table class="data-table">
+        <thead><tr><th>Nombre / Subdominio</th><th>Emisor</th><th>Válido desde</th><th>Válido hasta</th></tr></thead>
+        <tbody>
+          {% for cert in crt_data %}
+          <tr>
+            <td class="mono-cell">{{ cert.name }}</td>
+            <td class="col-desc">{{ cert.issuer[:60] }}{% if cert.issuer|length > 60 %}…{% endif %}</td>
+            <td>{{ cert.not_before[:10] if cert.not_before else '—' }}</td>
+            <td>{{ cert.not_after[:10] if cert.not_after else '—' }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </section>
+  {% endif %}
+
+  {% if not ip_data and not rdap_data and not crt_data and not errors %}
+  <div class="empty-state"><p>Sin resultados para <strong>{{ query }}</strong>.</p></div>
+  {% endif %}
+</div>
