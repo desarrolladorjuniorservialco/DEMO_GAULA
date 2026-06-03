@@ -34,7 +34,9 @@
       "Bash(python -c ' *)",
       "Bash(powershell -Command \"Get-ChildItem -Depth 2 -Directory | Format-Table -Property FullName\")",
       "Bash(powershell -Command \"Get-ChildItem -Filter '*.py' -Depth 0 | Select-Object -First 10 Name\")",
-      "Bash(python -c \"from modules.osint.analytics.graph_builder import build_graph, _generate_findings; print\\('graph_builder OK'\\)\")"
+      "Bash(python -c \"from modules.osint.analytics.graph_builder import build_graph, _generate_findings; print\\('graph_builder OK'\\)\")",
+      "Bash(git -C \"c:\\\\Users\\\\Victor Pulido\\\\Documents\\\\GIT\\\\DEMO_GAULA\" log --oneline -10)",
+      "Bash(git -C \"c:\\\\Users\\\\Victor Pulido\\\\Documents\\\\GIT\\\\PRUEBA_OSINT\" status)"
     ],
     "additionalDirectories": [
       "C:\\Users\\Victor Pulido\\Documents\\GIT\\DEMO_GAULA\\docs\\superpowers\\specs"
