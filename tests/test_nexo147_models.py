@@ -1,7 +1,8 @@
 # tests/test_nexo147_models.py
+import uuid
 import pytest
 from sqlalchemy.exc import IntegrityError
-from models.nexo147 import Usuario, UnidadGaula
+from models.nexo147 import Usuario, UnidadGaula, Caso, Reportante, CasoReportante, Evidencia, EventoCaso, MedioPago
 
 
 def test_usuario_creacion(session):
@@ -50,8 +51,6 @@ def test_unidad_gaula_nombre_unico(session):
 
 
 def test_caso_creacion(session):
-    import uuid
-    from models.nexo147 import Caso
     ug = UnidadGaula(nombre="GAULA Medellin")
     session.add(ug)
     session.flush()
@@ -74,10 +73,6 @@ def test_caso_creacion(session):
 
 
 def test_caso_id_caso_unico(session):
-    import uuid
-    import pytest
-    from sqlalchemy.exc import IntegrityError
-    from models.nexo147 import Caso
     uid = str(uuid.uuid4())
     session.add(Caso(id_caso=uid, estado="Recibido", created_by="test"))
     session.commit()
@@ -85,3 +80,67 @@ def test_caso_id_caso_unico(session):
     with pytest.raises(IntegrityError):
         session.commit()
     session.rollback()
+
+
+def test_reportante_y_junction(session):
+    caso = Caso(id_caso=str(uuid.uuid4()), estado="Recibido", created_by="test")
+    rep  = Reportante(nombre="Juan Perez", documento="123456", telefono="3001234567")
+    session.add_all([caso, rep])
+    session.flush()
+
+    jr = CasoReportante(
+        caso_id=caso.id,
+        reportante_id=rep.id,
+        rol_en_caso="denunciante",
+        created_by="test",
+    )
+    session.add(jr)
+    session.commit()
+
+    assert len(caso.reportantes) == 1
+    assert caso.reportantes[0].reportante.nombre == "Juan Perez"
+
+
+def test_reportante_anonimo_por_defecto(session):
+    r = Reportante()
+    session.add(r)
+    session.commit()
+    assert r.anonimo is False
+
+
+def test_evidencia(session):
+    caso = Caso(id_caso=str(uuid.uuid4()), estado="Recibido", created_by="test")
+    session.add(caso)
+    session.flush()
+    e = Evidencia(caso_id=caso.id, tipo="audio", descripcion="Llamada grabada", created_by="test")
+    session.add(e)
+    session.commit()
+    assert e.id is not None
+    assert caso.evidencias[0].tipo == "audio"
+
+
+def test_evento_caso(session):
+    caso = Caso(id_caso=str(uuid.uuid4()), estado="Recibido", created_by="test")
+    session.add(caso)
+    session.flush()
+    ev = EventoCaso(
+        caso_id=caso.id,
+        tipo_evento="creacion",
+        descripcion="Caso registrado.",
+        estado_nuevo="Recibido",
+        created_by="operador1",
+    )
+    session.add(ev)
+    session.commit()
+    assert ev.id is not None
+    assert ev.estado_anterior is None
+
+
+def test_medio_pago(session):
+    caso = Caso(id_caso=str(uuid.uuid4()), estado="Recibido", created_by="test")
+    session.add(caso)
+    session.flush()
+    mp = MedioPago(caso_id=caso.id, tipo="nequi", valor_exigido=500000, moneda="COP", created_by="test")
+    session.add(mp)
+    session.commit()
+    assert float(mp.valor_exigido) == 500000.0

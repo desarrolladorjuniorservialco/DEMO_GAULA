@@ -60,7 +60,90 @@ class Caso(db.Model):
     updated_by          = db.Column(db.String(50))
 
     unidad_gaula = db.relationship("UnidadGaula", back_populates="casos")
-    # reportantes  = db.relationship("CasoReportante", back_populates="caso")  # defined in future task
-    # evidencias   = db.relationship("Evidencia",       back_populates="caso")  # defined in future task
-    # eventos      = db.relationship("EventoCaso",      back_populates="caso")  # defined in future task
-    # medios_pago  = db.relationship("MedioPago",       back_populates="caso")  # defined in future task
+    reportantes  = db.relationship("CasoReportante", back_populates="caso")
+    evidencias   = db.relationship("Evidencia",       back_populates="caso")
+    eventos      = db.relationship("EventoCaso",      back_populates="caso")
+    medios_pago  = db.relationship("MedioPago",       back_populates="caso")
+
+
+class Reportante(db.Model):
+    __tablename__ = "reportantes"
+    __table_args__ = (
+        db.Index("ix_reportantes_documento", "documento"),
+        db.Index("ix_reportantes_telefono",  "telefono"),
+        {},
+    )
+
+    id         = db.Column(db.Integer, primary_key=True)
+    nombre     = db.Column(db.String(100))
+    documento  = db.Column(db.String(30))
+    telefono   = db.Column(db.String(20))
+    anonimo    = db.Column(db.Boolean, default=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, onupdate=datetime.utcnow)
+    created_by = db.Column(db.String(50))
+    updated_by = db.Column(db.String(50))
+
+    casos = db.relationship("CasoReportante", back_populates="reportante")
+
+
+class CasoReportante(db.Model):
+    __tablename__ = "caso_reportante"
+
+    caso_id       = db.Column(db.Integer, db.ForeignKey("casos.id"),       primary_key=True)
+    reportante_id = db.Column(db.Integer, db.ForeignKey("reportantes.id"), primary_key=True)
+    rol_en_caso   = db.Column(db.String(50))
+    created_at    = db.Column(db.DateTime, default=datetime.utcnow)
+    created_by    = db.Column(db.String(50))
+
+    caso       = db.relationship("Caso",       back_populates="reportantes")
+    reportante = db.relationship("Reportante", back_populates="casos")
+
+
+class Evidencia(db.Model):
+    __tablename__ = "evidencias"
+
+    id           = db.Column(db.Integer, primary_key=True)
+    caso_id      = db.Column(db.Integer, db.ForeignKey("casos.id"), nullable=False)
+    tipo         = db.Column(db.String(50))
+    descripcion  = db.Column(db.String(200))
+    ruta_archivo = db.Column(db.String(500))
+    hash_sha256  = db.Column(db.String(64))
+    created_at   = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at   = db.Column(db.DateTime, onupdate=datetime.utcnow)
+    created_by   = db.Column(db.String(50))
+    updated_by   = db.Column(db.String(50))
+
+    caso = db.relationship("Caso", back_populates="evidencias")
+
+
+class EventoCaso(db.Model):
+    __tablename__ = "eventos_caso"
+
+    id              = db.Column(db.Integer, primary_key=True)
+    caso_id         = db.Column(db.Integer, db.ForeignKey("casos.id"), nullable=False)
+    tipo_evento     = db.Column(db.String(50))
+    descripcion     = db.Column(db.Text)
+    estado_anterior = db.Column(db.String(20))
+    estado_nuevo    = db.Column(db.String(20))
+    created_at      = db.Column(db.DateTime, default=datetime.utcnow)
+    created_by      = db.Column(db.String(50))
+
+    caso = db.relationship("Caso", back_populates="eventos")
+
+
+class MedioPago(db.Model):
+    __tablename__ = "medios_pago"
+
+    id            = db.Column(db.Integer, primary_key=True)
+    caso_id       = db.Column(db.Integer, db.ForeignKey("casos.id"), nullable=False)
+    tipo          = db.Column(db.String(50))
+    valor_exigido = db.Column(db.Numeric(15, 2))
+    moneda        = db.Column(db.String(10), default="COP")
+    referencia    = db.Column(db.String(100))
+    created_at    = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at    = db.Column(db.DateTime, onupdate=datetime.utcnow)
+    created_by    = db.Column(db.String(50))
+    updated_by    = db.Column(db.String(50))
+
+    caso = db.relationship("Caso", back_populates="medios_pago")
