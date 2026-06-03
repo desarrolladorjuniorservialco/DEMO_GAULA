@@ -1,4 +1,6 @@
 # tests/test_nexo147_models.py
+import pytest
+from sqlalchemy.exc import IntegrityError
 from models.nexo147 import Usuario, UnidadGaula
 
 
@@ -23,9 +25,9 @@ def test_usuario_username_unico(session):
     session.add(u1)
     session.commit()
     session.add(u2)
-    import pytest
-    with pytest.raises(Exception):
+    with pytest.raises(IntegrityError):
         session.commit()
+    session.rollback()
 
 
 def test_unidad_gaula_creacion(session):
@@ -42,6 +44,6 @@ def test_unidad_gaula_nombre_unico(session):
     session.add(ug1)
     session.commit()
     session.add(ug2)
-    import pytest
-    with pytest.raises(Exception):
+    with pytest.raises(IntegrityError):
         session.commit()
+    session.rollback()
