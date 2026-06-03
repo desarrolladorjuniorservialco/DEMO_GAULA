@@ -10,6 +10,7 @@ from models import db as _db
 
 @pytest.fixture(scope="function")
 def app():
+    original_config = nexo.config.copy()
     nexo.config.update({
         "TESTING": True,
         "SQLALCHEMY_DATABASE_URI": "sqlite:///:memory:",
@@ -22,6 +23,7 @@ def app():
         _db.create_all()
         yield nexo
         _db.drop_all()
+    nexo.config.update(original_config)
 
 
 @pytest.fixture
