@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request, redirect, url_for, flash, session, jsonify
-from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
+from models import db
 from functools import wraps
 from datetime import datetime
 import os
@@ -12,9 +12,12 @@ nexo = Flask(__name__, static_folder="static", template_folder="templates")
 nexo.secret_key = os.getenv("SECRET_KEY", "demo-gaula-nexo-147")
 _basedir = os.path.abspath(os.path.dirname(__file__))
 nexo.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///" + os.path.join(_basedir, "data", "nexo147.db")
+nexo.config["SQLALCHEMY_BINDS"] = {
+    "intel": "sqlite:///" + os.path.join(_basedir, "data", "intel.db"),
+    "osint": "sqlite:///" + os.path.join(_basedir, "data", "osint.db"),
+}
 nexo.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
-
-db = SQLAlchemy(nexo)
+db.init_app(nexo)
 
 
 class Usuario(db.Model):
