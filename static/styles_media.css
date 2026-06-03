@@ -1,310 +1,140 @@
-@media (max-width: 1050px) {
+/* ==========================================================================
+   NEXO-147 TACTICAL OPERATIONS SYSTEM - RESPONSIVE STYLING
+   ========================================================================== */
 
-  .header {
-    width: calc(100% - 28px);
-    flex-direction: column;
-    gap: 16px;
-    position: relative;
+@media (max-width: 1024px) {
+  /* --- SIDEBAR MOVIBLE (TIPO CAJÓN) --- */
+  .console-sidebar {
+    position: fixed;
     top: 0;
+    left: 0;
+    bottom: 0;
+    transform: translateX(-100%);
+    box-shadow: 20px 0 50px rgba(0, 0, 0, 0.8);
+    z-index: 200;
   }
 
-  .nav {
-    flex-wrap: wrap;
-    justify-content: center;
+  .console-sidebar.open {
+    transform: translateX(0);
   }
 
-  .hero,
-  .section,
-  .split,
-  .contact {
-    width: calc(100% - 28px);
+  .btn-sidebar-toggle {
+    display: flex;
   }
 
-  .hero {
+  /* --- GRID MASONRY Y COLUMNAS --- */
+  .dashboard-grid {
     grid-template-columns: 1fr;
-    padding: 38px 24px;
-    height: auto;
-    border-radius: 32px;
+    gap: 16px;
   }
 
-  .hero h1 {
-    font-size: 42px;
-    letter-spacing: -1px;
-  }
-
-  .hero p {
-    font-size: 16px;
-  }
-
-  .hero-actions {
-    flex-direction: column;
-  }
-
-  .btn {
-    width: 100%;
-  }
-
-  .hero-metrics {
-    display: grid;
-    grid-template-columns: 1fr;
-  }
-
-  .hero-panel {
-    min-height: 420px;
-  }
-
-  .scan-circle {
-    width: 270px;
-    height: 270px;
-  }
-
-  .eye-core {
-    width: 120px;
-    height: 120px;
-  }
-
-  .floating-card {
-    position: relative;
-    width: 100%;
-    max-width: 320px;
-    left: auto;
-    right: auto;
-    top: auto;
-    bottom: auto;
-    margin-top: 14px;
-  }
-
-  .service-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .split,
-  .contact {
-    grid-template-columns: 1fr;
-    padding: 30px 22px;
-    border-radius: 32px;
-  }
-
-  .section-title h2,
-  .split h2,
-  .contact h2 {
-    font-size: 32px;
-  }
-}
-
-@media (max-width: 560px) {
-
-  .brand img {
-    width: 54px;
-    height: 54px;
-  }
-
-  .brand strong {
-    font-size: 16px;
-  }
-
-  .brand span {
-    font-size: 11px;
-  }
-
-  .nav a {
-    font-size: 12px;
-    padding: 9px 11px;
-  }
-
-  .hero {
-    padding: 30px 18px;
-  }
-
-  .hero h1 {
-    font-size: 34px;
-  }
-
-  .hero p {
-    font-size: 15px;
-  }
-
-  .scan-circle {
-    width: 230px;
-    height: 230px;
-  }
-
-  .eye-core {
-    width: 100px;
-    height: 100px;
-  }
-
-  .section-title h2,
-  .split h2,
-  .contact h2 {
-    font-size: 28px;
-  }
-
-  .form-section {
-    padding: 16px;
-  }
-}
-@media (max-width: 1050px) {
-  .dashboard {
-    width: calc(100% - 28px);
+  .col-span-12, .col-span-8, .col-span-6, .col-span-4 {
+    grid-column: span 12 !important;
   }
 
   .kpi-grid {
     grid-template-columns: repeat(2, 1fr);
   }
-
-  .dashboard-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .bar-row {
-    grid-template-columns: 1fr;
-  }
 }
 
-@media (max-width: 560px) {
-  .login-card {
-    padding: 28px;
+@media (max-width: 900px) {
+  /* --- SPLIT PANEL DE CASOS --- */
+  .cases-panel-split {
+    flex-direction: column;
+    align-items: stretch;
   }
 
-  .login-card h1 {
-    font-size: 38px;
+  .case-detail-sidebar {
+    width: 100%;
+    margin-top: 16px;
   }
 
-  .kpi-grid {
+  /* --- FORMULARIO OPERATIVO --- */
+  .form-tactical-layout {
     grid-template-columns: 1fr;
   }
-}
 
-@media (max-width: 1050px) {
+  .col-span-2 {
+    grid-column: span 1 !important;
+  }
+
+  .form-row {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+
+  /* --- PORTAL DE LOGIN --- */
   .login-screen {
-    width: calc(100% - 28px);
     grid-template-columns: 1fr;
-    padding: 28px 0;
+    height: auto;
+    max-height: none;
+    width: 100%;
+    margin: 16px;
   }
 
-  .login-visual,
-  .login-card {
-    padding: 30px 22px;
-    border-radius: 32px;
+  .login-visual {
+    border-right: none;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    padding: 32px 24px;
+    align-items: center;
+    text-align: center;
+  }
+
+  .login-visual p {
+    margin: 12px auto;
   }
 
   .login-orbit {
-    width: 260px;
-    height: 260px;
+    margin: 16px auto;
   }
 
-  .ring-one {
-    width: 250px;
-    height: 250px;
+  .login-card {
+    padding: 32px 24px;
   }
 
-  .ring-two {
-    width: 190px;
-    height: 190px;
-  }
-
-  .orbit-core {
-    width: 125px;
-    height: 125px;
-    font-size: 32px;
-  }
-}
-
-@media (max-width: 560px) {
-  .login-visual h1 {
-    font-size: 54px;
-    letter-spacing: -2px;
-  }
-
-  .login-card-header h2 {
-    font-size: 30px;
-  }
-
-  .login-metrics {
-    grid-template-columns: 1fr;
-  }
-}
-@media (max-width: 1050px) {
-  .nexo-core {
-    width: 320px;
-    height: 320px;
-  }
-
-  .ring-a {
-    width: 310px;
-    height: 310px;
-  }
-
-  .ring-b {
-    width: 235px;
-    height: 235px;
-  }
-
-  .ring-c {
-    width: 160px;
-    height: 160px;
-  }
-
-  .nexo-center {
-    width: 115px;
-    height: 115px;
-  }
-
-  .node {
-    position: relative;
-    inset: auto;
-    transform: none;
-    margin: 8px;
-  }
-}
-
-@media (max-width: 1050px) {
-  .dashboard {
-    width: calc(100% - 28px);
-  }
-
-  .kpi-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  .dashboard-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .bar-row {
+  .demo-grid {
     grid-template-columns: 1fr;
   }
 }
 
 @media (max-width: 560px) {
+  /* --- AJUSTES COMPACTOS EXTREMOS --- */
+  .console-topbar {
+    padding: 0 16px;
+  }
+
+  .console-workspace {
+    padding: 16px;
+  }
+
   .kpi-grid {
     grid-template-columns: 1fr;
   }
 
-  .dashboard-card {
-    padding: 22px;
+  .topbar-system-time {
+    display: none; /* Ocultar hora en teléfonos pequeños para ganar espacio */
   }
 
-  .radar-box,
-  .map-demo-pro {
-    height: 300px;
+  .tabs-tactical-header {
+    flex-wrap: wrap;
   }
-}
 
-.separator {
-  padding: 25px;
-  margin: auto auto 50px 50px;
-  border-radius: 8px;
-  margin-bottom: 24px;
-}
+  .tab-btn {
+    padding: 8px 12px;
+    font-size: 11px;
+  }
 
-.brechas-table {
-  width: 100%;
-  border-collapse: collapse;
-  text-align: left;
-  font-size: 16px;
-  font-family: 'Montserrat', sans-serif;
-  font-weight: 500;
-  color: var(--text);
+  /* Ajustes en tarjetas */
+  .double-bezel .inner-core {
+    padding: 16px;
+  }
+
+  .welcome-banner h1 {
+    font-size: 18px;
+  }
+
+  .db-status-bar {
+    flex-direction: column;
+    gap: 8px;
+  }
 }
