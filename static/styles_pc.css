@@ -41,18 +41,14 @@
   padding: 0;
 }
 
-html {
-  height: 100%;
+html, body {
+  height: 100vh;
+  width: 100vw;
   overflow: hidden;
-}
-
-body {
   background-color: var(--bg-deep);
   color: var(--text-primary);
   font-family: var(--font-display);
   font-size: 14px;
-  height: 100%;
-  overflow: hidden;
 }
 
 /* Scanline y Orbes Flotantes */
@@ -107,9 +103,11 @@ body {
 /* --- LAYOUT DEL CENTRO DE CONTROL --- */
 .console-layout {
   display: flex;
-  height: 100%;
-  width: 100%;
+  height: 100vh;
+  width: 100vw;
+  max-height: 100vh;
   position: relative;
+  overflow: hidden;
 }
 
 /* --- SIDEBAR TÁCTICO --- */
