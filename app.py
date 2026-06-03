@@ -5,6 +5,10 @@ from models.nexo147 import (
     Usuario, UnidadGaula, Caso, Reportante, CasoReportante,
     Evidencia, EventoCaso, MedioPago
 )
+from models.intel import (
+    Persona, Alias, Telefono, Correo, Direccion,
+    Ubicacion, Vehiculo, CuentaBancaria, RedSocial, Organizacion,
+)
 from functools import wraps
 from datetime import datetime
 import os
