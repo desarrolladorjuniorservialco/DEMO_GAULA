@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request, redirect, url_for, flash, session, jsonify
 from werkzeug.security import generate_password_hash, check_password_hash
 from models import db
+from models.nexo147 import Usuario, UnidadGaula
 from functools import wraps
 from datetime import datetime
 import os
@@ -18,16 +19,6 @@ nexo.config["SQLALCHEMY_BINDS"] = {
 }
 nexo.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 db.init_app(nexo)
-
-
-class Usuario(db.Model):
-    __tablename__ = "usuarios"
-    id            = db.Column(db.Integer, primary_key=True)
-    username      = db.Column(db.String(50), unique=True, nullable=False)
-    password_hash = db.Column(db.String(256), nullable=False)
-    nombre        = db.Column(db.String(100), nullable=False)
-    rol           = db.Column(db.String(20), nullable=False)
-    activo        = db.Column(db.Boolean, default=True)
 
 
 class Reporte(db.Model):
