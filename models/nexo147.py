@@ -65,6 +65,21 @@ class Caso(db.Model):
     eventos      = db.relationship("EventoCaso",      back_populates="caso")
     medios_pago  = db.relationship("MedioPago",       back_populates="caso")
 
+    @property
+    def intel_entities(self):
+        from .intel import CasoPersona, CasoTelefono, CasoUbicacion, CasoCuenta
+        personas = CasoPersona.query.filter_by(caso_id=self.id).all()
+        telefonos = CasoTelefono.query.filter_by(caso_id=self.id).all()
+        ubicaciones = CasoUbicacion.query.filter_by(caso_id=self.id).all()
+        cuentas = CasoCuenta.query.filter_by(caso_id=self.id).all()
+        return {
+            "personas": [p.persona for p in personas if p.persona],
+            "telefonos": [t.telefono for t in telefonos if t.telefono],
+            "ubicaciones": [u.ubicacion for u in ubicaciones if u.ubicacion],
+            "cuentas": [c.cuenta for c in cuentas if c.cuenta]
+        }
+
+
 
 class Reportante(db.Model):
     __tablename__ = "reportantes"

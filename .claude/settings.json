@@ -6,7 +6,8 @@
       "Bash(python -c \"import os; os.remove\\('.claude/settings.json'\\) if os.path.exists\\('.claude/settings.json'\\) else print\\('not found'\\)\")",
       "Bash(python -m pytest tests/ -q --tb=short)",
       "Bash(git branch *)",
-      "Bash(git stash *)"
+      "Bash(git stash *)",
+      "Bash(.\\\\venv\\\\Scripts\\\\python.exe -c \"import flask; print\\('Flask OK'\\)\")"
     ]
   }
 }

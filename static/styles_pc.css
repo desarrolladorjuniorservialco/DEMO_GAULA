@@ -1522,3 +1522,295 @@ tr:hover td {
   color: var(--accent-cyan);
   font-family: var(--font-mono);
 }
+
+/* ==========================================================================
+   ADDITIONAL STYLES FOR NEW INTEL, OSINT, ETL & DATAMART PANELS
+   ========================================================================== */
+
+/* Animations */
+@keyframes fadeInRow {
+  from { opacity: 0; transform: translateX(-4px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes slideUpItem {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.fade-in-row {
+  animation: fadeInRow 0.25s ease-out forwards;
+}
+
+.slide-up-item {
+  animation: slideUpItem 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* ETL Pipeline Flowchart */
+.etl-pipeline-flow {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  position: relative;
+  padding: 10px 0;
+}
+
+.etl-flow-line {
+  position: absolute;
+  left: 20px;
+  top: 10px;
+  bottom: 10px;
+  width: 2px;
+  background: linear-gradient(to bottom, var(--state-green), var(--accent-cyan), var(--accent-orange));
+  z-index: 1;
+}
+
+.etl-stage-step {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  position: relative;
+  z-index: 2;
+}
+
+.etl-step-number {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: var(--bg-deep);
+  border: 2px solid var(--text-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-mono);
+  font-weight: 700;
+  color: var(--text-muted);
+  transition: all 0.3s ease;
+  flex-shrink: 0;
+}
+
+.etl-stage-step.ok .etl-step-number {
+  border-color: var(--state-green);
+  color: var(--state-green);
+  box-shadow: 0 0 10px rgba(0, 230, 118, 0.3);
+}
+
+.etl-stage-step.warning .etl-step-number {
+  border-color: var(--state-amber);
+  color: var(--state-amber);
+  box-shadow: 0 0 10px rgba(255, 214, 0, 0.3);
+}
+
+.etl-step-card {
+  flex: 1;
+}
+
+.etl-step-card .inner-core {
+  padding: 14px 20px;
+}
+
+.etl-step-card h4 {
+  font-size: 13px;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 6px;
+}
+
+.etl-step-info {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-bottom: 6px;
+}
+
+.etl-step-progress-bar {
+  height: 4px;
+  background-color: rgba(255, 255, 255, 0.05);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.etl-step-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent-cyan), #00b0ff);
+  border-radius: 2px;
+  transition: width 0.8s ease;
+}
+
+.etl-stage-step.ok .etl-step-fill {
+  background: linear-gradient(90deg, var(--state-green), #00e676);
+}
+
+.etl-stage-step.warning .etl-step-fill {
+  background: linear-gradient(90deg, var(--state-amber), #ffd600);
+}
+
+/* ETL Metrics Grid */
+.etl-metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+}
+
+.etl-metric-box .inner-core {
+  padding: 16px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.etl-metric-box span {
+  font-size: 11px;
+  color: var(--text-muted);
+  font-family: var(--font-display);
+}
+
+.etl-metric-box strong {
+  font-size: 18px;
+  font-family: var(--font-mono);
+  color: var(--accent-cyan);
+}
+
+/* OSINT Indicadores & Hallazgos list */
+.indicadores-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-height: 420px;
+  overflow-y: auto;
+  padding-right: 6px;
+}
+
+.indicador-row {
+  background-color: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  border-radius: var(--radius-inner);
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.indicador-header-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.indicador-header-row strong {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: #fff;
+}
+
+.indicador-meta {
+  display: flex;
+  justify-content: space-between;
+  font-family: var(--font-mono);
+  font-size: 9.5px;
+  color: var(--text-muted);
+}
+
+/* Data Mart KPI Cards */
+.dm-kpi-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-bottom: 8px;
+}
+
+.dm-kpi-card .inner-core {
+  padding: 16px 20px;
+}
+
+.dm-kpi-card span {
+  font-size: 11px;
+  color: var(--text-muted);
+  display: block;
+  margin-bottom: 4px;
+}
+
+.dm-kpi-card strong {
+  font-size: 20px;
+  color: var(--accent-cyan);
+  font-family: var(--font-mono);
+}
+
+.dm-kpi-card.alert-kpi strong {
+  color: var(--accent-orange);
+}
+
+/* Mini Hallazgos list */
+.hallazgos-mini-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.hallazgo-mini-item {
+  background-color: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  border-radius: var(--radius-inner);
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.hallazgo-mini-item strong {
+  color: #fff;
+  font-size: 13px;
+}
+
+.hallazgo-mini-item p {
+  color: var(--text-muted);
+  font-size: 11.5px;
+  line-height: 1.4;
+}
+
+/* Analitica summary cards */
+.analitica-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+
+.summary-card .inner-core {
+  padding: 16px 20px;
+}
+
+.summary-card h4 {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-bottom: 8px;
+}
+
+.summary-card strong {
+  font-size: 20px;
+  color: var(--accent-cyan);
+  display: block;
+  margin-bottom: 4px;
+  font-family: var(--font-mono);
+}
+
+.summary-card span {
+  font-size: 11px;
+  color: var(--text-muted);
+  display: block;
+}
+
+/* Chart Canvas Area */
+.dm-chart-area {
+  position: relative;
+  min-height: 250px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.gis-enhanced {
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: var(--radius-inner);
+  background-color: rgba(0, 0, 0, 0.3) !important;
+}
