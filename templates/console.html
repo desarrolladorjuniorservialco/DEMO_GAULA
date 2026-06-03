@@ -1,0 +1,809 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>NEXO-147 | Centro de Operaciones e Inteligencia GAULA</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles_pc.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles_media.css') }}">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+</head>
+<body class="console-body">
+  <div class="bg-scanline"></div>
+  <div class="glow-orb orb-one"></div>
+  <div class="glow-orb orb-two"></div>
+
+  <div class="console-layout">
+    <!-- SIDEBAR PERSISTENTE -->
+    <aside class="console-sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <div class="brand-tactical">
+          <svg class="brand-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+          </svg>
+          <div class="brand-text">
+            <h2>NEXO-147</h2>
+            <span>SISTEMA OPERATIVO GAULA</span>
+          </div>
+        </div>
+        <button class="btn-sidebar-toggle" id="sidebar-toggle-close" aria-label="Cerrar panel lateral">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+        </button>
+      </div>
+
+      <nav class="sidebar-nav" id="sidebar-nav">
+        <span class="nav-category">OPERACIONES</span>
+        
+        <!-- Vista para todos los roles (Redirigido según rol a su pantalla principal) -->
+        <a href="#inicio" class="nav-item active" data-panel="panel-inicio">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+          <span>Consola Central</span>
+        </a>
+
+        {% if session.get("role") in ["admin", "operador"] %}
+        <a href="#nuevo-reporte" class="nav-item" data-panel="panel-formulario">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+          <span>Registrar Reporte</span>
+        </a>
+        {% endif %}
+
+        {% if session.get("role") in ["admin", "analista", "director"] %}
+        <a href="#casos" class="nav-item" data-panel="panel-casos">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+          <span>Bandeja de Casos</span>
+        </a>
+        {% endif %}
+
+        <!-- SECCIÓN INTELIGENCIA (Solo Analista, Director y Admin) -->
+        {% if session.get("role") in ["admin", "analista", "director"] %}
+        <span class="nav-category">INTELIGENCIA TÁCTICA</span>
+        <a href="#entidades" class="nav-item" data-panel="panel-entidades">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          <span>Base de Entidades</span>
+        </a>
+        <a href="#analisis-red" class="nav-item" data-panel="panel-inteligencia">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+          <span>Correlaciones e OSINT</span>
+        </a>
+        {% endif %}
+
+        <!-- DASHBOARD (Director y Admin, lectura restringida para Analista) -->
+        <span class="nav-category">ESTADÍSTICAS</span>
+        <a href="#dashboard" class="nav-item" data-panel="panel-dashboard">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+          <span>Dashboard Ejecutivo</span>
+        </a>
+
+        <!-- ADMINISTRACIÓN Y CONFIGURACIÓN -->
+        <span class="nav-category">ADMINISTRACIÓN</span>
+        {% if session.get("role") == "admin" %}
+        <a href="#gestion-usuarios" class="nav-item" data-panel="panel-administracion">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+          <span>Administración</span>
+        </a>
+        {% endif %}
+        <a href="#configuracion" class="nav-item" data-panel="panel-configuracion">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+          <span>Configuración</span>
+        </a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="user-pill">
+          <div class="user-avatar">
+            {{ session.get("user")[0].upper() if session.get("user") else 'U' }}
+          </div>
+          <div class="user-info">
+            <strong>{{ session.get("name", "Usuario GAULA") }}</strong>
+            <span>Rol: {{ session.get("role", "invitado").capitalize() }}</span>
+          </div>
+        </div>
+        <a href="{{ url_for('logout') }}" class="btn-logout" aria-label="Cerrar sesión">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></svg>
+        </a>
+      </div>
+    </aside>
+
+    <!-- WRAPPER PRINCIPAL -->
+    <div class="console-main">
+      
+      <!-- TOP BAR PERSISTENTE -->
+      <header class="console-topbar">
+        <div class="topbar-left">
+          <button class="btn-sidebar-toggle" id="sidebar-toggle-open" aria-label="Abrir panel lateral">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+          </button>
+          <div class="breadcrumb-tactical">
+            <span class="active-category">NEXO-147</span>
+            <span class="divider">/</span>
+            <span class="active-panel-name" id="current-panel-title">Consola Central</span>
+          </div>
+        </div>
+
+        <div class="topbar-right">
+          <!-- Alertas rápidas -->
+          <div class="topbar-alert-indicator" id="alert-indicator" title="Alertas operacionales críticas">
+            <span class="pulse-red"></span>
+            <span class="alert-count" id="alert-count-val">0</span>
+            <svg class="icon-topbar" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+          </div>
+          
+          <div class="topbar-system-time" id="system-time">
+            00:00:00 UTC
+          </div>
+        </div>
+      </header>
+
+      <!-- ÁREA DE TRABAJO DINÁMICA -->
+      <main class="console-workspace" id="workspace">
+
+        <!-- PANEL DE INICIO GENERAL -->
+        <section class="panel-section active" id="panel-inicio">
+          <div class="welcome-banner double-bezel">
+            <div class="inner-core">
+              <span class="badge-eyebrow">Demo Operativa Privada</span>
+              <h1>Bienvenido al Centro de Control, {{ session.get("name") }}</h1>
+              <p>Has iniciado sesión con el rol de <strong>{{ session.get("role").upper() }}</strong>. Tu espacio de trabajo y funciones clave se han habilitado en base a tus credenciales.</p>
+              
+              <div class="panel-shortcuts-grid" id="shortcuts-container">
+                <!-- Se inyecta dinámicamente por JS según el rol -->
+              </div>
+            </div>
+          </div>
+
+          <div class="dashboard-grid">
+            <!-- KPIs Generales de Actividad -->
+            <div class="dashboard-card double-bezel col-span-8">
+              <div class="inner-core">
+                <h3>Estado Operativo GAULA - Actividad de Turno</h3>
+                <div class="table-wrap">
+                  <table id="table-recent-activities">
+                    <thead>
+                      <tr>
+                        <th>Acción</th>
+                        <th>Detalle</th>
+                        <th>Operador</th>
+                        <th>Hora</th>
+                      </tr>
+                    </thead>
+                    <tbody id="activity-log-body">
+                      <!-- Mock logs de auditoría en vivo -->
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+
+            <!-- Resumen Rápido -->
+            <div class="dashboard-card double-bezel col-span-4">
+              <div class="inner-core flex-center-col">
+                <h3>Resumen de Roles</h3>
+                <div class="role-desc-list">
+                  <div class="role-desc-item">
+                    <span class="dot op"></span>
+                    <strong>Operador:</strong> Registra denuncias de extorsión y secuestro.
+                  </div>
+                  <div class="role-desc-item">
+                    <span class="dot an"></span>
+                    <strong>Analista:</strong> Filtra casos, vincula entidades y evalúa brechas OSINT.
+                  </div>
+                  <div class="role-desc-item">
+                    <span class="dot di"></span>
+                    <strong>Director:</strong> Visualiza el panel ejecutivo, KPIs e indicadores críticos.
+                  </div>
+                  <div class="role-desc-item">
+                    <span class="dot ad"></span>
+                    <strong>Administrador:</strong> Configuración, auditoría y control total del sistema.
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+
+        <!-- PANEL FORMULARIO REGISTRO (LÍNEA 147) -->
+        <section class="panel-section" id="panel-formulario">
+          <div class="section-header-tactical">
+            <h2>Recepción de Llamada y Denuncia - Línea 147</h2>
+            <p>Formulario estructurado de registro de hechos punibles para el despliegue rápido del GAULA.</p>
+          </div>
+
+          <div class="grid-form-container">
+            <form id="formulario-registro-reporte" class="form-tactical-layout">
+              <!-- SECCIÓN 1: TIPICIDAD -->
+              <div class="form-card double-bezel">
+                <div class="inner-core">
+                  <h3>1. Clasificación Preliminar</h3>
+                  <div class="form-group">
+                    <label for="tipo_reporte">Tipo de Reporte *</label>
+                    <select id="tipo_reporte" name="tipo_reporte" required>
+                      <option value="" disabled selected>-- Seleccione Tipo --</option>
+                      <option value="Extorsión">Extorsión</option>
+                      <option value="Secuestro">Secuestro</option>
+                      <option value="Hurto">Hurto</option>
+                      <option value="Amenaza">Amenaza</option>
+                      <option value="Fraude digital">Fraude digital</option>
+                      <option value="Desaparición asociada">Desaparición asociada</option>
+                      <option value="Información de inteligencia">Información de inteligencia</option>
+                      <option value="Otro">Otro</option>
+                    </select>
+                  </div>
+
+                  <div class="form-row">
+                    <div class="form-group">
+                      <label for="prioridad">Prioridad *</label>
+                      <select id="prioridad" name="prioridad" required>
+                        <option value="" disabled selected>-- Prioridad --</option>
+                        <option value="Crítica">Crítica</option>
+                        <option value="Alta">Alta</option>
+                        <option value="Media">Media</option>
+                        <option value="Baja">Baja</option>
+                      </select>
+                    </div>
+
+                    <div class="form-group">
+                      <label for="canal_recepcion">Canal *</label>
+                      <select id="canal_recepcion" name="canal_recepcion" required>
+                        <option value="" disabled selected>-- Canal --</option>
+                        <option value="Línea 147">Línea 147</option>
+                        <option value="Reporte presencial">Reporte presencial</option>
+                        <option value="Unidad territorial">Unidad territorial</option>
+                        <option value="Correo institucional">Correo de Emergencia</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div class="form-group">
+                    <label for="unidad_gaula">Unidad GAULA Receptora *</label>
+                    <select name="unidad_gaula" id="unidad_gaula" required>
+                      <option value="" disabled selected>-- Seleccione GAULA Responsable --</option>
+                      <optgroup label="Zonas Principales">
+                        <option value="GAULA Policía Bogotá">GAULA Policía Bogotá</option>
+                        <option value="GAULA Militar Bogotá">GAULA Militar Bogotá</option>
+                        <option value="GAULA Policía Antioquia">GAULA Policía Antioquia</option>
+                        <option value="GAULA Metropolitana de Medellín">GAULA Metropolitana Medellín</option>
+                        <option value="GAULA Policía Valle">GAULA Policía Valle del Cauca</option>
+                        <option value="GAULA Metropolitana de Cali">GAULA Metropolitana Cali</option>
+                        <option value="GAULA Policía Atlántico">GAULA Policía Barranquilla</option>
+                      </optgroup>
+                      <optgroup label="Otras Regiones">
+                        <option value="GAULA Policía Cundinamarca">GAULA Policía Cundinamarca</option>
+                        <option value="GAULA Policía Tolima">GAULA Policía Tolima</option>
+                        <option value="GAULA Policía Huila">GAULA Policía Huila</option>
+                        <option value="GAULA Policía Meta">GAULA Policía Meta</option>
+                        <option value="GAULA Policía Arauca">GAULA Policía Arauca</option>
+                      </optgroup>
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              <!-- SECCIÓN 2: DENUNCIANTE -->
+              <div class="form-card double-bezel">
+                <div class="inner-core">
+                  <h3>2. Datos del Reportante</h3>
+                  <div class="form-group">
+                    <label for="nombre_reportante">Nombre Completo</label>
+                    <input type="text" id="nombre_reportante" name="nombre_reportante" placeholder="Escriba nombres y apellidos">
+                  </div>
+
+                  <div class="form-row">
+                    <div class="form-group">
+                      <label for="documento_reportante">Identificación</label>
+                      <input type="text" id="documento_reportante" name="documento_reportante" placeholder="CC / NIT / Pasaporte">
+                    </div>
+                    <div class="form-group">
+                      <label for="telefono_reportante">Teléfono</label>
+                      <input type="text" id="telefono_reportante" name="telefono_reportante" placeholder="Nro de contacto">
+                    </div>
+                  </div>
+
+                  <div class="form-group">
+                    <label for="ubicacion">Ubicación del Suceso</label>
+                    <input type="text" id="ubicacion" name="ubicacion" placeholder="Ciudad, Barrio o Coordenadas">
+                  </div>
+                </div>
+              </div>
+
+              <!-- SECCIÓN 3: DETALLE DEL CASO -->
+              <div class="form-card double-bezel col-span-2">
+                <div class="inner-core">
+                  <h3>3. Hechos y Evidencia del Delito</h3>
+                  
+                  <div class="form-group">
+                    <label for="descripcion">Descripción Breve de los Hechos *</label>
+                    <textarea id="descripcion" name="descripcion" rows="4" placeholder="¿Qué ocurrió? Escriba detalles temporales y de amenaza..." required></textarea>
+                  </div>
+
+                  <div class="form-row">
+                    <div class="form-group">
+                      <label for="numero_extorsivo">Número Telefónico Extorsivo</label>
+                      <input type="text" id="numero_extorsivo" name="numero_extorsivo" placeholder="Ej. 315XXXXXXX">
+                    </div>
+                    <div class="form-group">
+                      <label for="alias_sospechoso">Alias del Sospechoso</label>
+                      <input type="text" id="alias_sospechoso" name="alias_sospechoso" placeholder="Ej. 'El Mugre' / 'Sombra'">
+                    </div>
+                  </div>
+
+                  <div class="form-row">
+                    <div class="form-group">
+                      <label for="medio_pago">Medio / Cuenta de Pago</label>
+                      <input type="text" id="medio_pago" name="medio_pago" placeholder="Ej. Cuenta Nequi/Daviplata/Banco">
+                    </div>
+                    <div class="form-group">
+                      <label for="valor_exigido">Monto Exigido (COP)</label>
+                      <input type="text" id="valor_exigido" name="valor_exigido" placeholder="Monto estimado">
+                    </div>
+                  </div>
+
+                  <div class="form-row">
+                    <div class="form-group">
+                      <label for="evidencia">Evidencias Físicas / Enlaces</label>
+                      <textarea id="evidencia" name="evidencia" rows="2" placeholder="Notas sobre capturas de WhatsApp, audios, documentos entregados..."></textarea>
+                    </div>
+                    <div class="form-group">
+                      <label for="observaciones">Observaciones del Operador</label>
+                      <textarea id="observaciones" name="observaciones" rows="2" placeholder="Observaciones internas..."></textarea>
+                    </div>
+                  </div>
+
+                  <div id="feedback-reporte-console" class="feedback-indicator hidden"></div>
+                  
+                  <div class="form-actions-right">
+                    <button class="btn btn-secondary-tactical" type="reset">Limpiar Formulario</button>
+                    <button class="btn btn-primary-tactical" type="button" id="btn-enviar-reporte">
+                      <span>Registrar Caso</span>
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </form>
+          </div>
+        </section>
+
+
+        <!-- PANEL BANDEJA DE CASOS (ANALISTA / DIRECTOR) -->
+        <section class="panel-section" id="panel-casos">
+          <div class="section-header-tactical">
+            <h2>Bandeja de Reportes y Casos Asignados</h2>
+            <p>Monitoree y cambie el estado operacional de los reportes. Vincule y asigne unidades tácticas.</p>
+          </div>
+
+          <div class="table-actions-bar">
+            <div class="search-box-tactical">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+              <input type="text" id="search-casos" placeholder="Buscar por ID, reportante, alias o unidad...">
+            </div>
+            
+            <div class="filters-box-tactical">
+              <select id="filter-prioridad">
+                <option value="">-- Prioridad --</option>
+                <option value="Crítica">Crítica</option>
+                <option value="Alta">Alta</option>
+                <option value="Media">Media</option>
+                <option value="Baja">Baja</option>
+              </select>
+              <select id="filter-estado">
+                <option value="">-- Estado --</option>
+                <option value="Recibido">Recibido</option>
+                <option value="En análisis">En análisis</option>
+                <option value="Asignado">Asignado</option>
+                <option value="Cerrado">Cerrado</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="cases-panel-split">
+            <!-- Tabla de casos -->
+            <div class="cases-list-container double-bezel">
+              <div class="inner-core">
+                <div class="table-wrap">
+                  <table id="table-cases-list">
+                    <thead>
+                      <tr>
+                        <th>Código / Fecha</th>
+                        <th>Delito</th>
+                        <th>Prioridad</th>
+                        <th>GAULA</th>
+                        <th>Estado</th>
+                        <th>Acción</th>
+                      </tr>
+                    </thead>
+                    <tbody id="cases-table-body">
+                      <!-- Se carga vía AJAX -->
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+
+            <!-- Panel de detalles en la derecha -->
+            <div class="case-detail-sidebar double-bezel hidden" id="case-detail-panel">
+              <div class="inner-core">
+                <div class="detail-header">
+                  <span class="detail-badge-id" id="detail-case-id">CASE-000</span>
+                  <button class="btn-close-detail" id="btn-close-detail-panel">&times;</button>
+                </div>
+
+                <div class="detail-scroll-content">
+                  <div class="detail-section">
+                    <h4>Clasificación Operativa</h4>
+                    <p><strong>Tipo:</strong> <span id="detail-case-tipo">N/A</span></p>
+                    <p><strong>Prioridad:</strong> <span class="badge" id="detail-case-prioridad">N/A</span></p>
+                    <p><strong>Estado Actual:</strong> <span class="badge" id="detail-case-estado">N/A</span></p>
+                    <p><strong>Unidad GAULA:</strong> <span id="detail-case-gaula">N/A</span></p>
+                  </div>
+
+                  <div class="detail-section">
+                    <h4>Datos del Hecho</h4>
+                    <p><strong>Número Extorsivo:</strong> <span id="detail-case-telefono-ext">No registra</span></p>
+                    <p><strong>Alias del Sospechoso:</strong> <span id="detail-case-alias">No registra</span></p>
+                    <p><strong>Monto Exigido:</strong> <span id="detail-case-monto">No registra</span></p>
+                    <p><strong>Cuenta de Cobro:</strong> <span id="detail-case-pago">No registra</span></p>
+                  </div>
+
+                  <div class="detail-section">
+                    <h4>Hechos Reportados</h4>
+                    <div class="text-box-raw" id="detail-case-descripcion">Sin hechos registrados.</div>
+                  </div>
+
+                  <div class="detail-section">
+                    <h4>Gestión Operativa</h4>
+                    <label for="detail-change-status">Cambiar Estado Operativo</label>
+                    <select id="detail-change-status" class="select-tactical">
+                      <option value="Recibido">Recibido</option>
+                      <option value="En análisis">En análisis</option>
+                      <option value="Asignado">Asignado</option>
+                      <option value="Cerrado">Cerrado</option>
+                    </select>
+                    <button class="btn btn-primary-tactical w-full mt-2" id="btn-save-case-status">Actualizar Estado</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+
+        <!-- PANEL BASE DE ENTIDADES (INTELIGENCIA) -->
+        <section class="panel-section" id="panel-entidades">
+          <div class="section-header-tactical">
+            <h2>Base de Datos de Inteligencia y Entidades</h2>
+            <p>Consulte personas, teléfonos, alias y ubicaciones vinculadas a redes extorsivas.</p>
+          </div>
+
+          <div class="tabs-tactical-header">
+            <button class="tab-btn active" data-tab="tab-personas">Personas</button>
+            <button class="tab-btn" data-tab="tab-telefonos">Teléfonos</button>
+            <button class="tab-btn" data-tab="tab-alias">Alias</button>
+            <button class="tab-btn" data-tab="tab-ubicaciones">Ubicaciones</button>
+          </div>
+
+          <div class="tabs-tactical-content">
+            <!-- PERSONAS -->
+            <div class="tab-panel active" id="tab-personas">
+              <div class="dashboard-card double-bezel">
+                <div class="inner-core">
+                  <div class="table-wrap">
+                    <table>
+                      <thead>
+                        <tr>
+                          <th>Nombre completo</th>
+                          <th>Identificación</th>
+                          <th>Rol de Caso</th>
+                          <th>Casos Vinculados</th>
+                        </tr>
+                      </thead>
+                      <tbody id="entities-personas-body">
+                        <!-- Carga dinámica -->
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- TELÉFONOS -->
+            <div class="tab-panel" id="tab-telefonos">
+              <div class="dashboard-card double-bezel">
+                <div class="inner-core">
+                  <div class="table-wrap">
+                    <table>
+                      <thead>
+                        <tr>
+                          <th>Número de Línea</th>
+                          <th>Operador</th>
+                          <th>Tipo de Uso</th>
+                          <th>Casos Vinculados</th>
+                        </tr>
+                      </thead>
+                      <tbody id="entities-telefonos-body">
+                        <!-- Carga dinámica -->
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- ALIAS -->
+            <div class="tab-panel" id="tab-alias">
+              <div class="dashboard-card double-bezel">
+                <div class="inner-core">
+                  <div class="table-wrap">
+                    <table>
+                      <thead>
+                        <tr>
+                          <th>Alias / Seudónimo</th>
+                          <th>Descripción de Perfil</th>
+                          <th>Casos Vinculados</th>
+                        </tr>
+                      </thead>
+                      <tbody id="entities-alias-body">
+                        <!-- Carga dinámica -->
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- UBICACIONES -->
+            <div class="tab-panel" id="tab-ubicaciones">
+              <div class="dashboard-card double-bezel">
+                <div class="inner-core">
+                  <div class="table-wrap">
+                    <table>
+                      <thead>
+                        <tr>
+                          <th>Lugar / Región</th>
+                          <th>Coordenadas</th>
+                          <th>Tipo de Zona</th>
+                          <th>Casos Vinculados</th>
+                        </tr>
+                      </thead>
+                      <tbody id="entities-ubicaciones-body">
+                        <!-- Carga dinámica -->
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+
+        <!-- PANEL CORRELACIONES E OSINT (INTELIGENCIA TÁCTICA) -->
+        <section class="panel-section" id="panel-inteligencia">
+          <div class="section-header-tactical">
+            <h2>Correlaciones de Redes Extorsivas y OSINT</h2>
+            <p>Visualización de enlaces entre delincuentes y verificación de brechas de seguridad externa en tiempo real.</p>
+          </div>
+
+          <div class="dashboard-grid">
+            <!-- Simulación de Redes de Enlace -->
+            <div class="dashboard-card double-bezel col-span-6">
+              <div class="inner-core">
+                <h3>Relaciones Detectadas por Correlación Cruzada</h3>
+                <p class="helper-text-mono">Algoritmo de vinculación telefónica y alias:</p>
+                <div class="table-wrap">
+                  <table>
+                    <thead>
+                      <tr>
+                        <th>Origen</th>
+                        <th>Destino</th>
+                        <th>Vínculo</th>
+                        <th>Nivel Confianza</th>
+                      </tr>
+                    </thead>
+                    <tbody id="intel-relations-body">
+                      <!-- Carga dinámica -->
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+
+            <!-- Módulo OSINT: Brechas externas -->
+            <div class="dashboard-card double-bezel col-span-6">
+              <div class="inner-core">
+                <h3>OSINT: Brechas de Seguridad Ajenas</h3>
+                <p class="helper-text-mono">Verificación externa de filtración de datos de interés:</p>
+                <button class="btn btn-secondary-tactical mb-2" id="btn-load-osint">Escanear Brechas Activas</button>
+                <div class="table-wrap text-small-wrap" style="max-height: 300px; overflow-y: auto;">
+                  <table>
+                    <thead>
+                      <tr>
+                        <th>Nombre</th>
+                        <th>Dominio</th>
+                        <th>Fecha</th>
+                        <th>Expuestos</th>
+                      </tr>
+                    </thead>
+                    <tbody id="intel-osint-body">
+                      <tr>
+                        <td colspan="4" class="text-center">Presione "Escanear" para consultar la base de datos externa.</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+
+        <!-- PANEL DASHBOARD EJECUTIVO (DIRECTOR / ADMIN) -->
+        <section class="panel-section" id="panel-dashboard">
+          <div class="section-header-tactical">
+            <h2>Centro de Mando Operacional - Estadísticas</h2>
+            <p>KPIs consolidados para la toma de decisiones estratégicas a nivel nacional.</p>
+          </div>
+
+          <div class="kpi-grid">
+            <article class="kpi-card double-bezel">
+              <div class="inner-core">
+                <span>Casos Activos</span>
+                <strong id="kpi-active-cases">48</strong>
+              </div>
+            </article>
+            <article class="kpi-card double-bezel alert-kpi">
+              <div class="inner-core">
+                <span>Casos Críticos</span>
+                <strong id="kpi-critical-cases">12</strong>
+              </div>
+            </article>
+            <article class="kpi-card double-bezel">
+              <div class="inner-core">
+                <span>GAULAs Conectados</span>
+                <strong>34</strong>
+              </div>
+            </article>
+            <article class="kpi-card double-bezel">
+              <div class="inner-core">
+                <span>Respuesta Promedio</span>
+                <strong>08m</strong>
+              </div>
+            </article>
+          </div>
+
+          <div class="dashboard-grid">
+            <!-- Gráfica Tipo Reporte -->
+            <div class="dashboard-card double-bezel col-span-6">
+              <div class="inner-core">
+                <h3>Tipología de Delito - Distribución</h3>
+                <div class="distribution-bars-container" id="kpi-distribution-bars">
+                  <!-- Se inyecta dinámicamente -->
+                </div>
+              </div>
+            </div>
+
+            <!-- Radar Tactico -->
+            <div class="dashboard-card double-bezel col-span-6">
+              <div class="inner-core flex-center">
+                <h3>Radar de Criticidad Activo</h3>
+                <div class="radar-box-tactical">
+                  <div class="radar-circle r1"></div>
+                  <div class="radar-circle r2"></div>
+                  <div class="radar-circle r3"></div>
+                  <div class="radar-sweep"></div>
+                  <div class="radar-dot d1"></div>
+                  <div class="radar-dot d2"></div>
+                  <div class="radar-dot d3"></div>
+                  <div class="radar-center">147</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Mapa Nacional -->
+            <div class="dashboard-card double-bezel col-span-12">
+              <div class="inner-core">
+                <h3>Georreferenciación Operacional (Proyección de Mapa Nacional)</h3>
+                <div class="map-grid-console">
+                  <div class="map-grid-lines"></div>
+                  <div class="map-target z1">BOGOTÁ</div>
+                  <div class="map-target z2">ANTIOQUIA</div>
+                  <div class="map-target z3">VALLE DEL CAUCA</div>
+                  <div class="map-target z4">META</div>
+                  
+                  <div class="map-pulse-c c1"></div>
+                  <div class="map-pulse-c c2"></div>
+                  <div class="map-pulse-c c3"></div>
+                  
+                  <span class="map-disclaimer">NEXO-147: Visualización táctica de nodos GAULA activos y alertas reportadas.</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+
+        <!-- PANEL ADMINISTRACIÓN (SOLO ADMIN) -->
+        <section class="panel-section" id="panel-administracion">
+          <div class="section-header-tactical">
+            <h2>Módulo Administrativo y Auditoría del Sistema</h2>
+            <p>Supervisión de accesos, estados de red e integraciones activas.</p>
+          </div>
+
+          <div class="dashboard-grid">
+            <div class="dashboard-card double-bezel col-span-12">
+              <div class="inner-core">
+                <h3>Auditoría de Actividad e Integración Base de Datos</h3>
+                <p class="helper-text-mono">Conexión con SQLAlchemy binds (intel.db, osint.db, nexo147.db):</p>
+                <div class="db-status-bar">
+                  <div class="db-status-item">
+                    <span class="status-indicator-green"></span>
+                    <span>Database: <strong>nexo147.db</strong> (Online)</span>
+                  </div>
+                  <div class="db-status-item">
+                    <span class="status-indicator-green"></span>
+                    <span>Database: <strong>intel.db</strong> (Online)</span>
+                  </div>
+                  <div class="db-status-item">
+                    <span class="status-indicator-green"></span>
+                    <span>Database: <strong>osint.db</strong> (Online)</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- PANEL CONFIGURACIÓN -->
+        <section class="panel-section" id="panel-configuracion">
+          <div class="section-header-tactical">
+            <h2>Configuraciones de Usuario y Preferencias del Sistema</h2>
+            <p>Administre sus configuraciones locales, temas de visualización e identidad.</p>
+          </div>
+
+          <div class="dashboard-card double-bezel">
+            <div class="inner-core">
+              <h3>Información del Agente</h3>
+              <p><strong>Identificador:</strong> <span class="helper-text-mono">{{ session.get("user") }}</span></p>
+              <p><strong>Nombre Completo:</strong> <span>{{ session.get("name") }}</span></p>
+              <p><strong>Rol en el Sistema:</strong> <span class="badge">{{ session.get("role") }}</span></p>
+              <hr class="divider-light">
+              <h3>Ajustes de Interfaz</h3>
+              <div class="form-group-checkbox">
+                <input type="checkbox" id="pref-sounds" checked>
+                <label for="pref-sounds">Habilitar alarmas audibles para casos Críticos</label>
+              </div>
+              <div class="form-group-checkbox">
+                <input type="checkbox" id="pref-reload" checked>
+                <label for="pref-reload">Auto-recargar bandeja de casos en segundo plano (30s)</label>
+              </div>
+            </div>
+          </div>
+        </section>
+
+      </main>
+
+      <!-- STATUS BAR INFERIOR -->
+      <footer class="console-statusbar">
+        <div class="statusbar-left">
+          <span class="system-status-indicator"><span class="pulse-green"></span> SISTEMA NOMINAL</span>
+          <span class="separator">|</span>
+          <span>NODO: GAULA COLOMBIA</span>
+          <span class="separator">|</span>
+          <span>ROUTING BIND: SQLITE</span>
+        </div>
+        <div class="statusbar-right">
+          <span>SECURE SEC: SHA256</span>
+          <span class="separator">|</span>
+          <span>V.2.1.0-DEMO</span>
+        </div>
+      </footer>
+
+    </div>
+  </div>
+
+  <script src="{{ url_for('static', filename='console.js') }}"></script>
+</body>
+</html>
