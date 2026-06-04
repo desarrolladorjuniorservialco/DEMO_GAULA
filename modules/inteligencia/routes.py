@@ -5,7 +5,7 @@ from modules.inteligencia import intel_bp
 from modules.auth.decorators import login_required
 from models.nexo147 import Caso
 from models.intel import (
-    Persona, Alias, Telefono, Correo, Ubicacion,
+    Persona, Alias, Telefono, Ubicacion,
     Vehiculo, CuentaBancaria, Organizacion,
     IntelNode, IntelEdge, HallazgoIntel,
 )
@@ -217,7 +217,7 @@ def api_etl_status():
         {"id": "gestion",      "nombre": "Gestión de Casos",               "estado": "completado" if n_casos > 0 else "pendiente",     "registros": n_casos,                              "porcentaje": 100 if n_casos > 0 else 0},
         {"id": "transac",      "nombre": "Base Transaccional",             "estado": "completado" if n_casos > 0 else "pendiente",     "registros": n_casos + n_personas,                 "porcentaje": 100 if n_casos > 0 else 0},
         {"id": "etl",          "nombre": "Motor ETL y Correlación",        "estado": "en_proceso" if (n_personas + n_alias) > 0 else ("en_proceso" if n_casos > 0 else "pendiente"),      "registros": n_personas + n_alias + n_telefonos,   "porcentaje": max(10 if n_casos > 0 else 0, min(90, pct(n_personas + n_alias, n_casos * 3 + 1)))},
-        {"id": "dw",           "nombre": "Data Warehouse / Grafo",         "estado": "en_proceso" if n_nodos > 0 else ("en_proceso" if n_casos > 0 else "pendiente"),                     "registros": n_nodos,                              "porcentaje": max(8 if n_casos > 0 else 0, min(80, pct(n_nodos, n_personas + 10)))},
+        {"id": "dw",           "nombre": "Data Warehouse / Grafo de Relaciones",         "estado": "en_proceso" if n_nodos > 0 else ("en_proceso" if n_casos > 0 else "pendiente"),                     "registros": n_nodos,                              "porcentaje": max(8 if n_casos > 0 else 0, min(80, pct(n_nodos, n_personas + 10)))},
         {"id": "datamart",     "nombre": "Data Mart de Inteligencia",      "estado": "en_proceso" if n_hallazgos > 0 else ("en_proceso" if n_casos > 0 else "pendiente"),                 "registros": n_hallazgos,                          "porcentaje": max(5 if n_casos > 0 else 0, min(70, pct(n_hallazgos, n_personas + 5)))},
         {"id": "dashboard_ia", "nombre": "Dashboard IA / GIS / Analítica", "estado": "en_proceso" if n_indicadores > 0 else ("en_proceso" if n_casos > 0 else "pendiente"),               "registros": n_indicadores,                        "porcentaje": max(3 if n_casos > 0 else 0, min(60, pct(n_indicadores, n_hallazgos + 3)))},
         {"id": "decisiones",   "nombre": "Toma de Decisiones",             "estado": "completado" if n_casos > 0 else "pendiente",     "registros": n_casos,                              "porcentaje": 100 if n_casos > 0 else 0},
