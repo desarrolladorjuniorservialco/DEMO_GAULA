@@ -90,7 +90,9 @@
       "Bash(mkdir \"C:\\\\Users\\\\Victor Pulido\\\\Documents\\\\GIT_Repositories\\\\DEMO_GAULA\\\\frontend\\\\src\\\\__tests__\")",
       "Bash(npm install *)",
       "Bash(npm test *)",
-      "Bash(npm run *)"
+      "Bash(npm run *)",
+      "Bash(python -c \"import sys,json; d=json.load\\(sys.stdin\\); print\\(json.dumps\\(d.get\\('scripts', {}\\), indent=2\\)\\)\")",
+      "Bash(python -c \"import re; content=open\\('static/js/osint-graph.bundle.js'\\).read\\(\\); matches=re.findall\\(r'.{0,60}og-detail-panel.{0,60}', content\\); print\\('\\\\n'.join\\(matches[:5]\\)\\)\")"
     ],
     "additionalDirectories": [
       "C:\\Users\\Victor Pulido\\Documents\\GIT\\DEMO_GAULA\\docs\\superpowers\\specs",

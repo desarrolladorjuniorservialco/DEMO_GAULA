@@ -18,11 +18,15 @@ const RISK_COLOR = { Crítico: '#ff5252', Alto: '#ff9800', Medio: '#f1c40f', Baj
 const RISK_BG    = { Crítico: '#4a0a0a', Alto: '#3a1a00', Medio: '#2a2a00', Bajo: '#0a1a0a', Info: '#0a1020' };
 
 export function clearPanel() {
+  const panel = document.getElementById('og-detail-panel');
+  if (panel) panel.style.display = 'none';
   const body = document.getElementById('og-detail-body');
   if (body) body.innerHTML = '<p class="og-detail-placeholder">Selecciona un nodo en el grafo para ver su ficha de inteligencia.</p>';
 }
 
 export function renderNodeDetail(nodeId, graph, onNavigate) {
+  const panel = document.getElementById('og-detail-panel');
+  if (panel) panel.style.display = 'flex';
   const body = document.getElementById('og-detail-body');
   if (!body || !graph.hasNode(nodeId)) return;
 
