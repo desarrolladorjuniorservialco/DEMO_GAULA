@@ -26,7 +26,7 @@
 
         {% if session.get("role") == "admin" %}
           <a href="#modulos" class="btn ghost">Ver módulos</a>
-          <a href="{{ url_for('dashboard') }}" class="btn ghost">Abrir dashboard</a>
+          <a href="{{ url_for('dashboard.dashboard') }}" class="btn ghost">Abrir dashboard</a>
         {% endif %}
       </div>
 
@@ -124,7 +124,7 @@
       {% endwith %}
     </div>
 
-    <form id="formulario-inicial" class="form" method="POST" action="{{ url_for('registrar_reporte') }}">
+    <form id="formulario-inicial" class="form" method="POST" action="{{ url_for('casos.registrar_reporte') }}">
       <div class="form-section">
         <h3>1. Clasificación inicial</h3>
         <label for="tipo_reporte" class="form-label">

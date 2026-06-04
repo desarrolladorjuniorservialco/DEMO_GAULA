@@ -18,7 +18,7 @@
     <div class="orb orb-one"></div>
     <div class="orb orb-two"></div>
       <header class="header">
-        <a href="{{ url_for('home') }}" class="brand">
+        <a href="{{ url_for('auth.home') }}" class="brand">
           <img src="{{ url_for('static', filename='assets/logo.png')}}" alt="NEXO-147">
           <div>
             <strong>NEXO-147</strong>
@@ -32,12 +32,12 @@
             <a href="#modulos">Módulos</a>
             <a href="#reporte">Reporte 147</a>
             <a href="#trazabilidad">Trazabilidad</a>
-            <a href="{{ url_for('dashboard') }}">Dashboard</a>
-            <a href="{{ url_for('logout') }}">Cerrar sesión</a>
-            <a href="{{ url_for('api_externa') }}">Verificación de brechas de seguridad</a>
+            <a href="{{ url_for('dashboard.dashboard') }}">Dashboard</a>
+            <a href="{{ url_for('auth.logout') }}">Cerrar sesión</a>
+            <a href="{{ url_for('dashboard.api_externa') }}">Verificación de brechas de seguridad</a>
           {% else %}
             <a href="#reporte">Formulario 147</a>
-            <a href="{{ url_for('logout') }}">Cerrar sesión</a>
+            <a href="{{ url_for('auth.logout') }}">Cerrar sesión</a>
           {% endif %}
         </nav>
       </header>

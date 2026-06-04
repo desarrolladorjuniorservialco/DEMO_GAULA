@@ -84,7 +84,13 @@
       "Bash(python -m pytest tests/ -v)",
       "Bash(python -m pytest tests/ --tb=short -q)",
       "Bash(Select-Object -Property FullName, PSIsContainer)",
-      "Bash(Sort-Object FullName)"
+      "Bash(Sort-Object FullName)",
+      "Bash(mkdir \"C:\\\\Users\\\\Victor Pulido\\\\Documents\\\\GIT_Repositories\\\\DEMO_GAULA\\\\frontend\")",
+      "Bash(mkdir \"C:\\\\Users\\\\Victor Pulido\\\\Documents\\\\GIT_Repositories\\\\DEMO_GAULA\\\\frontend\\\\src\")",
+      "Bash(mkdir \"C:\\\\Users\\\\Victor Pulido\\\\Documents\\\\GIT_Repositories\\\\DEMO_GAULA\\\\frontend\\\\src\\\\__tests__\")",
+      "Bash(npm install *)",
+      "Bash(npm test *)",
+      "Bash(npm run *)"
     ],
     "additionalDirectories": [
       "C:\\Users\\Victor Pulido\\Documents\\GIT\\DEMO_GAULA\\docs\\superpowers\\specs",

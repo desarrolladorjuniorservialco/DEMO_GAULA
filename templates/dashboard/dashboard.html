@@ -19,7 +19,7 @@
 <div class="orb orb-two"></div>
 
 <header class="header">
-  <a href="{{ url_for('dashboard') }}" class="brand">
+  <a href="{{ url_for('dashboard.dashboard') }}" class="brand">
     <img src="{{ url_for('static', filename='assets/logo.png') }}" alt="NEXO-147">
     <div>
       <strong>NEXO-147</strong>
@@ -28,9 +28,9 @@
   </a>
 
   <nav class="nav" aria-label="Navegación principal del panel">
-    <a href="{{ url_for('dashboard') }}">Dashboard</a>
-    <a href="{{ url_for('home') }}">Formulario 147</a>
-    <a href="{{ url_for('logout') }}">Salir</a>
+    <a href="{{ url_for('dashboard.dashboard') }}">Dashboard</a>
+    <a href="{{ url_for('auth.home') }}">Formulario 147</a>
+    <a href="{{ url_for('auth.logout') }}">Salir</a>
   </nav>
 </header>
 
