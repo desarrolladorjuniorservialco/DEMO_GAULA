@@ -1376,6 +1376,28 @@ document.addEventListener("DOMContentLoaded", () => {
     return { futureMonths, futureValues };
   }
 
+  function typewriterIntel(el, text, speed, onDone) {
+    if (!el) { if (typeof onDone === 'function') onDone(); return; }
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      el.textContent = text;
+      if (typeof onDone === 'function') onDone();
+      return;
+    }
+    let i = 0;
+    el.textContent = '';
+    el.classList.add('proj-tw-cursor');
+    function step() {
+      if (i < text.length) {
+        el.textContent = text.slice(0, ++i);
+        setTimeout(step, speed);
+      } else {
+        el.classList.remove('proj-tw-cursor');
+        if (typeof onDone === 'function') onDone();
+      }
+    }
+    step();
+  }
+
   function buildProjectionAnalysis(escenario, tendencia, totalCasos, monto) {
     const safeTotal = Number.isFinite(totalCasos) ? totalCasos : 0;
     const safeMonto = Number.isFinite(monto)      ? monto      : 0;
@@ -1424,13 +1446,24 @@ document.addEventListener("DOMContentLoaded", () => {
             <span class="helper-text-mono" style="display:block;font-size:.75rem;">Tendencia histórica: ${tendenciaLabel} · ${safeTotal.toLocaleString("es-CO")} casos · $${safeMonto.toLocaleString("es-CO")} COP</span>
           </div>
         </div>
-        <p style="margin-bottom:.75rem;color:#c0ccdc;">${cfg.resumen}</p>
+        <p class="proj-tw-resumen" style="margin-bottom:.75rem;color:#c0ccdc;min-height:1.4em;"></p>
         <strong style="display:block;margin-bottom:.5rem;color:#8b99ae;font-size:.8rem;letter-spacing:.07em;">ACCIONES SUGERIDAS:</strong>
         <ul style="margin:0;padding-left:1.25rem;">
-          ${cfg.acciones.map(a => `<li style="color:#f0f4fa;margin-bottom:.35rem;">${a}</li>`).join("")}
+          ${cfg.acciones.map(() => `<li class="proj-tw-accion" style="color:#f0f4fa;margin-bottom:.35rem;min-height:1.2em;"></li>`).join("")}
         </ul>
       </div>
     `;
+
+    const resumenEl = el.querySelector('.proj-tw-resumen');
+    const accionEls = [...el.querySelectorAll('.proj-tw-accion')];
+
+    typewriterIntel(resumenEl, cfg.resumen, 16, () => {
+      function typeAccion(idx) {
+        if (idx >= accionEls.length) return;
+        setTimeout(() => typewriterIntel(accionEls[idx], cfg.acciones[idx], 14, () => typeAccion(idx + 1)), 120);
+      }
+      setTimeout(() => typeAccion(0), 180);
+    });
   }
 
   function renderIntelProjections(filteredRecords, escenario) {

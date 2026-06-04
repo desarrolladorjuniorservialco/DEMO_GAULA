@@ -2070,6 +2070,20 @@ tr:hover td {
   margin-bottom: 18px;
 }
 
+/* Typewriter cursor for projection analysis */
+.proj-tw-cursor::after {
+  content: '▌';
+  color: inherit;
+  opacity: 0.8;
+  animation: proj-tw-blink 0.65s step-end infinite;
+}
+@keyframes proj-tw-blink {
+  50% { opacity: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .proj-tw-cursor::after { display: none; }
+}
+
 .intel-hero-grid {
   display: grid;
   grid-template-columns: 1.25fr 0.75fr;
