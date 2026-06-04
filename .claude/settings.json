@@ -81,7 +81,10 @@
       "Bash(Test-Path \"C:\\\\Users\\\\Victor Pulido\\\\Documents\\\\GIT\\\\DEMO_GAULA\\\\templates\\\\index.html\")",
       "Bash(Test-Path \"C:\\\\Users\\\\Victor Pulido\\\\Documents\\\\GIT\\\\DEMO_GAULA\\\\templates\\\\dashboard.html\")",
       "Bash(Test-Path \"C:\\\\Users\\\\Victor Pulido\\\\Documents\\\\GIT\\\\DEMO_GAULA\\\\templates\\\\brechas_seguridad.html\")",
-      "Bash(python -m pytest tests/ -v)"
+      "Bash(python -m pytest tests/ -v)",
+      "Bash(python -m pytest tests/ --tb=short -q)",
+      "Bash(Select-Object -Property FullName, PSIsContainer)",
+      "Bash(Sort-Object FullName)"
     ],
     "additionalDirectories": [
       "C:\\Users\\Victor Pulido\\Documents\\GIT\\DEMO_GAULA\\docs\\superpowers\\specs",
