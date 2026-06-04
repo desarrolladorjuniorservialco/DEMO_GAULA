@@ -14,6 +14,8 @@ def home():
 
 @auth_bp.route("/login", methods=["GET", "POST"])
 def login():
+    if "user" in session:
+        return redirect(url_for("auth.home"))
     if request.method == "POST":
         usuario = request.form.get("usuario", "").strip()
         password = request.form.get("password", "").strip()
