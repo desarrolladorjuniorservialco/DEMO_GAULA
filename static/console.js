@@ -1198,9 +1198,10 @@ document.addEventListener("DOMContentLoaded", () => {
       },
       hovertemplate: "%{x}<br>Reportes: %{y}<extra></extra>",
     }], {
-      xaxis: { title: groupBy === "monthly" ? "Mes registro" : "Fecha registro" },
+      xaxis: { title: groupBy === "monthly" ? "Mes registro" : "Fecha registro", tickangle: -35 },
       yaxis: { title: "Número de reportes" },
       showlegend: false,
+      margin: { l: 48, r: 28, t: 12, b: 72 },
     });
   }
 
@@ -1232,10 +1233,11 @@ document.addEventListener("DOMContentLoaded", () => {
         hovertemplate: "%{x}<br>Anterior: %{y}<extra></extra>",
       },
     ], {
-      xaxis: { title: groupBy === "monthly" ? "Mes" : "Fecha" },
+      xaxis: { title: groupBy === "monthly" ? "Mes" : "Fecha", tickangle: -35 },
       yaxis: { title: "Reportes" },
       showlegend: true,
-      legend: { orientation: "h", y: -0.18, font: { color: "#8b99ae", size: 11 } },
+      legend: { orientation: "h", y: -0.28, font: { color: "#8b99ae", size: 11 } },
+      margin: { l: 48, r: 28, t: 12, b: 88 },
     });
   }
 
@@ -1256,7 +1258,7 @@ document.addEventListener("DOMContentLoaded", () => {
       },
       hovertemplate: "%{label}<br>Cantidad: %{value}<extra></extra>",
     }], {
-      margin: { l: 8, r: 8, t: 12, b: 18 },
+      margin: { l: 24, r: 24, t: 12, b: 24 },
       showlegend: false,
     });
   }
@@ -1322,6 +1324,40 @@ document.addEventListener("DOMContentLoaded", () => {
       showlegend: false,
       margin: { l: 52, r: 24, t: 12, b: 110 },
     });
+  }
+
+  // ── Proyecciones: utilidades matemáticas ──────────────────────────────────
+
+  function calcLinearRegression(xArr, yArr) {
+    const n = xArr.length;
+    if (n < 2) return { slope: 0, intercept: yArr[0] || 0 };
+    const sumX  = xArr.reduce((a, b) => a + b, 0);
+    const sumY  = yArr.reduce((a, b) => a + b, 0);
+    const sumXY = xArr.reduce((s, x, i) => s + x * yArr[i], 0);
+    const sumX2 = xArr.reduce((s, x) => s + x * x, 0);
+    const denom = n * sumX2 - sumX * sumX;
+    if (denom === 0) return { slope: 0, intercept: sumY / n };
+    const slope     = (n * sumXY - sumX * sumY) / denom;
+    const intercept = (sumY - slope * sumX) / n;
+    return { slope, intercept };
+  }
+
+  function buildFutureMonths(lastMonthStr, n) {
+    const months = [];
+    const [y, m] = lastMonthStr.split("-").map(Number);
+    for (let i = 1; i <= n; i++) {
+      const d = new Date(y, m - 1 + i, 1);
+      months.push(`${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`);
+    }
+    return months;
+  }
+
+  function getScenarioModifiers(escenario, steps) {
+    const linspace = (start, end, n) =>
+      Array.from({ length: n }, (_, i) => start + (end - start) * (i / (n - 1)));
+    if (escenario === "optimista")  return { mods: linspace(0.85, 0.50, steps), color: "#22c55e" };
+    if (escenario === "pesimista")  return { mods: linspace(1.20, 2.10, steps), color: "#ef4444" };
+    return { mods: linspace(0.97, 1.03, steps), color: "#eab308" };  // realista
   }
 
   function syncIntelFilterState() {
