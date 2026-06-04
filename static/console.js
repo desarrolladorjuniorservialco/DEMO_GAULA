@@ -1330,7 +1330,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function calcLinearRegression(xArr, yArr) {
     const n = xArr.length;
-    if (n < 2) return { slope: 0, intercept: yArr[0] || 0 };
+    if (xArr.length !== yArr.length) {
+      console.warn("calcLinearRegression: arrays must have equal length");
+      return { slope: 0, intercept: 0 };
+    }
+    if (n < 2) return { slope: 0, intercept: yArr[0] ?? 0 };
     const sumX  = xArr.reduce((a, b) => a + b, 0);
     const sumY  = yArr.reduce((a, b) => a + b, 0);
     const sumXY = xArr.reduce((s, x, i) => s + x * yArr[i], 0);
@@ -1343,6 +1347,10 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function buildFutureMonths(lastMonthStr, n) {
+    if (!lastMonthStr || !/^\d{4}-\d{2}$/.test(lastMonthStr)) {
+      console.warn("buildFutureMonths: expected YYYY-MM, got:", lastMonthStr);
+      return [];
+    }
     const months = [];
     const [y, m] = lastMonthStr.split("-").map(Number);
     for (let i = 1; i <= n; i++) {
@@ -1353,8 +1361,11 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function getScenarioModifiers(escenario, steps) {
-    const linspace = (start, end, n) =>
-      Array.from({ length: n }, (_, i) => start + (end - start) * (i / (n - 1)));
+    const linspace = (start, end, len) => {
+      if (len <= 0) return [];
+      if (len === 1) return [start];
+      return Array.from({ length: len }, (_, i) => start + (end - start) * (i / (len - 1)));
+    };
     if (escenario === "optimista")  return { mods: linspace(0.85, 0.50, steps), color: "#22c55e" };
     if (escenario === "pesimista")  return { mods: linspace(1.20, 2.10, steps), color: "#ef4444" };
     return { mods: linspace(0.97, 1.03, steps), color: "#eab308" };  // realista
