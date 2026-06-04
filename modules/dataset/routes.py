@@ -16,7 +16,10 @@ _CSV_ALERTAS = os.path.join(_DATA_DIR, "nexo147_alertas_osint_demo.csv")  # used
 @dataset_bp.route("/api/dataset/casos")
 @login_required
 def api_dataset_casos():
-    df = pd.read_csv(_CSV_CASOS, dtype=str).fillna("")
+    try:
+        df = pd.read_csv(_CSV_CASOS, dtype=str).fillna("")
+    except (FileNotFoundError, pd.errors.ParserError, OSError) as exc:
+        return jsonify({"error": f"Dataset no disponible: {exc}"}), 503
     df = df.rename(columns={
         "unidad_gaula_receptora":         "unidad_gaula",
         "estado_caso":                    "estado",
@@ -56,11 +59,13 @@ def api_intel_dashboard():
     casos_df["fecha_registro"] = pd.to_datetime(casos_df["fecha_registro"], errors="coerce")
     casos_df["mes_anio"] = casos_df["fecha_registro"].dt.strftime("%Y-%m")
     casos_df = casos_df.sort_values("mes_anio")
+    casos_df = casos_df[casos_df["mes_anio"].notna()]
 
     # KPIs
     total_casos   = int(len(casos_df))
     total_monto   = int(casos_df["monto_exigido_perdida_estimada"].sum())
-    avg_riesgo    = float(casos_df["score_riesgo"].mean())
+    _mean_riesgo = casos_df["score_riesgo"].mean()
+    avg_riesgo   = float(_mean_riesgo) if not pd.isna(_mean_riesgo) else 0.0
     total_alertas = int(len(alertas_df))
 
     # G1: Monthly trend
