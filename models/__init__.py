@@ -1,3 +1,2 @@
-from flask_sqlalchemy import SQLAlchemy
-
-db = SQLAlchemy()
+# models/__init__.py
+from modules.extensions import db  # noqa: F401

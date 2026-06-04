@@ -1,31 +1,27 @@
+# tests/conftest.py
 import pytest
 import os
 import sys
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
 
-from app import nexo
-from models import db as _db
+from modules import create_app
+from modules.config import TestConfig
+from modules.extensions import db as _db
 
 
 @pytest.fixture(scope="function")
 def app():
-    original_config = nexo.config.copy()
-    nexo.config.update({
-        "TESTING": True,
-        "SQLALCHEMY_DATABASE_URI": "sqlite:///:memory:",
-        "SQLALCHEMY_BINDS": {
-            "intel": "sqlite:///:memory:",
-            "osint": "sqlite:///:memory:",
-        },
-    })
-    with nexo.app_context():
-        _db.create_all()
-        yield nexo
-        _db.drop_all()
-    nexo.config.update(original_config)
+    app = create_app(TestConfig)
+    with app.app_context():
+        yield app
 
 
 @pytest.fixture
 def session(app):
     yield _db.session
+
+
+@pytest.fixture
+def client(app):
+    return app.test_client()
