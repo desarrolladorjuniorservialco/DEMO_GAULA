@@ -25,7 +25,8 @@ def create_app(config=None):
     with app.app_context():
         os.makedirs(os.path.join(_basedir, "data"), exist_ok=True)
         db.create_all()
-        _seed_db()
+        if not app.config.get("TESTING"):
+            _seed_db()
 
     return app
 
