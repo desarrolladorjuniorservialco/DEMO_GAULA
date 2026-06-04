@@ -617,6 +617,8 @@ document.addEventListener("DOMContentLoaded", () => {
       // Trigger rendering charts for specific tabs
       if (targetTab === "tab-dm-ia") {
         renderDashboardIACharts();
+      } else if (targetTab === "tab-dm-gis") {
+        renderGIS();
       } else if (targetTab === "tab-dm-analitica") {
         renderAnaliticaCharts();
       }
@@ -663,215 +665,356 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // A. DASHBOARD IA
-  function renderDashboardIACharts() {
-    if (!dmData.entidades) return;
+  const _DEMO_IA = {
+    personas: [
+      ...Array(4).fill({ nivel_riesgo: "Crítico" }),
+      ...Array(7).fill({ nivel_riesgo: "Alto" }),
+      ...Array(9).fill({ nivel_riesgo: "Medio" }),
+      ...Array(5).fill({ nivel_riesgo: "Bajo" })
+    ],
+    telefonos: Array(14),
+    alias: Array(6),
+    hallazgos: [
+      { titulo: "Red extorsiva activa — Operación VENUS", descripcion: "Identificado patrón de extorsión sistemática con múltiples víctimas. Tres números activos vinculados.", nivel_clasificacion: "Secreto", estado: "Activo" },
+      { titulo: "Número VoIP en múltiples reportes (×7)", descripcion: "Línea extorsiva vinculada a 7 reportes distintos en diferentes municipios. Alta reincidencia detectada.", nivel_clasificacion: "Reservado", estado: "En análisis" },
+      { titulo: "Alias 'EL SOMBRA' con actividad reciente", descripcion: "Actor identificado en capturas de pantalla y audios de WhatsApp. OSINT confirmado vía redes sociales.", nivel_clasificacion: "Confidencial", estado: "Verificado" }
+    ],
+    indicadores: [
+      ...Array(5).fill({ nivel_riesgo: "Crítico" }),
+      ...Array(8).fill({ nivel_riesgo: "Alto" }),
+      ...Array(7).fill({ nivel_riesgo: "Medio" })
+    ]
+  };
 
-    // 1. Populate KPIs
+  function renderDashboardIACharts() {
+    const ents      = dmData.entidades   || { personas: _DEMO_IA.personas, telefonos: _DEMO_IA.telefonos, alias: _DEMO_IA.alias };
+    const hallazgos = (dmData.hallazgos  && dmData.hallazgos.length)  ? dmData.hallazgos  : _DEMO_IA.hallazgos;
+    const inds      = (dmData.indicadores && dmData.indicadores.length) ? dmData.indicadores : _DEMO_IA.indicadores;
+
+    // 1. KPIs
     const dmIaKpis = document.getElementById("dm-ia-kpis");
     if (dmIaKpis) {
-      const totalEnt = dmData.entidades.personas.length + dmData.entidades.telefonos.length + dmData.entidades.alias.length;
-      const hallazgosCrits = dmData.hallazgos ? dmData.hallazgos.filter(h => h.nivel_clasificacion.toLowerCase() === "secreto" || h.nivel_clasificacion.toLowerCase() === "reservado").length : 0;
-      const avgRiesgo = dmData.indicadores && dmData.indicadores.length > 0 
-        ? (dmData.indicadores.reduce((acc, curr) => acc + (curr.nivel_riesgo.toLowerCase() === "crítico" || curr.nivel_riesgo.toLowerCase() === "critico" ? 95 : curr.nivel_riesgo.toLowerCase() === "alto" ? 75 : 45), 0) / dmData.indicadores.length).toFixed(0) 
-        : 65;
+      const totalEnt       = ents.personas.length + ents.telefonos.length + ents.alias.length;
+      const hallazgosCrits = hallazgos.filter(h => ["secreto","reservado"].includes(h.nivel_clasificacion.toLowerCase())).length;
+      const avgRiesgo      = (inds.reduce((a, c) => a + (c.nivel_riesgo.toLowerCase().includes("crít") ? 95 : c.nivel_riesgo.toLowerCase() === "alto" ? 75 : 45), 0) / inds.length).toFixed(0);
 
       dmIaKpis.innerHTML = `
         <div class="dm-kpi-card double-bezel slide-up-item">
-          <div class="inner-core">
-            <span>Total Entidades Relacionadas</span>
-            <strong>${totalEnt}</strong>
-          </div>
+          <div class="inner-core"><span>Total Entidades Relacionadas</span><strong>${totalEnt}</strong></div>
         </div>
-        <div class="dm-kpi-card double-bezel alert-kpi slide-up-item" style="animation-delay: 0.1s;">
-          <div class="inner-core">
-            <span>Hallazgos Alta Criticidad</span>
-            <strong>${hallazgosCrits}</strong>
-          </div>
+        <div class="dm-kpi-card double-bezel alert-kpi slide-up-item" style="animation-delay:.1s">
+          <div class="inner-core"><span>Hallazgos Alta Criticidad</span><strong>${hallazgosCrits}</strong></div>
         </div>
-        <div class="dm-kpi-card double-bezel slide-up-item" style="animation-delay: 0.2s;">
-          <div class="inner-core">
-            <span>Score de Riesgo OSINT Promedio</span>
-            <strong>${avgRiesgo}%</strong>
-          </div>
+        <div class="dm-kpi-card double-bezel slide-up-item" style="animation-delay:.2s">
+          <div class="inner-core"><span>Score Riesgo OSINT Promedio</span><strong>${avgRiesgo}%</strong></div>
+        </div>
+        <div class="dm-kpi-card double-bezel slide-up-item" style="animation-delay:.3s">
+          <div class="inner-core"><span>Indicadores Activos</span><strong>${inds.length}</strong></div>
         </div>
       `;
     }
 
-    // 2. Populate Recent Hallazgos Mini-list
+    // 2. Hallazgos recientes
     const dmRecentHallazgos = document.getElementById("dm-recent-hallazgos");
-    if (dmRecentHallazgos && dmData.hallazgos) {
-      dmRecentHallazgos.innerHTML = dmData.hallazgos.slice(0, 3).map(h => `
+    if (dmRecentHallazgos) {
+      dmRecentHallazgos.innerHTML = hallazgos.slice(0, 3).map(h => `
         <div class="hallazgo-mini-item slide-up-item">
           <strong>${h.titulo}</strong>
-          <span class="badge ${h.nivel_clasificacion.toLowerCase() === 'secreto' ? 'alert-kpi' : ''}">${h.nivel_clasificacion}</span>
+          <span class="badge ${h.nivel_clasificacion.toLowerCase() === "secreto" ? "alert-kpi" : ""}">${h.nivel_clasificacion}</span>
           <p>${h.descripcion.substring(0, 90)}...</p>
         </div>
       `).join("");
     }
 
-    // 3. Render Chart.js: Risk Distribution
+    // 3. Gráfico: distribución de riesgo (doughnut)
     const distContainer = document.getElementById("dm-risk-distribution");
     if (distContainer) {
-      // Calculate risk stats
       const counts = { "Crítico": 0, "Alto": 0, "Medio": 0, "Bajo": 0 };
-      dmData.entidades.personas.forEach(p => {
-        const risk = p.nivel_riesgo;
-        if (counts[risk] !== undefined) counts[risk]++;
-        else counts["Medio"]++; // Fallback
+      ents.personas.forEach(p => {
+        if (p && counts[p.nivel_riesgo] !== undefined) counts[p.nivel_riesgo]++;
+        else counts["Medio"]++;
       });
 
-      // Clear & Inject Canvas
-      distContainer.innerHTML = `<canvas id="dm-risk-canvas" style="max-height: 250px;"></canvas>`;
+      distContainer.innerHTML = `<canvas id="dm-risk-canvas" style="max-height:250px;"></canvas>`;
       destroyChart("dm-risk-canvas");
-
-      const ctx = document.getElementById("dm-risk-canvas").getContext("2d");
-      chartInstances["dm-risk-canvas"] = new Chart(ctx, {
+      chartInstances["dm-risk-canvas"] = new Chart(document.getElementById("dm-risk-canvas").getContext("2d"), {
         type: "doughnut",
         data: {
           labels: ["Crítico", "Alto", "Medio", "Bajo"],
           datasets: [{
             data: [counts["Crítico"], counts["Alto"], counts["Medio"], counts["Bajo"]],
             backgroundColor: ["#ff5a1f", "#ffd600", "#00e5ff", "#00e676"],
-            borderWidth: 1,
-            borderColor: "#111524"
+            borderWidth: 1, borderColor: "#111524"
           }]
         },
         options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: {
-            legend: {
-              position: "right",
-              labels: {
-                color: "#8b99ae",
-                font: { family: "Nunito Sans", size: 11 }
-              }
-            }
-          }
+          responsive: true, maintainAspectRatio: false,
+          plugins: { legend: { position: "right", labels: { color: "#8b99ae", font: { family: "Nunito Sans", size: 11 } } } }
+        }
+      });
+    }
+
+    // 4. Gráfico: casos mensuales (line chart)
+    const timelineContainer = document.getElementById("dm-timeline-chart");
+    if (timelineContainer) {
+      timelineContainer.innerHTML = `<canvas id="dm-timeline-canvas"></canvas>`;
+      destroyChart("dm-timeline-canvas");
+      chartInstances["dm-timeline-canvas"] = new Chart(document.getElementById("dm-timeline-canvas").getContext("2d"), {
+        type: "line",
+        data: {
+          labels: ["Ene", "Feb", "Mar", "Abr", "May", "Jun"],
+          datasets: [{
+            label: "Casos registrados",
+            data: [8, 12, 9, 15, 18, 14],
+            borderColor: "#00e5ff",
+            backgroundColor: "rgba(0,229,255,0.07)",
+            pointBackgroundColor: "#00e5ff",
+            borderWidth: 2, fill: true, tension: 0.4
+          }]
+        },
+        options: {
+          responsive: true, maintainAspectRatio: false,
+          scales: {
+            y: { beginAtZero: true, grid: { color: "rgba(255,255,255,0.05)" }, ticks: { color: "#8b99ae", font: { family: "JetBrains Mono", size: 10 } } },
+            x: { grid: { display: false }, ticks: { color: "#8b99ae", font: { family: "Nunito Sans", size: 10 } } }
+          },
+          plugins: { legend: { display: false } }
+        }
+      });
+    }
+
+    // 5. Gráfico: prioridad de reportes (horizontal bar)
+    const priorityContainer = document.getElementById("dm-priority-chart");
+    if (priorityContainer) {
+      priorityContainer.innerHTML = `<canvas id="dm-priority-canvas"></canvas>`;
+      destroyChart("dm-priority-canvas");
+      chartInstances["dm-priority-canvas"] = new Chart(document.getElementById("dm-priority-canvas").getContext("2d"), {
+        type: "bar",
+        data: {
+          labels: ["Crítica", "Alta", "Media", "Baja"],
+          datasets: [{
+            label: "Reportes",
+            data: [11, 18, 14, 7],
+            backgroundColor: ["#ff5a1f", "#ffd600", "#00e5ff", "#00e676"],
+            borderWidth: 0, borderRadius: 4
+          }]
+        },
+        options: {
+          responsive: true, maintainAspectRatio: false, indexAxis: "y",
+          scales: {
+            x: { grid: { color: "rgba(255,255,255,0.05)" }, ticks: { color: "#8b99ae", font: { family: "JetBrains Mono", size: 10 } } },
+            y: { grid: { display: false }, ticks: { color: "#8b99ae", font: { family: "Nunito Sans", size: 10 } } }
+          },
+          plugins: { legend: { display: false } }
         }
       });
     }
   }
 
   // B. GIS GEORREFERENCIACIÓN
+  const _DEMO_GIS = [
+    { lat: 4.7110, lon: -74.0721, label: "14 reportes activos · R.CASO-2026-0341", prioridad: "Crítica",  fuente: "nexo147.db", fecha: "2026-05-14", size: 15, color: "#ff5a1f" },
+    { lat: 6.2518, lon: -75.5636, label: "Score: 87% · 3 entidades vinculadas",      prioridad: "Alta",    fuente: "intel.db",   fecha: "2026-05-22", size: 12, color: "#ffd600" },
+    { lat: 3.4516, lon: -76.5320, label: "Alerta extorsión activa · 7 casos",        prioridad: "Crítica", fuente: "intel.db",   fecha: "2026-05-29", size: 13, color: "#ff5a1f" },
+    { lat: 10.9685, lon: -74.7813, label: "2 números extorsivos detectados",         prioridad: "Media",   fuente: "osint.db",   fecha: "2026-06-01", size: 9,  color: "#00e5ff" },
+    { lat: 10.3997, lon: -75.5144, label: "Caso JUD-2026-0087 · Asignado",           prioridad: "Alta",    fuente: "intel.db",   fecha: "2026-05-18", size: 10, color: "#ffd600" },
+    { lat: 7.1193,  lon: -73.1227, label: "4 reportes · Prioridad Crítica",          prioridad: "Crítica", fuente: "nexo147.db", fecha: "2026-06-02", size: 12, color: "#ff5a1f" },
+    { lat: 7.8931,  lon: -72.5078, label: "Cuenta NQUI-***847 en análisis",          prioridad: "Alta",    fuente: "osint.db",   fecha: "2026-05-31", size: 10, color: "#ffd600" },
+    { lat: 4.1420,  lon: -73.6266, label: "Hallazgo clasificado RSRV",               prioridad: "Alta",    fuente: "intel.db",   fecha: "2026-06-03", size: 11, color: "#ffd600" },
+    { lat: 4.8133,  lon: -75.6961, label: "1 caso en seguimiento activo",            prioridad: "Media",   fuente: "nexo147.db", fecha: "2026-05-27", size: 8,  color: "#00e5ff" },
+    { lat: 1.2136,  lon: -77.2811, label: "Extorsión registrada · R.CASO-0341",      prioridad: "Crítica", fuente: "intel.db",   fecha: "2026-05-25", size: 11, color: "#ff5a1f" },
+    { lat: 5.0703,  lon: -75.5138, label: "Score 62% · Monitoreo OSINT",             prioridad: "Media",   fuente: "osint.db",   fecha: "2026-06-01", size: 9,  color: "#00e5ff" },
+    { lat: 2.9273,  lon: -75.2820, label: "Monitoreo activo · Indicador OD-047",     prioridad: "Baja",    fuente: "osint.db",   fecha: "2026-05-30", size: 7,  color: "#00e676" }
+  ];
+
   function renderGIS() {
+    const puntos = (dmData.entidades && dmData.entidades.ubicaciones && dmData.entidades.ubicaciones.length)
+      ? dmData.entidades.ubicaciones.map(u => ({
+          lat: u.latitud, lon: u.longitud,
+          label: u.descripcion, prioridad: "N/D",
+          fuente: u.fuente || "intel.db", fecha: u.fecha_captura,
+          size: 10, color: "#00e5ff"
+        }))
+      : _DEMO_GIS;
+
+    // Mapa Plotly de Colombia
+    const mapDiv = document.getElementById("gis-plotly-map");
+    if (mapDiv && typeof Plotly !== "undefined") {
+      const textPositions = ["top center","bottom center","top right","bottom left","top left","bottom right"];
+
+      const trace = {
+        type: "scattergeo",
+        lat:  puntos.map(p => p.lat),
+        lon:  puntos.map(p => p.lon),
+        text: puntos.map(p => p.label),
+        mode: "markers+text",
+        textposition: puntos.map((_, i) => textPositions[i % textPositions.length]),
+        textfont: { color: "#c0ccdc", size: 9, family: "JetBrains Mono" },
+        marker: {
+          size:    puntos.map(p => p.size),
+          color:   puntos.map(p => p.color),
+          symbol:  "circle",
+          line: { color: "rgba(240,244,250,0.5)", width: 1 },
+          opacity: 0.9
+        },
+        hovertemplate: "<b>%{text}</b><extra></extra>"
+      };
+
+      const layout = {
+        geo: {
+          scope: "south america",
+          projection: { type: "mercator" },
+          lataxis: { range: [-4.5, 13.5] },
+          lonaxis: { range: [-79.5, -66.5] },
+          showland: true,   landcolor:    "#1a2535",
+          showocean: true,  oceancolor:   "#0a1220",
+          showcountries: true, countrycolor: "#2a3a50",
+          showsubunits: true,  subunitcolor: "#1e2535",
+          showrivers: true, rivercolor:   "#131e2c",
+          showlakes: true,  lakecolor:    "#0a1220",
+          bgcolor: "rgba(0,0,0,0)"
+        },
+        paper_bgcolor: "rgba(0,0,0,0)",
+        plot_bgcolor:  "rgba(0,0,0,0)",
+        margin: { l: 0, r: 0, t: 20, b: 0 },
+        font: { color: "#8b99ae", family: "Nunito Sans", size: 10 }
+      };
+
+      Plotly.newPlot(mapDiv, [trace], layout, { responsive: true, displayModeBar: false });
+    }
+
+    // Tabla de ubicaciones
     const gisTableBody = document.getElementById("gis-table-body");
-    if (gisTableBody && dmData.entidades) {
-      if (dmData.entidades.ubicaciones.length === 0) {
-        gisTableBody.innerHTML = `<tr><td colspan="5" class="text-center">No hay ubicaciones registradas en intel.db.</td></tr>`;
-      } else {
-        gisTableBody.innerHTML = dmData.entidades.ubicaciones.map(u => `
-          <tr class="fade-in-row">
-            <td><strong>${u.descripcion}</strong></td>
-            <td class="text-mono">${u.latitud.toFixed(4)}</td>
-            <td class="text-mono">${u.longitud.toFixed(4)}</td>
-            <td><span class="badge">${u.fuente || "Intel"}</span></td>
-            <td class="text-mono">${u.fecha_captura}</td>
-          </tr>
-        `).join("");
-      }
+    if (gisTableBody) {
+      gisTableBody.innerHTML = puntos.map(p => `
+        <tr class="fade-in-row">
+          <td><strong>${p.label}</strong></td>
+          <td class="text-mono">${typeof p.lat === "number" ? p.lat.toFixed(4) : p.lat}</td>
+          <td class="text-mono">${typeof p.lon === "number" ? p.lon.toFixed(4) : p.lon}</td>
+          <td><span class="badge">${p.fuente}</span></td>
+          <td class="text-mono">${p.fecha}</td>
+        </tr>
+      `).join("");
     }
   }
 
   // C. ANALÍTICA
-  function renderAnaliticaCharts() {
-    if (!dmData.casos) return;
+  const _DEMO_ANALITICA = {
+    casos: [
+      ...Array(28).fill({ tipo_reporte: "Extorsión" }),
+      ...Array(14).fill({ tipo_reporte: "Amenaza" }),
+      ...Array(11).fill({ tipo_reporte: "Fraude digital" }),
+      ...Array(8).fill({ tipo_reporte: "Hurto" }),
+      ...Array(4).fill({ tipo_reporte: "Secuestro" }),
+      ...Array(6).fill({ tipo_reporte: "Otro" })
+    ],
+    indicadores: [
+      ...Array(18).fill({ tipo: "telefono" }),
+      ...Array(9).fill({ tipo: "ip" }),
+      ...Array(12).fill({ tipo: "dominio" }),
+      ...Array(7).fill({ tipo: "correo" })
+    ]
+  };
 
-    // 1. Tipologías Chart
+  function renderAnaliticaCharts() {
+    const casos = (dmData.casos      && dmData.casos.length)      ? dmData.casos      : _DEMO_ANALITICA.casos;
+    const inds  = (dmData.indicadores && dmData.indicadores.length) ? dmData.indicadores : _DEMO_ANALITICA.indicadores;
+
+    // 1. Tipologías (bar chart)
     const tiposContainer = document.getElementById("analitica-tipos-chart");
     if (tiposContainer) {
       const counts = {};
-      dmData.casos.forEach(c => {
+      casos.forEach(c => {
         const t = c.tipo_reporte || "Otros";
         counts[t] = (counts[t] || 0) + 1;
       });
 
-      tiposContainer.innerHTML = `<canvas id="analitica-tipos-canvas" style="max-height: 250px;"></canvas>`;
+      tiposContainer.innerHTML = `<canvas id="analitica-tipos-canvas" style="max-height:250px;"></canvas>`;
       destroyChart("analitica-tipos-canvas");
-
-      const ctx = document.getElementById("analitica-tipos-canvas").getContext("2d");
-      chartInstances["analitica-tipos-canvas"] = new Chart(ctx, {
+      chartInstances["analitica-tipos-canvas"] = new Chart(document.getElementById("analitica-tipos-canvas").getContext("2d"), {
         type: "bar",
         data: {
           labels: Object.keys(counts),
           datasets: [{
             label: "Casos por Tipo",
             data: Object.values(counts),
-            backgroundColor: "#00e5ff",
-            borderColor: "#00e5ff",
-            borderWidth: 1
+            backgroundColor: ["#ff5a1f","#ffd600","#00e5ff","#00e676","#ba68c8","#8b99ae"],
+            borderWidth: 0, borderRadius: 4
           }]
         },
         options: {
-          responsive: true,
-          maintainAspectRatio: false,
+          responsive: true, maintainAspectRatio: false,
           scales: {
-            y: {
-              grid: { color: "rgba(255, 255, 255, 0.05)" },
-              ticks: { color: "#8b99ae", font: { family: "JetBrains Mono", size: 10 } }
-            },
-            x: {
-              grid: { display: false },
-              ticks: { color: "#8b99ae", font: { family: "Nunito Sans", size: 10 } }
-            }
+            y: { grid: { color: "rgba(255,255,255,0.05)" }, ticks: { color: "#8b99ae", font: { family: "JetBrains Mono", size: 10 } } },
+            x: { grid: { display: false }, ticks: { color: "#8b99ae", font: { family: "Nunito Sans", size: 10 } } }
           },
-          plugins: {
-            legend: { display: false }
-          }
+          plugins: { legend: { display: false } }
         }
       });
     }
 
-    // 2. OSINT Indicators Chart
+    // 2. OSINT Radar chart con animación de barrido tipo radar
     const osintChartContainer = document.getElementById("analitica-osint-chart");
-    if (osintChartContainer && dmData.indicadores) {
-      const counts = { "telefono": 0, "ip": 0, "dominio": 0, "correo": 0 };
-      dmData.indicadores.forEach(i => {
-        const type = i.tipo.toLowerCase();
-        if (counts[type] !== undefined) counts[type]++;
-      });
+    if (osintChartContainer) {
+      const counts = { telefono: 0, ip: 0, dominio: 0, correo: 0 };
+      inds.forEach(i => { const t = (i.tipo || "").toLowerCase(); if (counts[t] !== undefined) counts[t]++; });
 
-      osintChartContainer.innerHTML = `<canvas id="analitica-osint-canvas" style="max-height: 250px;"></canvas>`;
+      osintChartContainer.style.position = "relative";
+      osintChartContainer.innerHTML = `
+        <div style="
+          position:absolute; top:50%; left:50%;
+          transform:translate(-50%,-52%);
+          width:270px; height:270px;
+          border-radius:50%; overflow:hidden;
+          pointer-events:none; z-index:0;">
+          <div style="
+            position:absolute; inset:0;
+            background:conic-gradient(
+              from 0deg,
+              transparent 0deg,
+              rgba(255,90,31,0.22) 18deg,
+              rgba(255,90,31,0.10) 36deg,
+              transparent 55deg
+            );
+            animation:radarSweepAnim 3s linear infinite;">
+          </div>
+        </div>
+        <canvas id="analitica-osint-canvas" style="max-height:250px;position:relative;z-index:1;"></canvas>
+      `;
       destroyChart("analitica-osint-canvas");
-
-      const ctx = document.getElementById("analitica-osint-canvas").getContext("2d");
-      chartInstances["analitica-osint-canvas"] = new Chart(ctx, {
+      chartInstances["analitica-osint-canvas"] = new Chart(document.getElementById("analitica-osint-canvas").getContext("2d"), {
         type: "radar",
         data: {
           labels: ["Teléfono", "Dirección IP", "Dominio Phishing", "Correo Electrónico"],
           datasets: [{
             label: "Riesgos OSINT",
-            data: [counts["telefono"], counts["ip"], counts["dominio"], counts["correo"]],
-            backgroundColor: "rgba(255, 90, 31, 0.2)",
+            data: [counts.telefono, counts.ip, counts.dominio, counts.correo],
+            backgroundColor: "rgba(255,90,31,0.15)",
             borderColor: "#ff5a1f",
             pointBackgroundColor: "#ff5a1f",
             borderWidth: 2
           }]
         },
         options: {
-          responsive: true,
-          maintainAspectRatio: false,
+          responsive: true, maintainAspectRatio: false,
           scales: {
             r: {
-              grid: { color: "rgba(255, 255, 255, 0.07)" },
-              angleLines: { color: "rgba(255, 255, 255, 0.07)" },
+              grid: { color: "rgba(255,255,255,0.07)" },
+              angleLines: { color: "rgba(255,255,255,0.07)" },
               pointLabels: { color: "#8b99ae", font: { family: "Nunito Sans", size: 10 } },
-              ticks: { display: false }
+              ticks: { display: false, backdropColor: "transparent" }
             }
           },
-          plugins: {
-            legend: { display: false }
-          }
+          plugins: { legend: { display: false } }
         }
       });
     }
 
-    // 3. Populate summary grid
+    // 3. Resumen ejecutivo
     const summaryContainer = document.getElementById("analitica-summary");
     if (summaryContainer) {
-      const nCasos = dmData.casos.length;
-      const nInd = dmData.indicadores ? dmData.indicadores.length : 0;
-      const nHallazgos = dmData.hallazgos ? dmData.hallazgos.length : 0;
+      const nCasos = casos.length;
+      const nInd   = inds.length;
 
       summaryContainer.innerHTML = `
         <div class="summary-card double-bezel slide-up-item">
@@ -881,14 +1024,14 @@ document.addEventListener("DOMContentLoaded", () => {
             <span>Procesamiento de datos sin retrasos</span>
           </div>
         </div>
-        <div class="summary-card double-bezel alert-kpi slide-up-item" style="animation-delay: 0.1s;">
+        <div class="summary-card double-bezel alert-kpi slide-up-item" style="animation-delay:.1s">
           <div class="inner-core">
             <h4>Entidades Correlacionadas</h4>
-            <strong>${nCasos > 0 ? (nCasos * 1.5).toFixed(0) : "0"} Relaciones</strong>
+            <strong>${(nCasos * 1.5).toFixed(0)} Relaciones</strong>
             <span>Vínculos confirmados de teléfonos/alias</span>
           </div>
         </div>
-        <div class="summary-card double-bezel slide-up-item" style="animation-delay: 0.2s;">
+        <div class="summary-card double-bezel slide-up-item" style="animation-delay:.2s">
           <div class="inner-core">
             <h4>Base OSINT Indexada</h4>
             <strong>${nInd} Indicadores</strong>

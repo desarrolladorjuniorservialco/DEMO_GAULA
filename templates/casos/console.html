@@ -16,6 +16,10 @@
       color: #f0f4fa;
       font-family: 'Nunito Sans', sans-serif;
     }
+    @keyframes radarSweepAnim {
+      from { transform: rotate(0deg); }
+      to   { transform: rotate(360deg); }
+    }
   </style>
   <script src="https://unpkg.com/lucide@latest"></script>
   <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
@@ -276,21 +280,52 @@
                     <label for="unidad_gaula">Unidad GAULA Receptora *</label>
                     <select name="unidad_gaula" id="unidad_gaula" required>
                       <option value="" disabled selected>-- Seleccione GAULA Responsable --</option>
-                      <optgroup label="Zonas Principales">
-                        <option value="GAULA Policía Bogotá">GAULA Policía Bogotá</option>
-                        <option value="GAULA Militar Bogotá">GAULA Militar Bogotá</option>
-                        <option value="GAULA Policía Antioquia">GAULA Policía Antioquia</option>
-                        <option value="GAULA Metropolitana de Medellín">GAULA Metropolitana Medellín</option>
-                        <option value="GAULA Policía Valle">GAULA Policía Valle del Cauca</option>
-                        <option value="GAULA Metropolitana de Cali">GAULA Metropolitana Cali</option>
-                        <option value="GAULA Policía Atlántico">GAULA Policía Barranquilla</option>
+                      <optgroup label="Bogotá y Centro">
+                        <option value="GAULA METROPOLITANA DE BOGOTÁ">GAULA METROPOLITANA DE BOGOTÁ</option>
+                        <option value="GAULA CUNDINAMARCA">GAULA CUNDINAMARCA</option>
+                        <option value="GAULA BOYACÁ">GAULA BOYACÁ</option>
+                        <option value="GAULA TOLIMA">GAULA TOLIMA</option>
+                        <option value="GAULA HUILA">GAULA HUILA</option>
                       </optgroup>
-                      <optgroup label="Otras Regiones">
-                        <option value="GAULA Policía Cundinamarca">GAULA Policía Cundinamarca</option>
-                        <option value="GAULA Policía Tolima">GAULA Policía Tolima</option>
-                        <option value="GAULA Policía Huila">GAULA Policía Huila</option>
-                        <option value="GAULA Policía Meta">GAULA Policía Meta</option>
-                        <option value="GAULA Policía Arauca">GAULA Policía Arauca</option>
+                      <optgroup label="Antioquia y Eje Cafetero">
+                        <option value="GAULA METROPOLITANA DEL VALLE DE ABURRÁ">GAULA METROPOLITANA DEL VALLE DE ABURRÁ</option>
+                        <option value="GAULA ANTIOQUIA">GAULA ANTIOQUIA</option>
+                        <option value="GAULA URABÁ">GAULA URABÁ</option>
+                        <option value="GAULA CALDAS">GAULA CALDAS</option>
+                        <option value="GAULA RISARALDA">GAULA RISARALDA</option>
+                        <option value="GAULA QUINDÍO">GAULA QUINDÍO</option>
+                      </optgroup>
+                      <optgroup label="Región Caribe">
+                        <option value="GAULA METROPOLITANA DE BARRANQUILLA">GAULA METROPOLITANA DE BARRANQUILLA</option>
+                        <option value="GAULA ATLÁNTICO">GAULA ATLÁNTICO</option>
+                        <option value="GAULA METROPOLITANA DE CARTAGENA">GAULA METROPOLITANA DE CARTAGENA</option>
+                        <option value="GAULA BOLÍVAR">GAULA BOLÍVAR</option>
+                        <option value="GAULA CÓRDOBA">GAULA CÓRDOBA</option>
+                        <option value="GAULA SUCRE">GAULA SUCRE</option>
+                        <option value="GAULA MAGDALENA">GAULA MAGDALENA</option>
+                        <option value="GAULA METROPOLITANA DE SANTA MARTA">GAULA METROPOLITANA DE SANTA MARTA</option>
+                        <option value="GAULA CESAR">GAULA CESAR</option>
+                        <option value="GAULA GUAJIRA">GAULA GUAJIRA</option>
+                      </optgroup>
+                      <optgroup label="Nororiente">
+                        <option value="GAULA SANTANDER">GAULA SANTANDER</option>
+                        <option value="GAULA MAGDALENA MEDIO">GAULA MAGDALENA MEDIO</option>
+                        <option value="GAULA NORTE DE SANTANDER">GAULA NORTE DE SANTANDER</option>
+                        <option value="GAULA CÚCUTA">GAULA CÚCUTA</option>
+                        <option value="GAULA ARAUCA">GAULA ARAUCA</option>
+                        <option value="GAULA CASANARE">GAULA CASANARE</option>
+                      </optgroup>
+                      <optgroup label="Región Pacífica y Suroccidente">
+                        <option value="GAULA METROPOLITANA DE CALI">GAULA METROPOLITANA DE CALI</option>
+                        <option value="GAULA VALLE">GAULA VALLE</option>
+                        <option value="GAULA CAUCA">GAULA CAUCA</option>
+                        <option value="GAULA NARIÑO">GAULA NARIÑO</option>
+                        <option value="GAULA CHOCÓ">GAULA CHOCÓ</option>
+                      </optgroup>
+                      <optgroup label="Llanos y Amazonía">
+                        <option value="GAULA META">GAULA META</option>
+                        <option value="GAULA CAQUETÁ">GAULA CAQUETÁ</option>
+                        <option value="GAULA PUTUMAYO">GAULA PUTUMAYO</option>
                       </optgroup>
                     </select>
                   </div>
@@ -1135,6 +1170,18 @@
                     <div id="dm-recent-hallazgos" class="hallazgos-mini-list"></div>
                   </div>
                 </div>
+                <div class="dashboard-card double-bezel col-span-6">
+                  <div class="inner-core">
+                    <h3>Casos Mensuales — Evolución</h3>
+                    <div id="dm-timeline-chart" class="dm-chart-area" style="height:220px;"></div>
+                  </div>
+                </div>
+                <div class="dashboard-card double-bezel col-span-6">
+                  <div class="inner-core">
+                    <h3>Distribución por Prioridad</h3>
+                    <div id="dm-priority-chart" class="dm-chart-area" style="height:220px;"></div>
+                  </div>
+                </div>
               </div>
             </div>
             <!-- GIS -->
@@ -1143,17 +1190,7 @@
                 <div class="dashboard-card double-bezel col-span-12">
                   <div class="inner-core">
                     <h2>Georreferenciación Táctica de Entidades: intel.db</h2>
-                    <div class="map-grid-console gis-enhanced">
-                      <div class="map-grid-lines"></div>
-                      <div class="map-target z1">BOGOTÁ</div>
-                      <div class="map-target z2">ANTIOQUIA</div>
-                      <div class="map-target z3">VALLE DEL CAUCA</div>
-                      <div class="map-target z4">META</div>
-                      <div class="map-pulse-c c1"></div>
-                      <div class="map-pulse-c c2"></div>
-                      <div class="map-pulse-c c3"></div>
-                      <span class="map-disclaimer">NEXO-147 GIS: Ubicaciones de interés operacional desde intel.db: Coordenadas georreferenciadas.</span>
-                    </div>
+                    <div id="gis-plotly-map" style="width:100%;height:480px;background:transparent;border-radius:6px;overflow:hidden;"></div>
                   </div>
                 </div>
                 <div class="dashboard-card double-bezel col-span-12">
