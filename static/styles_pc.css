@@ -560,6 +560,41 @@ html, body {
 .col-span-8 { grid-column: span 8; }
 .col-span-6 { grid-column: span 6; }
 .col-span-4 { grid-column: span 4; }
+.col-span-2 { grid-column: span 2; }
+
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.kpi-card .inner-core {
+  padding: 20px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.kpi-card span {
+  font-size: 11px;
+  font-family: var(--font-mono);
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.kpi-card strong {
+  font-size: 32px;
+  font-family: var(--font-mono);
+  font-weight: 700;
+  color: var(--accent-cyan);
+  line-height: 1;
+}
+
+.kpi-card.alert-kpi strong {
+  color: var(--accent-orange);
+}
 
 .dashboard-card h2 {
   font-size: 14px;

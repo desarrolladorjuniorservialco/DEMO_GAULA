@@ -92,7 +92,16 @@
       "Bash(npm test *)",
       "Bash(npm run *)",
       "Bash(python -c \"import sys,json; d=json.load\\(sys.stdin\\); print\\(json.dumps\\(d.get\\('scripts', {}\\), indent=2\\)\\)\")",
-      "Bash(python -c \"import re; content=open\\('static/js/osint-graph.bundle.js'\\).read\\(\\); matches=re.findall\\(r'.{0,60}og-detail-panel.{0,60}', content\\); print\\('\\\\n'.join\\(matches[:5]\\)\\)\")"
+      "Bash(python -c \"import re; content=open\\('static/js/osint-graph.bundle.js'\\).read\\(\\); matches=re.findall\\(r'.{0,60}og-detail-panel.{0,60}', content\\); print\\('\\\\n'.join\\(matches[:5]\\)\\)\")",
+      "Skill(impeccable)",
+      "Skill(impeccable:*)",
+      "Bash(node .claude/skills/impeccable/scripts/context.mjs)",
+      "Bash(node \"C:\\\\Users\\\\Victor Pulido\\\\.claude\\\\skills\\\\impeccable\\\\scripts\\\\context.mjs\")",
+      "Bash(grep -Hm1 ^description: 'c:\\\\Users\\\\Victor Pulido\\\\Documents\\\\GIT_Repositories\\\\DEMO_GAULA/.claude/skills/*/SKILL.md')",
+      "Bash(.venv\\\\Scripts\\\\python.exe -c \"from modules import create_app; app = create_app\\(\\); print\\('App created OK'\\)\")",
+      "PowerShell(cd \"c:\\\\Users\\\\Victor Pulido\\\\Documents\\\\GIT_Repositories\\\\DEMO_GAULA\"; Start-Process -NoNewWindow -FilePath \".\\\\.venv\\\\Scripts\\\\python.exe\" -ArgumentList \"app.py\" -RedirectStandardOutput \"$env:TEMP\\\\flask_out.txt\" -RedirectStandardError \"$env:TEMP\\\\flask_err.txt\"; Start-Sleep -Seconds 3; Get-Content \"$env:TEMP\\\\flask_err.txt\" | Select-Object -First 10)",
+      "Bash(.venv/Scripts/python.exe -c ' *)",
+      "Read(//c/tmp/**)"
     ],
     "additionalDirectories": [
       "C:\\Users\\Victor Pulido\\Documents\\GIT\\DEMO_GAULA\\docs\\superpowers\\specs",
