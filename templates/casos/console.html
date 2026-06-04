@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8">
@@ -19,7 +19,7 @@
   </style>
   <script src="https://unpkg.com/lucide@latest"></script>
   <script src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/cytoscape/3.28.1/cytoscape.min.js"></script>
+  <script src="{{ url_for('static', filename='js/osint-graph.bundle.js') }}" defer></script>
 </head>
 <body class="console-body">
   <div class="bg-scanline"></div>
@@ -132,7 +132,7 @@
             <span>Rol: {{ session.get("role", "invitado").capitalize() }}</span>
           </div>
         </div>
-        <a href="{{ url_for('logout') }}" class="btn-logout" aria-label="Cerrar sesión">
+        <a href="{{ url_for('auth.logout') }}" class="btn-logout" aria-label="Cerrar sesión">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></svg>
         </a>
       </div>
@@ -747,12 +747,11 @@
           <!-- Tab: Grafo de Relaciones -->
           <div class="osint-tab-pane" id="osint-tab-graph" style="display:none">
             <style>
-              /* ── OSINT Graph panel ── */
               .og-toolbar{display:flex;gap:.5rem;align-items:center;flex-wrap:wrap;margin-bottom:.75rem}
-              .og-layout{display:flex;gap:10px;height:480px}
-              .og-canvas-wrap{flex:1;min-width:0;position:relative;background:#07080c;border:1px solid #1e2535;border-radius:6px;overflow:hidden}
+              .og-layout{display:flex;gap:10px;height:520px}
+              .og-canvas-wrap{flex:1;min-width:0;position:relative;background:#0B1220;border:1px solid #1e2535;border-radius:6px;overflow:hidden}
               #osint-graph-canvas{width:100%;height:100%}
-              .og-detail{width:270px;flex-shrink:0;background:rgba(4,13,25,.7);border:1px solid #1e2535;border-radius:6px;display:flex;flex-direction:column;overflow:hidden}
+              .og-detail{width:270px;flex-shrink:0;background:rgba(4,13,25,.8);border:1px solid #1e2535;border-radius:6px;display:flex;flex-direction:column;overflow:hidden}
               .og-detail-header{padding:10px 12px;border-bottom:1px solid #1e2535;font-size:.75rem;font-weight:600;color:#4bc8a8;letter-spacing:.07em;text-transform:uppercase;flex-shrink:0}
               .og-detail-body{flex:1;overflow-y:auto;padding:12px;font-size:.77rem;color:#c0ccdc}
               .og-detail-placeholder{color:#3a4a5a;font-size:.78rem;text-align:center;padding:2rem 1rem;line-height:1.6}
@@ -761,17 +760,8 @@
               .og-d-key{color:#5a7090;min-width:80px;flex-shrink:0}
               .og-d-val{color:#c0ccdc;text-align:right;word-break:break-all}
               .og-d-section{margin-top:10px;margin-bottom:4px;font-size:.68rem;font-weight:700;color:#4bc8a8;letter-spacing:.08em;text-transform:uppercase}
-              .og-d-rel{padding:3px 0;color:#8ab4cc;border-bottom:1px solid #0d1a2e;font-size:.73rem}
-              .og-risk-badge{display:inline-block;padding:1px 7px;border-radius:3px;font-size:.67rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em}
-              .og-risk-Crítico{background:#4a0a0a;color:#ff5252;border:1px solid #7a1a1a}
-              .og-risk-Alto{background:#3a1a00;color:#ff9800;border:1px solid #5c3000}
-              .og-risk-Medio{background:#2a2a00;color:#f1c40f;border:1px solid #4a4000}
-              .og-risk-Bajo{background:#0a1a0a;color:#4bc87a;border:1px solid #1a4a1a}
-              .og-risk-Info{background:#0a1020;color:#6b8aaa;border:1px solid #1a2a3a}
-              .og-conf-bar-wrap{display:flex;align-items:center;gap:6px;margin-top:2px}
-              .og-conf-bar{flex:1;height:4px;background:#1e2535;border-radius:2px;overflow:hidden}
-              .og-conf-fill{height:100%;border-radius:2px;background:linear-gradient(90deg,#1abc9c,#4bc8a8)}
-              /* ── Findings panel ── */
+              .og-d-rel{padding:3px 0;border-bottom:1px solid #0d1a2e;font-size:.73rem}
+              .og-d-rel:hover{background:rgba(75,200,168,.06)}
               .og-findings{margin-top:10px}
               .og-findings-title{font-size:.78rem;font-weight:700;color:#6b8aaa;letter-spacing:.08em;text-transform:uppercase;margin-bottom:8px;display:flex;align-items:center;gap:6px}
               .og-findings-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:8px}
@@ -785,11 +775,10 @@
               .og-finding-icon{font-size:.9rem;flex-shrink:0}
               .og-finding-tit{font-weight:700;color:#c0ccdc}
               .og-finding-desc{color:#6b8aaa;line-height:1.4}
-              /* ── Legend ── */
               .og-legend{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;margin-bottom:4px}
-              .og-legend-item{display:flex;align-items:center;gap:4px;font-size:.68rem;color:#6b8aaa}
+              .og-legend-item{display:flex;align-items:center;gap:4px;font-size:.68rem;color:#6b8aaa;padding:2px 6px;border-radius:3px;transition:background .15s}
+              .og-legend-item:hover{background:rgba(255,255,255,.05)}
               .og-legend-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
-              /* ── Info bar ── */
               #osint-graph-info{font-size:.73rem;color:#4b6a8a;margin-bottom:4px}
               @keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
             </style>
@@ -803,7 +792,12 @@
                   <input type="text" id="osint-graph-q" class="search-input-tactical" placeholder="objetivo (vacío = grafo completo)" style="flex:1;min-width:140px">
                   <button class="btn btn-primary-tactical" onclick="osintLoadGraph()">CARGAR GRAFO</button>
                   <button class="btn btn-secondary-tactical" onclick="osintResetGraph()">LIMPIAR</button>
-                  <button class="btn btn-secondary-tactical" id="og-fit-btn" onclick="if(_osintCy)_osintCy.fit(undefined,30)" style="display:none">⊞ Ajustar</button>
+                  <button class="btn btn-secondary-tactical" id="og-fit-btn" onclick="window.OsintGraph && window.OsintGraph.fit()" style="display:none">⊞ Ajustar</button>
+                  <button class="btn btn-secondary-tactical" id="og-expand-back-btn" onclick="window.OsintGraph && window.OsintGraph.clearExpansion()" style="display:none">← Grafo completo</button>
+                  <select id="og-metric-select" class="select-tactical" onchange="window.OsintGraph && window.OsintGraph.setMetric(this.value)" style="font-size:.75rem">
+                    <option value="degree">Métrica: Grado</option>
+                    <option value="betweenness">Métrica: Betweenness</option>
+                  </select>
                 </div>
 
                 <div id="osint-graph-info"></div>
@@ -1294,13 +1288,17 @@
   <script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
 <script>
 // ── OSINT Panel ────────────────────────────────────────────────────────────
-let _osintCy = null;
 
 function osintSwitchTab(tab) {
   document.querySelectorAll('.osint-tab-pane').forEach(p => p.style.display = 'none');
   document.querySelectorAll('.osint-tab-btn').forEach(b => b.classList.remove('active'));
   document.getElementById('osint-tab-' + tab).style.display = '';
   document.querySelector('[data-tab="' + tab + '"]').classList.add('active');
+}
+
+function _ogSpinner(show) {
+  const s = document.getElementById('osint-graph-spinner');
+  if (s) s.style.display = show ? 'flex' : 'none';
 }
 
 function osintFetchSocial() {
@@ -1313,7 +1311,6 @@ function osintFetchSocial() {
   spinner.style.display = '';
   results.innerHTML = '';
 
-  // Ocultar badges de tabs relacionados mientras se busca
   document.getElementById('osint-od-badge').style.display = 'none';
   document.getElementById('osint-graph-badge').style.display = 'none';
 
@@ -1324,17 +1321,13 @@ function osintFetchSocial() {
     })
     .then(html => {
       results.innerHTML = html;
-
-      // Pre-llenar Datos Abiertos con el mismo query y activar badge
       document.getElementById('osint-od-q').value = q;
       document.getElementById('osint-od-badge').style.display = 'inline';
-
-      // Pre-llenar Grafo, activar badge y cargar grafo automáticamente
       document.getElementById('osint-graph-q').value = q;
       document.getElementById('osint-graph-badge').style.display = 'inline';
       osintLoadGraph();
     })
-    .catch(err  => { results.innerHTML = '<p style="color:#f87171;font-size:.8rem">⚠ Error: ' + err.message + '</p>'; })
+    .catch(err => { results.innerHTML = '<p style="color:#f87171;font-size:.8rem">⚠ Error: ' + err.message + '</p>'; })
     .finally(() => { spinner.style.display = 'none'; });
 }
 
@@ -1354,595 +1347,44 @@ function osintFetchOpendata() {
       return r.text();
     })
     .then(html => { results.innerHTML = html; })
-    .catch(err  => { results.innerHTML = '<p style="color:#f87171;font-size:.8rem">⚠ Error: ' + err.message + '</p>'; })
+    .catch(err => { results.innerHTML = '<p style="color:#f87171;font-size:.8rem">⚠ Error: ' + err.message + '</p>'; })
     .finally(() => { spinner.style.display = 'none'; });
 }
 
-// ── OSINT enriched graph ──────────────────────────────────────────────────────
-
-const _OG_TYPE_LABELS = {
-  person:'Persona', alias:'Alias', email:'Correo', organization:'Organización',
-  domain:'Dominio', ip:'IP', repository:'Repositorio', social_profile:'Perfil Social',
-  location:'Ubicación', platform:'Plataforma', url:'URL',
-};
-
-const _OG_CLUSTER_LABELS = {
-  person:'Personas', alias:'Alias', email:'Correos', organization:'Organizaciones',
-  domain:'Dominios', ip:'IPs', repository:'Repositorios', social_profile:'Perfiles Sociales',
-  location:'Ubicaciones', platform:'Plataformas', url:'URLs',
-};
-
-const _OG_RISK_ORDER = {Crítico:4, Alto:3, Medio:2, Bajo:1, Info:0};
-
-function _ogSpinner(show) {
-  const s = document.getElementById('osint-graph-spinner');
-  if (s) s.style.display = show ? 'flex' : 'none';
-}
-
-function _ogRenderDetail(node) {
-  const body = document.getElementById('og-detail-body');
-  if (!node) {
-    body.innerHTML = '<p class="og-detail-placeholder">Selecciona un nodo en el grafo para ver su ficha de inteligencia.</p>';
-    return;
-  }
-  const d      = node.data();
-  const typeL  = _OG_TYPE_LABELS[d.type] || d.type;
-  const meta   = d.metadata || {};
-
-  let rels = '';
-  if (_osintCy) {
-    _osintCy.edges().forEach(e => {
-      const src = e.data('source'), tgt = e.data('target');
-      if (src === d.id || tgt === d.id) {
-        const other = src === d.id ? tgt : src;
-        const dir   = src === d.id ? '→' : '←';
-        const rel   = (e.data('relation_type')||'').replace(/_/g,' ');
-        rels += `<div class="og-d-rel">${dir} <span style="color:#4bc8a8">${rel}</span> — <em>${other}</em></div>`;
-      }
-    });
-  }
-
-  let metaRows = '';
-  if (d.type === 'repository' && meta.language)
-    metaRows += `<div class="og-d-row"><span class="og-d-key">Lenguaje</span><span class="og-d-val">${meta.language}</span></div>`;
-  if (meta.stars !== undefined)
-    metaRows += `<div class="og-d-row"><span class="og-d-key">Stars</span><span class="og-d-val">${meta.stars}</span></div>`;
-  if (meta.url)
-    metaRows += `<div class="og-d-row"><span class="og-d-key">URL</span><span class="og-d-val"><a href="${meta.url}" target="_blank" rel="noopener" style="color:#4bc8a8">${meta.url.slice(0,40)}…</a></span></div>`;
-  if (meta.karma_total !== undefined)
-    metaRows += `<div class="og-d-row"><span class="og-d-key">Karma</span><span class="og-d-val">${meta.karma_total}</span></div>`;
-  if (d.type === 'location' && meta.lat)
-    metaRows += `<div class="og-d-row"><span class="og-d-key">Coords</span><span class="og-d-val">${meta.lat}, ${meta.lon}</span></div>`;
-  if (d.type === 'ip' && meta.isp)
-    metaRows += `<div class="og-d-row"><span class="og-d-key">ISP</span><span class="og-d-val">${meta.isp}</span></div>`;
-  if (meta.languages && meta.languages.length)
-    metaRows += `<div class="og-d-row"><span class="og-d-key">Lenguajes</span><span class="og-d-val">${meta.languages.join(', ')}</span></div>`;
-
-  const confPct = Math.round((d.confidence||0)*100);
-  body.innerHTML = `
-    <div class="og-d-type" style="background:${d.color}22;color:${d.color};border:1px solid ${d.color}44">${typeL}</div>
-    <div style="font-size:.85rem;font-weight:700;color:#e0eaf8;margin-bottom:8px;word-break:break-all">${d.label}</div>
-    <div class="og-d-row">
-      <span class="og-d-key">Riesgo</span>
-      <span class="og-d-val"><span class="og-risk-badge og-risk-${d.risk_level}">${d.risk_level||'—'}</span></span>
-    </div>
-    <div class="og-d-row">
-      <span class="og-d-key">Confianza</span>
-      <span class="og-d-val">
-        <div class="og-conf-bar-wrap">
-          <div class="og-conf-bar"><div class="og-conf-fill" style="width:${confPct}%"></div></div>
-          <span style="font-size:.7rem;color:#6b8aaa">${confPct}%</span>
-        </div>
-      </span>
-    </div>
-    <div class="og-d-row"><span class="og-d-key">Fuente</span><span class="og-d-val">${(d.source_evidence||'').replace(/_/g,' ')}</span></div>
-    <div class="og-d-row"><span class="og-d-key">Detectado</span><span class="og-d-val">${d.discovered_at||'—'}</span></div>
-    ${metaRows}
-    ${rels ? `<div class="og-d-section">Relaciones</div>${rels}` : ''}
-  `;
-}
-
-function _ogRenderLegend(nodesData) {
-  const seen  = new Set();
-  const items = [];
-  nodesData.forEach(n => {
-    if (!seen.has(n.type)) {
-      seen.add(n.type);
-      items.push({ type: n.type, color: n.color });
-    }
-  });
-  const legend = document.getElementById('og-legend');
-  if (!legend) return;
-  legend.innerHTML = items.map(i =>
-    `<div class="og-legend-item"><div class="og-legend-dot" style="background:${i.color}"></div><span>${_OG_TYPE_LABELS[i.type]||i.type}</span></div>`
-  ).join('');
-}
-
-function _ogRenderFindings(findings) {
-  const wrap = document.getElementById('og-findings-wrap');
-  const grid = document.getElementById('og-findings-grid');
-  if (!wrap || !grid || !findings || !findings.length) return;
-  grid.innerHTML = findings.map(f => `
-    <div class="og-finding-card nivel-${f.nivel}">
-      <div class="og-finding-head">
-        <span class="og-finding-icon">${f.icon||'●'}</span>
-        <span class="og-finding-tit">${f.titulo}</span>
-      </div>
-      <div class="og-finding-desc">${f.descripcion}</div>
-    </div>
-  `).join('');
-  wrap.style.display = '';
-}
-
-// ── Radial seed positions (BFS from target) ───────────────────────────────────
-function _ogComputeRadialPositions(elements, targetId) {
-  const adj = {};
-  elements
-    .filter(el => el.data.source !== undefined)
-    .forEach(el => {
-      const { source, target } = el.data;
-      if (!adj[source]) adj[source] = [];
-      if (!adj[target]) adj[target] = [];
-      adj[source].push(target);
-      adj[target].push(source);
-    });
-
-  const levels  = { [targetId]: 0 };
-  const queue   = [targetId];
-  const visited = new Set([targetId]);
-  while (queue.length) {
-    const cur = queue.shift();
-    (adj[cur] || []).forEach(nb => {
-      if (!visited.has(nb)) {
-        visited.add(nb);
-        levels[nb] = levels[cur] + 1;
-        queue.push(nb);
-      }
-    });
-  }
-  elements
-    .filter(el => el.data.source === undefined && el.data.id !== targetId)
-    .forEach(el => { if (levels[el.data.id] === undefined) levels[el.data.id] = 3; });
-
-  const byLevel = {};
-  Object.entries(levels).forEach(([id, lv]) => {
-    if (!byLevel[lv]) byLevel[lv] = [];
-    byLevel[lv].push(id);
-  });
-
-  const BASE_RADII = [0, 230, 460, 660, 840];
-  const positions  = {};
-  Object.entries(byLevel).forEach(([lv, ids]) => {
-    const level  = parseInt(lv);
-    if (level === 0) { positions[targetId] = { x: 0, y: 0 }; return; }
-    const radius = (BASE_RADII[Math.min(level, BASE_RADII.length - 1)] || 0)
-                 + (level > BASE_RADII.length - 1 ? (level - BASE_RADII.length + 1) * 180 : 0);
-    ids.sort();
-    ids.forEach((id, i) => {
-      const angle  = (2 * Math.PI * i / ids.length) - Math.PI / 2;
-      const jitter = (Math.random() - 0.5) * 55;
-      positions[id] = {
-        x: Math.cos(angle) * (radius + jitter),
-        y: Math.sin(angle) * (radius + Math.abs(jitter) * 0.4),
-      };
-    });
-  });
-  return positions;
-}
-
-// ── Cluster halos (drawn after layoutstop) ────────────────────────────────────
-function _ogDrawClusterHalos(cy, typeColors) {
-  cy.remove('.og-cluster-halo');
-
-  const clusters = {};
-  cy.nodes('.data-node').forEach(node => {
-    const t = node.data('type');
-    if (node.data('is_target')) return;
-    if (!clusters[t]) clusters[t] = [];
-    clusters[t].push(node);
-  });
-
-  Object.entries(clusters).forEach(([type, nodes]) => {
-    if (nodes.length < 2) return;
-
-    let sx = 0, sy = 0;
-    nodes.forEach(n => { sx += n.position('x'); sy += n.position('y'); });
-    const cx    = sx / nodes.length;
-    const cy_p  = sy / nodes.length;
-
-    let maxR = 0;
-    nodes.forEach(n => {
-      const dx   = n.position('x') - cx;
-      const dy   = n.position('y') - cy_p;
-      const dist = Math.sqrt(dx * dx + dy * dy) + (n.data('size') || 28) * 0.7;
-      maxR = Math.max(maxR, dist);
-    });
-    maxR = Math.max(maxR + 68, 100);
-
-    const color  = typeColors[type] || '#2a3a4a';
-    const label  = _OG_CLUSTER_LABELS[type] || type;
-    const haloId = `__og_halo_${type}`;
-
-    cy.add({
-      group:    'nodes',
-      data:     { id: haloId, label, isHalo: true },
-      position: { x: cx, y: cy_p },
-      classes:  'og-cluster-halo',
-    });
-
-    const halo = cy.getElementById(haloId);
-    halo.style({
-      'width':                   maxR * 2,
-      'height':                  maxR * 1.72,
-      'background-color':        color,
-      'background-opacity':      0,
-      'border-color':            color,
-      'border-opacity':          0,
-      'border-width':            1.5,
-      'border-style':            'dashed',
-      'shape':                   'ellipse',
-      'color':                   color,
-      'label':                   label,
-      'font-size':               '11px',
-      'font-family':             '"JetBrains Mono", monospace',
-      'text-valign':             'top',
-      'text-halign':             'center',
-      'text-margin-y':           String(-(maxR * 0.87 + 16)),
-      'text-background-color':   '#07080c',
-      'text-background-opacity': 0,
-      'text-background-padding': '4px',
-      'events':                  'no',
-      'selectable':              false,
-      'z-index':                 0,
-      'opacity':                 0,
-    });
-    halo.ungrabify();
-    halo.unselectify();
-    halo.animate({
-      style: {
-        'background-opacity':      0.06,
-        'border-opacity':          0.22,
-        'text-background-opacity': 0.75,
-        'opacity':                 1,
-      }
-    }, { duration: 700, easing: 'ease-in-out' });
-  });
-}
-
-// ── Zoom-responsive labels ────────────────────────────────────────────────────
-function _ogApplyZoomLabels(cy, zoom) {
-  cy.nodes('.data-node').forEach(node => {
-    let show = true;
-    if      (zoom < 0.35) show = !!node.data('is_target');
-    else if (zoom < 0.60) show = !!node.data('is_target') || node.data('degree') >= 3;
-    node.style('label', show ? node.data('label') : '');
-  });
-}
-
 function osintLoadGraph() {
-  const q    = (document.getElementById('osint-graph-q').value||'').trim();
+  const q    = (document.getElementById('osint-graph-q').value || '').trim();
   const info = document.getElementById('osint-graph-info');
   info.textContent = '';
   _ogSpinner(true);
-
   document.getElementById('og-findings-wrap').style.display = 'none';
-  _ogRenderDetail(null);
-
-  if (_osintCy) { _osintCy.destroy(); _osintCy = null; }
 
   fetch('/osint/analytics/graph?q=' + encodeURIComponent(q))
     .then(r => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
     .then(data => {
       const nodes = data.nodes || [];
       const links = data.links || [];
-
       if (!nodes.length) {
         info.textContent = 'Sin nodos. Ejecuta primero una búsqueda en Redes Sociales o Datos Abiertos.';
         return;
       }
-
-      // Degree map
-      const degree = {};
-      nodes.forEach(n => { degree[n.id] = 0; });
-      links.forEach(l => {
-        if (degree[l.source] !== undefined) degree[l.source]++;
-        if (degree[l.target] !== undefined) degree[l.target]++;
-      });
-
-      // Type→color map for cluster halos
-      const typeColors = {};
-      nodes.forEach(n => { typeColors[n.type] = n.color; });
-
-      // Build Cytoscape elements — VOSviewer logarithmic size scaling
-      const VOS_MIN = 20, VOS_MAX = 65;
-      const maxDeg  = Math.max(...Object.values(degree), 1);
-      const elements = [];
-      nodes.forEach(n => {
-        const deg      = degree[n.id] || 1;
-        const sz       = n.is_target
-          ? VOS_MAX
-          : VOS_MIN + (VOS_MAX - VOS_MIN) * Math.log(deg + 1) / Math.log(maxDeg + 1);
-        const fontSize   = Math.round(8.5 + 5.5 * (sz - VOS_MIN) / (VOS_MAX - VOS_MIN));
-        const fontWeight = sz > 38 ? '700' : '400';
-        elements.push({
-          data: {
-            id:              n.id,
-            label:           n.label,
-            type:            n.type,
-            color:           n.color,
-            shape:           n.shape,
-            size:            sz,
-            fontSize:        fontSize + 'px',
-            fontWeight:      fontWeight,
-            degree:          deg,
-            confidence:      n.confidence,
-            risk_level:      n.risk_level,
-            source_evidence: n.source_evidence,
-            discovered_at:   n.discovered_at,
-            metadata:        n.metadata || {},
-            is_target:       n.is_target || false,
-          },
-          classes: 'data-node',
-        });
-      });
-      links.forEach(l => {
-        const conf = l.confidence || 0.75;
-        const w    = Math.max(1, Math.round(conf * 2.5));
-        const col  = conf >= 0.8 ? '#2a5a4a' : conf >= 0.6 ? '#4a4a1a' : '#2a2838';
-        elements.push({ data: {
-          source:          l.source,
-          target:          l.target,
-          label:           l.label || (l.relation_type||'').replace(/_/g,' '),
-          relation_type:   l.relation_type || '',
-          confidence:      conf,
-          edgeWidth:       w,
-          edgeColor:       col,
-          source_evidence: l.source_evidence || '',
-        }});
-      });
-
-      // Find target node and compute radial seed positions
-      const targetNode = nodes.find(n => n.is_target) || nodes[0];
-      const targetId   = targetNode.id;
-      const radialPos  = _ogComputeRadialPositions(elements, targetId);
-
-      _osintCy = cytoscape({
-        container: document.getElementById('osint-graph-canvas'),
-        elements,
-        style: [
-          {
-            selector: 'node.data-node',
-            style: {
-              'background-color':           'data(color)',
-              'shape':                      'ellipse',
-              'width':                      'data(size)',
-              'height':                     'data(size)',
-              'label':                      'data(label)',
-              'color':                      '#e8f0fa',
-              'font-size':                  'data(fontSize)',
-              'font-weight':                'data(fontWeight)',
-              'font-family':                '"Open Sans", "Nunito Sans", sans-serif',
-              'text-valign':                'center',
-              'text-halign':                'center',
-              'text-wrap':                  'wrap',
-              'text-max-width':             '120px',
-              'text-background-color':      '#07080c',
-              'text-background-opacity':    0.85,
-              'text-background-padding':    '4px',
-              'text-background-shape':      'roundrectangle',
-              'border-width':               '2px',
-              'border-color':               'data(color)',
-              'border-opacity':             0.60,
-              'shadow-blur':                10,
-              'shadow-color':               'data(color)',
-              'shadow-opacity':             0.42,
-              'shadow-offset-x':            0,
-              'shadow-offset-y':            0,
-              'transition-property':        'shadow-opacity, border-opacity, opacity',
-              'transition-duration':        '0.2s',
-              'z-index':                    10,
-              'cursor':                     'pointer',
-            },
-          },
-          {
-            selector: 'node.data-node[?is_target]',
-            style: {
-              'border-width':   '3px',
-              'border-color':   '#e8c870',
-              'border-opacity': 1,
-              'shadow-blur':    26,
-              'shadow-color':   '#c8a84b',
-              'shadow-opacity': 0.90,
-              'z-index':        20,
-            },
-          },
-          {
-            selector: 'node.data-node:selected',
-            style: {
-              'border-width':    '3px',
-              'border-color':    '#ffffff',
-              'border-opacity':  1,
-              'shadow-blur':     26,
-              'shadow-opacity':  0.95,
-              'overlay-color':   '#ffffff',
-              'overlay-opacity': 0.07,
-              'overlay-padding': 8,
-            },
-          },
-          {
-            selector: 'node.og-hover',
-            style: { 'shadow-blur': 16, 'shadow-opacity': 0.82, 'border-opacity': 1 },
-          },
-          {
-            selector: 'node.og-dimmed',
-            style: { 'opacity': 0.16 },
-          },
-          {
-            selector: 'node.data-node[type="repository"]',
-            style: { 'opacity': 0.82 },
-          },
-          {
-            selector: 'node.data-node[type="platform"]',
-            style: {
-              'background-opacity': 0.38,
-              'border-style':       'dashed',
-              'color':              '#6b8aaa',
-              'font-size':          '8.5px',
-              'font-weight':        '400',
-            },
-          },
-          {
-            selector: 'edge',
-            style: {
-              'line-color':              'data(edgeColor)',
-              'target-arrow-color':      'data(edgeColor)',
-              'target-arrow-shape':      'triangle',
-              'arrow-scale':             0.60,
-              'curve-style':             'bezier',
-              'control-point-step-size': 55,
-              'width':                   'data(edgeWidth)',
-              'label':                   '',
-              'font-size':               '8px',
-              'color':                   '#374757',
-              'font-family':             '"Open Sans", "Nunito Sans", sans-serif',
-              'text-rotation':           'autorotate',
-              'text-margin-y':           '-8px',
-              'text-background-color':   '#07080c',
-              'text-background-opacity': 0.8,
-              'text-background-padding': '2px',
-              'opacity':                 0.27,
-              'transition-property':     'opacity, width, line-color',
-              'transition-duration':     '0.2s',
-            },
-          },
-          {
-            selector: 'edge.og-edge-hover, edge:selected',
-            style: {
-              'label':              'data(label)',
-              'opacity':            0.96,
-              'line-color':         '#4bc8a8',
-              'target-arrow-color': '#4bc8a8',
-            },
-          },
-          {
-            selector: 'edge.og-dimmed',
-            style: { 'opacity': 0.05 },
-          },
-          {
-            selector: 'node.og-cluster-halo',
-            style: { 'events': 'no', 'selectable': false },
-          },
-        ],
-        layout: {
-          name:      'preset',
-          positions: el => radialPos[el.id()] || { x: (Math.random()-0.5)*200, y: (Math.random()-0.5)*200 },
-          fit:       false,
-        },
-        minZoom: 0.07,
-        maxZoom: 4.5,
-        wheelSensitivity: 0.3,
-      });
-
-      // Lock target at center during force layout
-      const targetElem = _osintCy.getElementById(targetId);
-      if (targetElem.length) {
-        targetElem.lock();
-        targetElem.position({ x: 0, y: 0 });
-      }
-
-      // Force-directed refinement from radial seed — VOSviewer physics
-      const layout = _osintCy.layout({
-        name:             'cose',
-        animate:          true,
-        randomize:        false,
-        nodeRepulsion:    480000,
-        idealEdgeLength:  290,
-        edgeElasticity:   0.32,
-        gravity:          0.10,
-        numIter:          2800,
-        initialTemp:      180,
-        coolingFactor:    0.994,
-        minTemp:          1.0,
-        fit:              true,
-        padding:          90,
-        componentSpacing: 260,
-        nodeOverlap:      60,
-      });
-
-      layout.on('layoutstop', () => {
-        if (targetElem.length) targetElem.unlock();
-        _ogDrawClusterHalos(_osintCy, typeColors);
-        _ogApplyZoomLabels(_osintCy, _osintCy.zoom());
-        _osintCy.fit(80);
-      });
-
-      layout.run();
-
-      // Zoom → progressive labels
-      _osintCy.on('zoom', () => _ogApplyZoomLabels(_osintCy, _osintCy.zoom()));
-
-      // Node hover: illuminate neighbourhood
-      _osintCy.on('mouseover', 'node.data-node', evt => {
-        const node = evt.target;
-        node.addClass('og-hover');
-        const neighbourhood = node.neighborhood().add(node);
-        _osintCy.elements('.data-node, edge').not(neighbourhood).addClass('og-dimmed');
-        neighbourhood.removeClass('og-dimmed');
-        node.connectedEdges().addClass('og-edge-hover');
-      });
-
-      _osintCy.on('mouseout', 'node.data-node', evt => {
-        evt.target.removeClass('og-hover');
-        _osintCy.elements().removeClass('og-dimmed');
-        evt.target.connectedEdges().forEach(e => {
-          if (!e.selected()) e.removeClass('og-edge-hover');
-        });
-      });
-
-      // Edge hover: reveal label
-      _osintCy.on('mouseover', 'edge', evt => evt.target.addClass('og-edge-hover'));
-      _osintCy.on('mouseout',  'edge', evt => {
-        if (!evt.target.selected()) evt.target.removeClass('og-edge-hover');
-      });
-
-      // Node tap → detail panel
-      _osintCy.on('tap', 'node.data-node', evt => {
-        _osintCy.nodes().unselect();
-        evt.target.select();
-        _ogRenderDetail(evt.target);
-      });
-      _osintCy.on('tap', function(evt) {
-        if (evt.target === _osintCy) _ogRenderDetail(null);
-      });
-
-      // Stats bar
-      const stats  = data.stats || {};
-      const counts = stats.entity_counts || {};
-      const parts  = Object.entries(counts)
-        .sort((a,b) => b[1]-a[1])
-        .map(([t,c]) => `${c} ${_OG_TYPE_LABELS[t]||t}`)
-        .join(' · ');
-      info.textContent = `${nodes.length} entidades · ${links.length} relaciones${parts ? ' — ' + parts : ''}${q ? ' (objetivo: "'+q+'")' : ''}`;
-
-      document.getElementById('og-fit-btn').style.display = '';
-      _ogRenderLegend(nodes);
-      _ogRenderFindings(data.findings || []);
+      const counts = (data.stats || {}).entity_counts || {};
+      const parts  = Object.entries(counts).sort((a, b) => b[1] - a[1]).map(([t, c]) => `${c} ${t}`).join(' · ');
+      info.textContent = `${nodes.length} entidades · ${links.length} relaciones${parts ? ' — ' + parts : ''}${q ? ' (objetivo: "' + q + '")' : ''}`;
+      window.OsintGraph.load(data);
     })
     .catch(err => { info.textContent = '⚠ Error: ' + err.message; })
     .finally(() => { _ogSpinner(false); });
 }
 
 function osintResetGraph() {
-  if (_osintCy) { _osintCy.destroy(); _osintCy = null; }
+  if (window.OsintGraph) window.OsintGraph.reset();
   document.getElementById('osint-graph-info').textContent = '';
   document.getElementById('osint-graph-q').value = '';
-  document.getElementById('og-findings-wrap').style.display = 'none';
-  document.getElementById('og-legend').innerHTML = '';
-  document.getElementById('og-fit-btn').style.display = 'none';
-  _ogRenderDetail(null);
 }
 
 document.addEventListener('DOMContentLoaded', function() {
+  if (window.OsintGraph) window.OsintGraph.init('osint-graph-canvas');
+
   document.getElementById('osint-social-q')
     .addEventListener('keydown', e => { if (e.key === 'Enter') osintFetchSocial(); });
   document.getElementById('osint-od-q')
