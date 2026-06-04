@@ -18,8 +18,7 @@
     }
   </style>
   <script src="https://unpkg.com/lucide@latest"></script>
-  <script src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
-  <script src="{{ url_for('static', filename='js/osint-graph.bundle.js') }}" defer></script>
+  <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 </head>
 <body class="console-body">
   <div class="bg-scanline"></div>
@@ -81,10 +80,6 @@
         <a href="#hallazgos" class="nav-item" data-panel="panel-hallazgos">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 12h6m-6 4h6m2 5H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5.586a1 1 0 0 1 .707.293l5.414 5.414a1 1 0 0 1 .293.707V19a2 2 0 0 1-2 2z"/></svg>
           <span>Hallazgos Intel</span>
-        </a>
-        <a href="#grafo" class="nav-item" data-panel="panel-grafo">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="5" cy="12" r="2"/><circle cx="19" cy="5" r="2"/><circle cx="19" cy="19" r="2"/><line x1="6.48" y1="10.74" x2="17.52" y2="6.26"/><line x1="6.48" y1="13.26" x2="17.52" y2="17.74"/></svg>
-          <span>Grafo de Relaciones</span>
         </a>
         {% endif %}
 
@@ -831,92 +826,31 @@
         </section>
 
 
-        <!-- PANEL HALLAZGOS INTEL + OSINT INDICADORES -->
+        <!-- PANEL HALLAZGOS INTEL + DASHBOARD PLOTLY -->
         <section class="panel-section" id="panel-hallazgos">
           <div class="section-header-tactical">
-            <h2>Hallazgos de Inteligencia y Riesgo OSINT</h2>
-            <p>Findings catalogados del análisis cruzado entre intel.db, osint.db y nexo147. Datos clasificados según nivel de acceso del operador.</p>
+            <h2>Dashboard de Tendencias NEXO-147</h2>
+            <p>Análisis de tendencias operativas y correlación OSINT sobre el dataset de demostración (500 casos + alertas).</p>
           </div>
-          <div class="dashboard-grid">
-            <div class="dashboard-card double-bezel col-span-8">
-              <div class="inner-core">
-                <h2>Hallazgos Registrados: HallazgoIntel</h2>
-                <div class="table-wrap">
-                  <table id="table-hallazgos">
-                    <thead>
-                      <tr>
-                        <th>Título / Descripción</th>
-                        <th>Clasificación</th>
-                        <th>Estado</th>
-                        <th>Fecha</th>
-                      </tr>
-                    </thead>
-                    <tbody id="hallazgos-body">
-                      <tr><td colspan="4" class="text-center helper-text-mono">Cargando hallazgos...</td></tr>
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            </div>
-            <div class="dashboard-card double-bezel col-span-4">
-              <div class="inner-core">
-                <h3>Indicadores OSINT Activos</h3>
-                <div id="indicadores-osint-list" class="indicadores-list">
-                  <div class="helper-text-mono text-center">Cargando indicadores...</div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
 
-
-        <!-- PANEL GRAFO DE RELACIONES (DATA WAREHOUSE INTEL) -->
-        <section class="panel-section" id="panel-grafo">
-          <div class="section-header-tactical">
-            <h2>Grafo de Relaciones: Data Warehouse Intel</h2>
-            <p>Nodos (IntelNode) y aristas (IntelEdge) del motor de correlación cruzada. Vínculos detectados por el Motor ETL entre entidades de intel.db.</p>
+          <div class="kpi-grid" id="intel-kpis" style="display:grid; grid-template-columns: repeat(4,1fr); gap:16px; margin-bottom:24px;">
+            <!-- Inyectado por fetchIntelDashboard() -->
           </div>
-          <div class="dashboard-grid">
-            <div class="dashboard-card double-bezel col-span-12">
-              <div class="inner-core">
-                <div class="graph-toolbar" style="margin-bottom: 15px; display: flex; gap: 10px; flex-wrap: wrap; align-items: center;">
-                  <span class="helper-text-mono" style="margin: 0;">Filtro de Riesgo:</span>
-                  <select id="graph-filter-risk" class="select-tactical" style="padding: 6px 12px; border-radius: 6px; font-size: 12px;">
-                    <option value="todos">Todos los Nodos</option>
-                    <option value="critico-alto">Crítico & Alto</option>
-                    <option value="critico">Solo Crítico</option>
-                  </select>
-                  
-                  <span class="helper-text-mono" style="margin: 0; margin-left: 10px;">Agrupar:</span>
-                  <button id="btn-cluster-type" class="btn btn-secondary-tactical" style="padding: 6px 12px; font-size: 12px; border-radius: 6px;">Agrupar por Tipo</button>
-                  <button id="btn-uncluster" class="btn btn-secondary-tactical" style="padding: 6px 12px; font-size: 12px; border-radius: 6px; display: none;">Desagrupar</button>
-                </div>
-                
-                <div class="graph-layout-container" style="display: flex; gap: 20px; height: 500px;">
-                  <!-- Contenedor del Grafo -->
-                  <div id="grafo-canvas" style="flex: 1; height: 100%; background-color: rgba(4, 13, 25, 0.4); border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.08); position: relative; padding: 12px;">
-                    <div id="grafo-loading" style="position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; background: rgba(7, 8, 12, 0.8); z-index: 10; font-family: var(--font-mono); color: var(--accent-cyan);">Cargando Grafo Interactivo...</div>
-                  </div>
-                  
-                  <!-- Panel Lateral de Detalles -->
-                  <div id="grafo-detail-sidebar" class="double-bezel" style="width: 320px; height: 100%; display: flex; flex-direction: column;">
-                    <div class="inner-core" style="padding: 16px; display: flex; flex-direction: column; height: 100%; overflow-y: auto;">
-                       <h2 style="font-size: 18px; margin-bottom: 12px; border-left: 2px solid var(--accent-cyan); padding-left: 8px;">Detalle de Selección</h2>
-                      <div id="grafo-detail-content" style="flex: 1; display: flex; flex-direction: column; justify-content: center; text-align: center; color: var(--text-muted); font-size: 12px;">
-                        Seleccione un nodo o un grupo (cluster) para ver su ficha técnica detallada.
-                      </div>
-                    </div>
-                  </div>
-                </div>
+
+          <div class="dashboard-card double-bezel" style="margin-bottom:24px;">
+            <div class="inner-core">
+              <div style="border-left: 4px solid #38bdf8; padding-left:16px;">
+                <p style="margin-bottom:8px;"><strong>1. Anomalía y Pico Temporal (Q1-2026):</strong> Los datos muestran una estabilidad en 2025 que rompe abruptamente en marzo y abril de 2026, donde el volumen de casos se dispara superando los 80 incidentes por mes, concentrado bajo la modalidad de <strong>Extorsión</strong>.</p>
+                <p style="margin-bottom:8px;"><strong>2. Foco Demográfico y Económico:</strong> Bogotá D.C., Antioquia y Valle del Cauca centralizan el grueso operativo, representando pérdidas y exigencias acumuladas por más de <strong>$10,407 millones de pesos</strong>.</p>
+                <p style="margin-bottom:0;"><strong>3. Hallazgo Técnico OSINT:</strong> Las alertas tempranas correlacionadas revelan que los incidentes nocturnos y la reincidencia en números telefónicos específicos estructuran la principal firma de los ataques.</p>
               </div>
             </div>
-            
-            <div class="dashboard-card double-bezel col-span-12">
-              <div class="inner-core">
-                <h2>Estadísticas del Grafo de Relaciones</h2>
-                <div id="grafo-stats-container" class="kpi-grid" style="margin-top: 0;"></div>
-              </div>
-            </div>
+          </div>
+
+          <div id="intel-charts-container"></div>
+
+          <div id="intel-dashboard-loading" class="helper-text-mono text-center" style="padding:40px 0;">
+            Cargando dashboard de inteligencia...
           </div>
         </section>
 

@@ -42,11 +42,7 @@ document.addEventListener("DOMContentLoaded", () => {
       etlInterval = null;
     }
 
-    if (panelId === "panel-hallazgos") {
-      fetchHallazgos();
-    } else if (panelId === "panel-grafo") {
-      fetchGrafo();
-    } else if (panelId === "panel-etl") {
+    if (panelId === "panel-etl") {
       fetchETLStatus();
       // Setup periodic refresh every 30 seconds
       if (!etlInterval) {

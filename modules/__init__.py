@@ -36,6 +36,7 @@ def _register_blueprints(app):
     from modules.casos       import casos_bp
     from modules.inteligencia import intel_bp
     from modules.dashboard   import dashboard_bp
+    from modules.dataset     import dataset_bp
     from modules.osint.social    import social_osint_bp
     from modules.osint.opendata  import opendata_osint_bp
     from modules.osint.analytics import analytics_osint_bp
@@ -44,6 +45,7 @@ def _register_blueprints(app):
     app.register_blueprint(casos_bp)
     app.register_blueprint(intel_bp)
     app.register_blueprint(dashboard_bp)
+    app.register_blueprint(dataset_bp)
     app.register_blueprint(social_osint_bp,    url_prefix="/osint/social")
     app.register_blueprint(opendata_osint_bp,  url_prefix="/osint/opendata")
     app.register_blueprint(analytics_osint_bp, url_prefix="/osint/analytics")

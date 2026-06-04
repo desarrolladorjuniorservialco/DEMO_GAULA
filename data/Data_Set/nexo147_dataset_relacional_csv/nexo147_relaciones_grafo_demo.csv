@@ -1,0 +1,1501 @@
+﻿origen,tipo_origen,destino,tipo_destino,tipo_relacion,peso
+NEXO-147-00001,caso,Alias-344,alias,menciona_alias,1
+NEXO-147-00001,caso,CTA-DEMO-499,cuenta_pago,usa_cuenta,3
+NEXO-147-00001,caso,3508589530,telefono,asocia_telefono,4
+NEXO-147-00002,caso,Alias-920,alias,menciona_alias,1
+NEXO-147-00002,caso,CTA-DEMO-472,cuenta_pago,usa_cuenta,5
+NEXO-147-00002,caso,3538127377,telefono,asocia_telefono,1
+NEXO-147-00003,caso,Alias-572,alias,menciona_alias,1
+NEXO-147-00003,caso,CTA-DEMO-358,cuenta_pago,usa_cuenta,2
+NEXO-147-00003,caso,3609470818,telefono,asocia_telefono,4
+NEXO-147-00004,caso,El Primo,alias,menciona_alias,5
+NEXO-147-00004,caso,CTA-DEMO-266,cuenta_pago,usa_cuenta,1
+NEXO-147-00004,caso,3308643446,telefono,asocia_telefono,5
+NEXO-147-00005,caso,Alias-173,alias,menciona_alias,1
+NEXO-147-00005,caso,CTA-DEMO-020,cuenta_pago,usa_cuenta,1
+NEXO-147-00005,caso,3641836771,telefono,asocia_telefono,4
+NEXO-147-00006,caso,Alias-160,alias,menciona_alias,1
+NEXO-147-00006,caso,CTA-DEMO-019,cuenta_pago,usa_cuenta,4
+NEXO-147-00006,caso,3671851345,telefono,asocia_telefono,3
+NEXO-147-00007,caso,Comando 17,alias,menciona_alias,2
+NEXO-147-00007,caso,CTA-DEMO-007,cuenta_pago,usa_cuenta,2
+NEXO-147-00007,caso,3848649379,telefono,asocia_telefono,5
+NEXO-147-00008,caso,Alias-938,alias,menciona_alias,3
+NEXO-147-00008,caso,CTA-DEMO-006,cuenta_pago,usa_cuenta,3
+NEXO-147-00008,caso,3927614975,telefono,asocia_telefono,2
+NEXO-147-00009,caso,Alias-345,alias,menciona_alias,2
+NEXO-147-00009,caso,CTA-DEMO-792,cuenta_pago,usa_cuenta,3
+NEXO-147-00009,caso,3724373564,telefono,asocia_telefono,5
+NEXO-147-00010,caso,R-21,alias,menciona_alias,3
+NEXO-147-00010,caso,CTA-DEMO-320,cuenta_pago,usa_cuenta,1
+NEXO-147-00010,caso,3887403982,telefono,asocia_telefono,1
+NEXO-147-00011,caso,Alias-857,alias,menciona_alias,5
+NEXO-147-00011,caso,CTA-DEMO-019,cuenta_pago,usa_cuenta,4
+NEXO-147-00011,caso,3447272666,telefono,asocia_telefono,1
+NEXO-147-00012,caso,Delta,alias,menciona_alias,5
+NEXO-147-00012,caso,CTA-DEMO-006,cuenta_pago,usa_cuenta,1
+NEXO-147-00012,caso,3245906230,telefono,asocia_telefono,4
+NEXO-147-00013,caso,Alias-897,alias,menciona_alias,3
+NEXO-147-00013,caso,CTA-DEMO-681,cuenta_pago,usa_cuenta,1
+NEXO-147-00013,caso,3918567357,telefono,asocia_telefono,3
+NEXO-147-00014,caso,Alias-984,alias,menciona_alias,4
+NEXO-147-00014,caso,CTA-DEMO-246,cuenta_pago,usa_cuenta,1
+NEXO-147-00014,caso,3238668510,telefono,asocia_telefono,1
+NEXO-147-00015,caso,Alias-343,alias,menciona_alias,1
+NEXO-147-00015,caso,CTA-DEMO-885,cuenta_pago,usa_cuenta,1
+NEXO-147-00015,caso,3752990796,telefono,asocia_telefono,3
+NEXO-147-00016,caso,Delta,alias,menciona_alias,1
+NEXO-147-00016,caso,CTA-DEMO-510,cuenta_pago,usa_cuenta,3
+NEXO-147-00016,caso,3247951124,telefono,asocia_telefono,2
+NEXO-147-00017,caso,El Primo,alias,menciona_alias,2
+NEXO-147-00017,caso,CTA-DEMO-764,cuenta_pago,usa_cuenta,5
+NEXO-147-00017,caso,3732514689,telefono,asocia_telefono,4
+NEXO-147-00018,caso,R-21,alias,menciona_alias,2
+NEXO-147-00018,caso,CTA-DEMO-958,cuenta_pago,usa_cuenta,2
+NEXO-147-00018,caso,3245906230,telefono,asocia_telefono,5
+NEXO-147-00019,caso,El Primo,alias,menciona_alias,3
+NEXO-147-00019,caso,CTA-DEMO-656,cuenta_pago,usa_cuenta,4
+NEXO-147-00019,caso,3934977602,telefono,asocia_telefono,1
+NEXO-147-00020,caso,Alias-491,alias,menciona_alias,5
+NEXO-147-00020,caso,CTA-DEMO-008,cuenta_pago,usa_cuenta,4
+NEXO-147-00020,caso,3233132589,telefono,asocia_telefono,1
+NEXO-147-00021,caso,Alias-726,alias,menciona_alias,3
+NEXO-147-00021,caso,CTA-DEMO-879,cuenta_pago,usa_cuenta,4
+NEXO-147-00021,caso,3353385192,telefono,asocia_telefono,4
+NEXO-147-00022,caso,El Mensajero,alias,menciona_alias,1
+NEXO-147-00022,caso,CTA-DEMO-003,cuenta_pago,usa_cuenta,4
+NEXO-147-00022,caso,3397949082,telefono,asocia_telefono,3
+NEXO-147-00023,caso,Alias-630,alias,menciona_alias,3
+NEXO-147-00023,caso,CTA-DEMO-968,cuenta_pago,usa_cuenta,5
+NEXO-147-00023,caso,3714984789,telefono,asocia_telefono,3
+NEXO-147-00024,caso,Alias-338,alias,menciona_alias,1
+NEXO-147-00024,caso,CTA-DEMO-224,cuenta_pago,usa_cuenta,3
+NEXO-147-00024,caso,3397949082,telefono,asocia_telefono,5
+NEXO-147-00025,caso,Alias-915,alias,menciona_alias,3
+NEXO-147-00025,caso,CTA-DEMO-290,cuenta_pago,usa_cuenta,1
+NEXO-147-00025,caso,3934977602,telefono,asocia_telefono,1
+NEXO-147-00026,caso,Sombra,alias,menciona_alias,1
+NEXO-147-00026,caso,CTA-DEMO-498,cuenta_pago,usa_cuenta,3
+NEXO-147-00026,caso,3352309889,telefono,asocia_telefono,4
+NEXO-147-00027,caso,Alias-616,alias,menciona_alias,5
+NEXO-147-00027,caso,CTA-DEMO-196,cuenta_pago,usa_cuenta,2
+NEXO-147-00027,caso,3927614975,telefono,asocia_telefono,2
+NEXO-147-00028,caso,Comando 17,alias,menciona_alias,5
+NEXO-147-00028,caso,CTA-DEMO-018,cuenta_pago,usa_cuenta,2
+NEXO-147-00028,caso,3397949082,telefono,asocia_telefono,1
+NEXO-147-00029,caso,Omega,alias,menciona_alias,2
+NEXO-147-00029,caso,CTA-DEMO-637,cuenta_pago,usa_cuenta,5
+NEXO-147-00029,caso,3842137288,telefono,asocia_telefono,3
+NEXO-147-00030,caso,R-21,alias,menciona_alias,4
+NEXO-147-00030,caso,CTA-DEMO-740,cuenta_pago,usa_cuenta,2
+NEXO-147-00030,caso,3116400444,telefono,asocia_telefono,3
+NEXO-147-00031,caso,El Mensajero,alias,menciona_alias,3
+NEXO-147-00031,caso,CTA-DEMO-397,cuenta_pago,usa_cuenta,2
+NEXO-147-00031,caso,3798524069,telefono,asocia_telefono,5
+NEXO-147-00032,caso,El Mensajero,alias,menciona_alias,4
+NEXO-147-00032,caso,CTA-DEMO-004,cuenta_pago,usa_cuenta,5
+NEXO-147-00032,caso,3154799399,telefono,asocia_telefono,2
+NEXO-147-00033,caso,Alias-743,alias,menciona_alias,2
+NEXO-147-00033,caso,CTA-DEMO-007,cuenta_pago,usa_cuenta,1
+NEXO-147-00033,caso,3751103684,telefono,asocia_telefono,3
+NEXO-147-00034,caso,Comando 17,alias,menciona_alias,3
+NEXO-147-00034,caso,CTA-DEMO-004,cuenta_pago,usa_cuenta,4
+NEXO-147-00034,caso,3682154626,telefono,asocia_telefono,5
+NEXO-147-00035,caso,El Norte,alias,menciona_alias,2
+NEXO-147-00035,caso,CTA-DEMO-003,cuenta_pago,usa_cuenta,3
+NEXO-147-00035,caso,3798524069,telefono,asocia_telefono,3
+NEXO-147-00036,caso,La Voz,alias,menciona_alias,3
+NEXO-147-00036,caso,CTA-DEMO-599,cuenta_pago,usa_cuenta,2
+NEXO-147-00036,caso,3666344803,telefono,asocia_telefono,1
+NEXO-147-00037,caso,El Mensajero,alias,menciona_alias,4
+NEXO-147-00037,caso,CTA-DEMO-794,cuenta_pago,usa_cuenta,4
+NEXO-147-00037,caso,3989954828,telefono,asocia_telefono,5
+NEXO-147-00038,caso,Alias-316,alias,menciona_alias,2
+NEXO-147-00038,caso,CTA-DEMO-013,cuenta_pago,usa_cuenta,1
+NEXO-147-00038,caso,3479494201,telefono,asocia_telefono,5
+NEXO-147-00039,caso,El Norte,alias,menciona_alias,5
+NEXO-147-00039,caso,CTA-DEMO-221,cuenta_pago,usa_cuenta,4
+NEXO-147-00039,caso,3771331880,telefono,asocia_telefono,2
+NEXO-147-00040,caso,Omega,alias,menciona_alias,3
+NEXO-147-00040,caso,CTA-DEMO-279,cuenta_pago,usa_cuenta,2
+NEXO-147-00040,caso,3812279253,telefono,asocia_telefono,5
+NEXO-147-00041,caso,El Mensajero,alias,menciona_alias,4
+NEXO-147-00041,caso,CTA-DEMO-384,cuenta_pago,usa_cuenta,1
+NEXO-147-00041,caso,3036136778,telefono,asocia_telefono,1
+NEXO-147-00042,caso,Alias-469,alias,menciona_alias,1
+NEXO-147-00042,caso,CTA-DEMO-001,cuenta_pago,usa_cuenta,3
+NEXO-147-00042,caso,3397526513,telefono,asocia_telefono,1
+NEXO-147-00043,caso,Alias-739,alias,menciona_alias,5
+NEXO-147-00043,caso,CTA-DEMO-554,cuenta_pago,usa_cuenta,1
+NEXO-147-00043,caso,3766338723,telefono,asocia_telefono,5
+NEXO-147-00044,caso,Alias-778,alias,menciona_alias,5
+NEXO-147-00044,caso,CTA-DEMO-810,cuenta_pago,usa_cuenta,2
+NEXO-147-00044,caso,3938206967,telefono,asocia_telefono,4
+NEXO-147-00045,caso,Delta,alias,menciona_alias,5
+NEXO-147-00045,caso,CTA-DEMO-218,cuenta_pago,usa_cuenta,4
+NEXO-147-00045,caso,3193856302,telefono,asocia_telefono,3
+NEXO-147-00046,caso,Alias-925,alias,menciona_alias,2
+NEXO-147-00046,caso,CTA-DEMO-005,cuenta_pago,usa_cuenta,4
+NEXO-147-00046,caso,3958127507,telefono,asocia_telefono,1
+NEXO-147-00047,caso,Omega,alias,menciona_alias,2
+NEXO-147-00047,caso,CTA-DEMO-207,cuenta_pago,usa_cuenta,3
+NEXO-147-00047,caso,3249828138,telefono,asocia_telefono,1
+NEXO-147-00048,caso,La Voz,alias,menciona_alias,1
+NEXO-147-00048,caso,CTA-DEMO-017,cuenta_pago,usa_cuenta,1
+NEXO-147-00048,caso,3681990030,telefono,asocia_telefono,3
+NEXO-147-00049,caso,Alias-602,alias,menciona_alias,5
+NEXO-147-00049,caso,CTA-DEMO-161,cuenta_pago,usa_cuenta,3
+NEXO-147-00049,caso,3592699371,telefono,asocia_telefono,5
+NEXO-147-00050,caso,R-21,alias,menciona_alias,3
+NEXO-147-00050,caso,CTA-DEMO-018,cuenta_pago,usa_cuenta,4
+NEXO-147-00050,caso,3887403982,telefono,asocia_telefono,2
+NEXO-147-00051,caso,Alias-753,alias,menciona_alias,3
+NEXO-147-00051,caso,CTA-DEMO-007,cuenta_pago,usa_cuenta,2
+NEXO-147-00051,caso,3368314495,telefono,asocia_telefono,3
+NEXO-147-00052,caso,Omega,alias,menciona_alias,2
+NEXO-147-00052,caso,CTA-DEMO-015,cuenta_pago,usa_cuenta,5
+NEXO-147-00052,caso,3598077809,telefono,asocia_telefono,4
+NEXO-147-00053,caso,El Primo,alias,menciona_alias,4
+NEXO-147-00053,caso,CTA-DEMO-005,cuenta_pago,usa_cuenta,3
+NEXO-147-00053,caso,3107949412,telefono,asocia_telefono,4
+NEXO-147-00054,caso,El Primo,alias,menciona_alias,3
+NEXO-147-00054,caso,CTA-DEMO-353,cuenta_pago,usa_cuenta,5
+NEXO-147-00054,caso,3895745646,telefono,asocia_telefono,4
+NEXO-147-00055,caso,El Norte,alias,menciona_alias,4
+NEXO-147-00055,caso,CTA-DEMO-947,cuenta_pago,usa_cuenta,3
+NEXO-147-00055,caso,3958127507,telefono,asocia_telefono,1
+NEXO-147-00056,caso,Sombra,alias,menciona_alias,1
+NEXO-147-00056,caso,CTA-DEMO-736,cuenta_pago,usa_cuenta,5
+NEXO-147-00056,caso,3112902386,telefono,asocia_telefono,4
+NEXO-147-00057,caso,Comando 17,alias,menciona_alias,2
+NEXO-147-00057,caso,CTA-DEMO-015,cuenta_pago,usa_cuenta,5
+NEXO-147-00057,caso,3252653600,telefono,asocia_telefono,2
+NEXO-147-00058,caso,El Norte,alias,menciona_alias,2
+NEXO-147-00058,caso,CTA-DEMO-945,cuenta_pago,usa_cuenta,3
+NEXO-147-00058,caso,3187482372,telefono,asocia_telefono,4
+NEXO-147-00059,caso,Delta,alias,menciona_alias,5
+NEXO-147-00059,caso,CTA-DEMO-008,cuenta_pago,usa_cuenta,5
+NEXO-147-00059,caso,3314597187,telefono,asocia_telefono,2
+NEXO-147-00060,caso,Sombra,alias,menciona_alias,1
+NEXO-147-00060,caso,CTA-DEMO-015,cuenta_pago,usa_cuenta,5
+NEXO-147-00060,caso,3091086352,telefono,asocia_telefono,5
+NEXO-147-00061,caso,Alias-149,alias,menciona_alias,4
+NEXO-147-00061,caso,CTA-DEMO-006,cuenta_pago,usa_cuenta,4
+NEXO-147-00061,caso,3934582528,telefono,asocia_telefono,2
+NEXO-147-00062,caso,R-21,alias,menciona_alias,2
+NEXO-147-00062,caso,CTA-DEMO-180,cuenta_pago,usa_cuenta,1
+NEXO-147-00062,caso,3602438733,telefono,asocia_telefono,2
+NEXO-147-00063,caso,Comando 17,alias,menciona_alias,1
+NEXO-147-00063,caso,CTA-DEMO-003,cuenta_pago,usa_cuenta,4
+NEXO-147-00063,caso,3027975876,telefono,asocia_telefono,2
+NEXO-147-00064,caso,El Norte,alias,menciona_alias,5
+NEXO-147-00064,caso,CTA-DEMO-017,cuenta_pago,usa_cuenta,4
+NEXO-147-00064,caso,3726513897,telefono,asocia_telefono,1
+NEXO-147-00065,caso,Sombra,alias,menciona_alias,2
+NEXO-147-00065,caso,CTA-DEMO-734,cuenta_pago,usa_cuenta,5
+NEXO-147-00065,caso,3451866974,telefono,asocia_telefono,2
+NEXO-147-00066,caso,Alias-162,alias,menciona_alias,4
+NEXO-147-00066,caso,CTA-DEMO-351,cuenta_pago,usa_cuenta,5
+NEXO-147-00066,caso,3718790785,telefono,asocia_telefono,1
+NEXO-147-00067,caso,Delta,alias,menciona_alias,3
+NEXO-147-00067,caso,CTA-DEMO-713,cuenta_pago,usa_cuenta,4
+NEXO-147-00067,caso,3798524069,telefono,asocia_telefono,4
+NEXO-147-00068,caso,La Voz,alias,menciona_alias,4
+NEXO-147-00068,caso,CTA-DEMO-002,cuenta_pago,usa_cuenta,1
+NEXO-147-00068,caso,3966004399,telefono,asocia_telefono,2
+NEXO-147-00069,caso,Sombra,alias,menciona_alias,3
+NEXO-147-00069,caso,CTA-DEMO-914,cuenta_pago,usa_cuenta,4
+NEXO-147-00069,caso,3887403982,telefono,asocia_telefono,4
+NEXO-147-00070,caso,Alias-347,alias,menciona_alias,1
+NEXO-147-00070,caso,CTA-DEMO-959,cuenta_pago,usa_cuenta,1
+NEXO-147-00070,caso,3983790006,telefono,asocia_telefono,5
+NEXO-147-00071,caso,Delta,alias,menciona_alias,2
+NEXO-147-00071,caso,CTA-DEMO-011,cuenta_pago,usa_cuenta,2
+NEXO-147-00071,caso,3345225217,telefono,asocia_telefono,3
+NEXO-147-00072,caso,Comando 17,alias,menciona_alias,3
+NEXO-147-00072,caso,CTA-DEMO-790,cuenta_pago,usa_cuenta,4
+NEXO-147-00072,caso,3465998488,telefono,asocia_telefono,3
+NEXO-147-00073,caso,Alias-629,alias,menciona_alias,3
+NEXO-147-00073,caso,CTA-DEMO-020,cuenta_pago,usa_cuenta,1
+NEXO-147-00073,caso,3264597007,telefono,asocia_telefono,3
+NEXO-147-00074,caso,Alias-288,alias,menciona_alias,4
+NEXO-147-00074,caso,CTA-DEMO-378,cuenta_pago,usa_cuenta,4
+NEXO-147-00074,caso,3295731193,telefono,asocia_telefono,3
+NEXO-147-00075,caso,El Mensajero,alias,menciona_alias,2
+NEXO-147-00075,caso,CTA-DEMO-552,cuenta_pago,usa_cuenta,3
+NEXO-147-00075,caso,3034812976,telefono,asocia_telefono,2
+NEXO-147-00076,caso,El Mensajero,alias,menciona_alias,4
+NEXO-147-00076,caso,CTA-DEMO-398,cuenta_pago,usa_cuenta,1
+NEXO-147-00076,caso,3718790785,telefono,asocia_telefono,3
+NEXO-147-00077,caso,Alias-706,alias,menciona_alias,2
+NEXO-147-00077,caso,CTA-DEMO-200,cuenta_pago,usa_cuenta,2
+NEXO-147-00077,caso,3706062113,telefono,asocia_telefono,3
+NEXO-147-00078,caso,Omega,alias,menciona_alias,4
+NEXO-147-00078,caso,CTA-DEMO-007,cuenta_pago,usa_cuenta,2
+NEXO-147-00078,caso,3429658001,telefono,asocia_telefono,1
+NEXO-147-00079,caso,Omega,alias,menciona_alias,3
+NEXO-147-00079,caso,CTA-DEMO-004,cuenta_pago,usa_cuenta,2
+NEXO-147-00079,caso,3958127507,telefono,asocia_telefono,3
+NEXO-147-00080,caso,Alias-637,alias,menciona_alias,1
+NEXO-147-00080,caso,CTA-DEMO-014,cuenta_pago,usa_cuenta,3
+NEXO-147-00080,caso,3565612369,telefono,asocia_telefono,4
+NEXO-147-00081,caso,Alias-418,alias,menciona_alias,1
+NEXO-147-00081,caso,CTA-DEMO-016,cuenta_pago,usa_cuenta,5
+NEXO-147-00081,caso,3353385192,telefono,asocia_telefono,2
+NEXO-147-00082,caso,El Norte,alias,menciona_alias,5
+NEXO-147-00082,caso,CTA-DEMO-353,cuenta_pago,usa_cuenta,3
+NEXO-147-00082,caso,3644723911,telefono,asocia_telefono,5
+NEXO-147-00083,caso,El Norte,alias,menciona_alias,1
+NEXO-147-00083,caso,CTA-DEMO-333,cuenta_pago,usa_cuenta,4
+NEXO-147-00083,caso,3382442374,telefono,asocia_telefono,2
+NEXO-147-00084,caso,Comando 17,alias,menciona_alias,2
+NEXO-147-00084,caso,CTA-DEMO-008,cuenta_pago,usa_cuenta,5
+NEXO-147-00084,caso,3262023892,telefono,asocia_telefono,4
+NEXO-147-00085,caso,El Primo,alias,menciona_alias,4
+NEXO-147-00085,caso,CTA-DEMO-962,cuenta_pago,usa_cuenta,2
+NEXO-147-00085,caso,3518043924,telefono,asocia_telefono,3
+NEXO-147-00086,caso,Alias-248,alias,menciona_alias,3
+NEXO-147-00086,caso,CTA-DEMO-860,cuenta_pago,usa_cuenta,1
+NEXO-147-00086,caso,3718790785,telefono,asocia_telefono,3
+NEXO-147-00087,caso,R-21,alias,menciona_alias,4
+NEXO-147-00087,caso,CTA-DEMO-847,cuenta_pago,usa_cuenta,2
+NEXO-147-00087,caso,3718790785,telefono,asocia_telefono,2
+NEXO-147-00088,caso,Alias-792,alias,menciona_alias,1
+NEXO-147-00088,caso,CTA-DEMO-793,cuenta_pago,usa_cuenta,1
+NEXO-147-00088,caso,3025791384,telefono,asocia_telefono,4
+NEXO-147-00089,caso,Delta,alias,menciona_alias,4
+NEXO-147-00089,caso,CTA-DEMO-416,cuenta_pago,usa_cuenta,3
+NEXO-147-00089,caso,3655194682,telefono,asocia_telefono,3
+NEXO-147-00090,caso,Alias-578,alias,menciona_alias,3
+NEXO-147-00090,caso,CTA-DEMO-186,cuenta_pago,usa_cuenta,5
+NEXO-147-00090,caso,3309280758,telefono,asocia_telefono,2
+NEXO-147-00091,caso,Alias-824,alias,menciona_alias,2
+NEXO-147-00091,caso,CTA-DEMO-622,cuenta_pago,usa_cuenta,4
+NEXO-147-00091,caso,3261493263,telefono,asocia_telefono,4
+NEXO-147-00092,caso,La Voz,alias,menciona_alias,5
+NEXO-147-00092,caso,CTA-DEMO-009,cuenta_pago,usa_cuenta,2
+NEXO-147-00092,caso,3771331880,telefono,asocia_telefono,3
+NEXO-147-00093,caso,El Primo,alias,menciona_alias,4
+NEXO-147-00093,caso,CTA-DEMO-004,cuenta_pago,usa_cuenta,2
+NEXO-147-00093,caso,3031285945,telefono,asocia_telefono,3
+NEXO-147-00094,caso,Omega,alias,menciona_alias,5
+NEXO-147-00094,caso,CTA-DEMO-733,cuenta_pago,usa_cuenta,2
+NEXO-147-00094,caso,3611631990,telefono,asocia_telefono,1
+NEXO-147-00095,caso,R-21,alias,menciona_alias,3
+NEXO-147-00095,caso,CTA-DEMO-960,cuenta_pago,usa_cuenta,4
+NEXO-147-00095,caso,3618724069,telefono,asocia_telefono,3
+NEXO-147-00096,caso,Alias-518,alias,menciona_alias,4
+NEXO-147-00096,caso,CTA-DEMO-972,cuenta_pago,usa_cuenta,4
+NEXO-147-00096,caso,3302005845,telefono,asocia_telefono,1
+NEXO-147-00097,caso,El Mensajero,alias,menciona_alias,1
+NEXO-147-00097,caso,CTA-DEMO-971,cuenta_pago,usa_cuenta,1
+NEXO-147-00097,caso,3034812976,telefono,asocia_telefono,3
+NEXO-147-00098,caso,Comando 17,alias,menciona_alias,3
+NEXO-147-00098,caso,CTA-DEMO-805,cuenta_pago,usa_cuenta,2
+NEXO-147-00098,caso,3004289236,telefono,asocia_telefono,4
+NEXO-147-00099,caso,Omega,alias,menciona_alias,2
+NEXO-147-00099,caso,CTA-DEMO-412,cuenta_pago,usa_cuenta,2
+NEXO-147-00099,caso,3088015542,telefono,asocia_telefono,5
+NEXO-147-00100,caso,Alias-168,alias,menciona_alias,4
+NEXO-147-00100,caso,CTA-DEMO-007,cuenta_pago,usa_cuenta,4
+NEXO-147-00100,caso,3815114116,telefono,asocia_telefono,5
+NEXO-147-00101,caso,Delta,alias,menciona_alias,5
+NEXO-147-00101,caso,CTA-DEMO-019,cuenta_pago,usa_cuenta,1
+NEXO-147-00101,caso,3025791384,telefono,asocia_telefono,4
+NEXO-147-00102,caso,Alias-734,alias,menciona_alias,3
+NEXO-147-00102,caso,CTA-DEMO-393,cuenta_pago,usa_cuenta,1
+NEXO-147-00102,caso,3353385192,telefono,asocia_telefono,5
+NEXO-147-00103,caso,Alias-574,alias,menciona_alias,3
+NEXO-147-00103,caso,CTA-DEMO-264,cuenta_pago,usa_cuenta,4
+NEXO-147-00103,caso,3146976496,telefono,asocia_telefono,3
+NEXO-147-00104,caso,Alias-290,alias,menciona_alias,2
+NEXO-147-00104,caso,CTA-DEMO-804,cuenta_pago,usa_cuenta,5
+NEXO-147-00104,caso,3503509577,telefono,asocia_telefono,2
+NEXO-147-00105,caso,Omega,alias,menciona_alias,1
+NEXO-147-00105,caso,CTA-DEMO-746,cuenta_pago,usa_cuenta,5
+NEXO-147-00105,caso,3448388379,telefono,asocia_telefono,2
+NEXO-147-00106,caso,Sombra,alias,menciona_alias,4
+NEXO-147-00106,caso,CTA-DEMO-450,cuenta_pago,usa_cuenta,1
+NEXO-147-00106,caso,3197300167,telefono,asocia_telefono,4
+NEXO-147-00107,caso,Alias-295,alias,menciona_alias,4
+NEXO-147-00107,caso,CTA-DEMO-771,cuenta_pago,usa_cuenta,3
+NEXO-147-00107,caso,3632435442,telefono,asocia_telefono,1
+NEXO-147-00108,caso,R-21,alias,menciona_alias,1
+NEXO-147-00108,caso,CTA-DEMO-717,cuenta_pago,usa_cuenta,1
+NEXO-147-00108,caso,3823568093,telefono,asocia_telefono,1
+NEXO-147-00109,caso,El Mensajero,alias,menciona_alias,4
+NEXO-147-00109,caso,CTA-DEMO-017,cuenta_pago,usa_cuenta,2
+NEXO-147-00109,caso,3887403982,telefono,asocia_telefono,2
+NEXO-147-00110,caso,Comando 17,alias,menciona_alias,3
+NEXO-147-00110,caso,CTA-DEMO-896,cuenta_pago,usa_cuenta,3
+NEXO-147-00110,caso,3461358379,telefono,asocia_telefono,1
+NEXO-147-00111,caso,Delta,alias,menciona_alias,3
+NEXO-147-00111,caso,CTA-DEMO-127,cuenta_pago,usa_cuenta,1
+NEXO-147-00111,caso,3469133588,telefono,asocia_telefono,3
+NEXO-147-00112,caso,Alias-955,alias,menciona_alias,4
+NEXO-147-00112,caso,CTA-DEMO-442,cuenta_pago,usa_cuenta,1
+NEXO-147-00112,caso,3755669929,telefono,asocia_telefono,1
+NEXO-147-00113,caso,Alias-153,alias,menciona_alias,5
+NEXO-147-00113,caso,CTA-DEMO-015,cuenta_pago,usa_cuenta,1
+NEXO-147-00113,caso,3247951124,telefono,asocia_telefono,5
+NEXO-147-00114,caso,Omega,alias,menciona_alias,4
+NEXO-147-00114,caso,CTA-DEMO-863,cuenta_pago,usa_cuenta,1
+NEXO-147-00114,caso,3771331880,telefono,asocia_telefono,4
+NEXO-147-00115,caso,El Norte,alias,menciona_alias,1
+NEXO-147-00115,caso,CTA-DEMO-512,cuenta_pago,usa_cuenta,1
+NEXO-147-00115,caso,3888381874,telefono,asocia_telefono,2
+NEXO-147-00116,caso,Alias-572,alias,menciona_alias,1
+NEXO-147-00116,caso,CTA-DEMO-015,cuenta_pago,usa_cuenta,5
+NEXO-147-00116,caso,3245906230,telefono,asocia_telefono,3
+NEXO-147-00117,caso,Alias-444,alias,menciona_alias,3
+NEXO-147-00117,caso,CTA-DEMO-006,cuenta_pago,usa_cuenta,1
+NEXO-147-00117,caso,3034812976,telefono,asocia_telefono,5
+NEXO-147-00118,caso,Omega,alias,menciona_alias,2
+NEXO-147-00118,caso,CTA-DEMO-930,cuenta_pago,usa_cuenta,5
+NEXO-147-00118,caso,3082905023,telefono,asocia_telefono,4
+NEXO-147-00119,caso,Omega,alias,menciona_alias,3
+NEXO-147-00119,caso,CTA-DEMO-357,cuenta_pago,usa_cuenta,1
+NEXO-147-00119,caso,3701639317,telefono,asocia_telefono,2
+NEXO-147-00120,caso,El Norte,alias,menciona_alias,4
+NEXO-147-00120,caso,CTA-DEMO-562,cuenta_pago,usa_cuenta,5
+NEXO-147-00120,caso,3353385192,telefono,asocia_telefono,3
+NEXO-147-00121,caso,Alias-839,alias,menciona_alias,2
+NEXO-147-00121,caso,CTA-DEMO-003,cuenta_pago,usa_cuenta,5
+NEXO-147-00121,caso,3932094064,telefono,asocia_telefono,2
+NEXO-147-00122,caso,Sombra,alias,menciona_alias,2
+NEXO-147-00122,caso,CTA-DEMO-328,cuenta_pago,usa_cuenta,1
+NEXO-147-00122,caso,3098895446,telefono,asocia_telefono,4
+NEXO-147-00123,caso,Alias-860,alias,menciona_alias,4
+NEXO-147-00123,caso,CTA-DEMO-234,cuenta_pago,usa_cuenta,4
+NEXO-147-00123,caso,3399209173,telefono,asocia_telefono,3
+NEXO-147-00124,caso,El Primo,alias,menciona_alias,4
+NEXO-147-00124,caso,CTA-DEMO-876,cuenta_pago,usa_cuenta,1
+NEXO-147-00124,caso,3309952603,telefono,asocia_telefono,4
+NEXO-147-00125,caso,Omega,alias,menciona_alias,2
+NEXO-147-00125,caso,CTA-DEMO-110,cuenta_pago,usa_cuenta,5
+NEXO-147-00125,caso,3766067567,telefono,asocia_telefono,4
+NEXO-147-00126,caso,Omega,alias,menciona_alias,3
+NEXO-147-00126,caso,CTA-DEMO-256,cuenta_pago,usa_cuenta,5
+NEXO-147-00126,caso,3934977602,telefono,asocia_telefono,1
+NEXO-147-00127,caso,Alias-283,alias,menciona_alias,4
+NEXO-147-00127,caso,CTA-DEMO-019,cuenta_pago,usa_cuenta,4
+NEXO-147-00127,caso,3397949082,telefono,asocia_telefono,2
+NEXO-147-00128,caso,Alias-223,alias,menciona_alias,3
+NEXO-147-00128,caso,CTA-DEMO-524,cuenta_pago,usa_cuenta,2
+NEXO-147-00128,caso,3382442374,telefono,asocia_telefono,1
+NEXO-147-00129,caso,Alias-351,alias,menciona_alias,3
+NEXO-147-00129,caso,CTA-DEMO-918,cuenta_pago,usa_cuenta,3
+NEXO-147-00129,caso,3073792367,telefono,asocia_telefono,2
+NEXO-147-00130,caso,Comando 17,alias,menciona_alias,4
+NEXO-147-00130,caso,CTA-DEMO-357,cuenta_pago,usa_cuenta,5
+NEXO-147-00130,caso,3289022248,telefono,asocia_telefono,2
+NEXO-147-00131,caso,El Mensajero,alias,menciona_alias,1
+NEXO-147-00131,caso,CTA-DEMO-003,cuenta_pago,usa_cuenta,1
+NEXO-147-00131,caso,3609470818,telefono,asocia_telefono,2
+NEXO-147-00132,caso,Alias-917,alias,menciona_alias,4
+NEXO-147-00132,caso,CTA-DEMO-013,cuenta_pago,usa_cuenta,1
+NEXO-147-00132,caso,3989988589,telefono,asocia_telefono,4
+NEXO-147-00133,caso,El Primo,alias,menciona_alias,3
+NEXO-147-00133,caso,CTA-DEMO-212,cuenta_pago,usa_cuenta,1
+NEXO-147-00133,caso,3245906230,telefono,asocia_telefono,3
+NEXO-147-00134,caso,El Norte,alias,menciona_alias,5
+NEXO-147-00134,caso,CTA-DEMO-810,cuenta_pago,usa_cuenta,3
+NEXO-147-00134,caso,3886620608,telefono,asocia_telefono,4
+NEXO-147-00135,caso,Sombra,alias,menciona_alias,5
+NEXO-147-00135,caso,CTA-DEMO-251,cuenta_pago,usa_cuenta,4
+NEXO-147-00135,caso,3158451630,telefono,asocia_telefono,3
+NEXO-147-00136,caso,Alias-282,alias,menciona_alias,5
+NEXO-147-00136,caso,CTA-DEMO-020,cuenta_pago,usa_cuenta,5
+NEXO-147-00136,caso,3176080155,telefono,asocia_telefono,5
+NEXO-147-00137,caso,Comando 17,alias,menciona_alias,4
+NEXO-147-00137,caso,CTA-DEMO-686,cuenta_pago,usa_cuenta,2
+NEXO-147-00137,caso,3014437639,telefono,asocia_telefono,4
+NEXO-147-00138,caso,El Norte,alias,menciona_alias,1
+NEXO-147-00138,caso,CTA-DEMO-003,cuenta_pago,usa_cuenta,5
+NEXO-147-00138,caso,3025791384,telefono,asocia_telefono,1
+NEXO-147-00139,caso,Alias-778,alias,menciona_alias,1
+NEXO-147-00139,caso,CTA-DEMO-137,cuenta_pago,usa_cuenta,1
+NEXO-147-00139,caso,3887403982,telefono,asocia_telefono,5
+NEXO-147-00140,caso,Alias-768,alias,menciona_alias,3
+NEXO-147-00140,caso,CTA-DEMO-316,cuenta_pago,usa_cuenta,1
+NEXO-147-00140,caso,3895700291,telefono,asocia_telefono,4
+NEXO-147-00141,caso,Sombra,alias,menciona_alias,1
+NEXO-147-00141,caso,CTA-DEMO-424,cuenta_pago,usa_cuenta,5
+NEXO-147-00141,caso,3779594078,telefono,asocia_telefono,4
+NEXO-147-00142,caso,Alias-890,alias,menciona_alias,2
+NEXO-147-00142,caso,CTA-DEMO-145,cuenta_pago,usa_cuenta,2
+NEXO-147-00142,caso,3798524069,telefono,asocia_telefono,1
+NEXO-147-00143,caso,Comando 17,alias,menciona_alias,5
+NEXO-147-00143,caso,CTA-DEMO-985,cuenta_pago,usa_cuenta,2
+NEXO-147-00143,caso,3798524069,telefono,asocia_telefono,3
+NEXO-147-00144,caso,El Primo,alias,menciona_alias,5
+NEXO-147-00144,caso,CTA-DEMO-016,cuenta_pago,usa_cuenta,3
+NEXO-147-00144,caso,3282305265,telefono,asocia_telefono,1
+NEXO-147-00145,caso,Alias-376,alias,menciona_alias,1
+NEXO-147-00145,caso,CTA-DEMO-433,cuenta_pago,usa_cuenta,1
+NEXO-147-00145,caso,3469133588,telefono,asocia_telefono,5
+NEXO-147-00146,caso,Omega,alias,menciona_alias,4
+NEXO-147-00146,caso,CTA-DEMO-228,cuenta_pago,usa_cuenta,4
+NEXO-147-00146,caso,3609470818,telefono,asocia_telefono,5
+NEXO-147-00147,caso,Omega,alias,menciona_alias,3
+NEXO-147-00147,caso,CTA-DEMO-005,cuenta_pago,usa_cuenta,3
+NEXO-147-00147,caso,3631542309,telefono,asocia_telefono,2
+NEXO-147-00148,caso,El Norte,alias,menciona_alias,5
+NEXO-147-00148,caso,CTA-DEMO-009,cuenta_pago,usa_cuenta,1
+NEXO-147-00148,caso,3918863884,telefono,asocia_telefono,4
+NEXO-147-00149,caso,Comando 17,alias,menciona_alias,5
+NEXO-147-00149,caso,CTA-DEMO-935,cuenta_pago,usa_cuenta,3
+NEXO-147-00149,caso,3473585671,telefono,asocia_telefono,3
+NEXO-147-00150,caso,Delta,alias,menciona_alias,5
+NEXO-147-00150,caso,CTA-DEMO-729,cuenta_pago,usa_cuenta,1
+NEXO-147-00150,caso,3197300167,telefono,asocia_telefono,3
+NEXO-147-00151,caso,Alias-174,alias,menciona_alias,1
+NEXO-147-00151,caso,CTA-DEMO-256,cuenta_pago,usa_cuenta,5
+NEXO-147-00151,caso,3718790785,telefono,asocia_telefono,5
+NEXO-147-00152,caso,Alias-221,alias,menciona_alias,4
+NEXO-147-00152,caso,CTA-DEMO-012,cuenta_pago,usa_cuenta,5
+NEXO-147-00152,caso,3934977602,telefono,asocia_telefono,1
+NEXO-147-00153,caso,El Mensajero,alias,menciona_alias,3
+NEXO-147-00153,caso,CTA-DEMO-011,cuenta_pago,usa_cuenta,1
+NEXO-147-00153,caso,3336173970,telefono,asocia_telefono,5
+NEXO-147-00154,caso,Sombra,alias,menciona_alias,5
+NEXO-147-00154,caso,CTA-DEMO-012,cuenta_pago,usa_cuenta,4
+NEXO-147-00154,caso,3245906230,telefono,asocia_telefono,3
+NEXO-147-00155,caso,La Voz,alias,menciona_alias,1
+NEXO-147-00155,caso,CTA-DEMO-935,cuenta_pago,usa_cuenta,1
+NEXO-147-00155,caso,3958127507,telefono,asocia_telefono,1
+NEXO-147-00156,caso,Alias-427,alias,menciona_alias,5
+NEXO-147-00156,caso,CTA-DEMO-629,cuenta_pago,usa_cuenta,1
+NEXO-147-00156,caso,3609470818,telefono,asocia_telefono,3
+NEXO-147-00157,caso,La Voz,alias,menciona_alias,3
+NEXO-147-00157,caso,CTA-DEMO-230,cuenta_pago,usa_cuenta,4
+NEXO-147-00157,caso,3887403982,telefono,asocia_telefono,3
+NEXO-147-00158,caso,Omega,alias,menciona_alias,1
+NEXO-147-00158,caso,CTA-DEMO-013,cuenta_pago,usa_cuenta,1
+NEXO-147-00158,caso,3609470818,telefono,asocia_telefono,3
+NEXO-147-00159,caso,Omega,alias,menciona_alias,5
+NEXO-147-00159,caso,CTA-DEMO-726,cuenta_pago,usa_cuenta,1
+NEXO-147-00159,caso,3282305265,telefono,asocia_telefono,5
+NEXO-147-00160,caso,El Primo,alias,menciona_alias,3
+NEXO-147-00160,caso,CTA-DEMO-012,cuenta_pago,usa_cuenta,4
+NEXO-147-00160,caso,3702674706,telefono,asocia_telefono,4
+NEXO-147-00161,caso,Alias-666,alias,menciona_alias,5
+NEXO-147-00161,caso,CTA-DEMO-009,cuenta_pago,usa_cuenta,3
+NEXO-147-00161,caso,3609470818,telefono,asocia_telefono,5
+NEXO-147-00162,caso,El Mensajero,alias,menciona_alias,4
+NEXO-147-00162,caso,CTA-DEMO-017,cuenta_pago,usa_cuenta,2
+NEXO-147-00162,caso,3556674383,telefono,asocia_telefono,2
+NEXO-147-00163,caso,Sombra,alias,menciona_alias,3
+NEXO-147-00163,caso,CTA-DEMO-006,cuenta_pago,usa_cuenta,4
+NEXO-147-00163,caso,3034812976,telefono,asocia_telefono,3
+NEXO-147-00164,caso,La Voz,alias,menciona_alias,5
+NEXO-147-00164,caso,CTA-DEMO-478,cuenta_pago,usa_cuenta,1
+NEXO-147-00164,caso,3343680052,telefono,asocia_telefono,5
+NEXO-147-00165,caso,El Norte,alias,menciona_alias,1
+NEXO-147-00165,caso,CTA-DEMO-019,cuenta_pago,usa_cuenta,5
+NEXO-147-00165,caso,3697970741,telefono,asocia_telefono,1
+NEXO-147-00166,caso,Comando 17,alias,menciona_alias,5
+NEXO-147-00166,caso,CTA-DEMO-007,cuenta_pago,usa_cuenta,1
+NEXO-147-00166,caso,3771331880,telefono,asocia_telefono,5
+NEXO-147-00167,caso,El Mensajero,alias,menciona_alias,4
+NEXO-147-00167,caso,CTA-DEMO-482,cuenta_pago,usa_cuenta,1
+NEXO-147-00167,caso,3237266869,telefono,asocia_telefono,1
+NEXO-147-00168,caso,El Primo,alias,menciona_alias,1
+NEXO-147-00168,caso,CTA-DEMO-819,cuenta_pago,usa_cuenta,5
+NEXO-147-00168,caso,3089890720,telefono,asocia_telefono,2
+NEXO-147-00169,caso,Alias-412,alias,menciona_alias,3
+NEXO-147-00169,caso,CTA-DEMO-005,cuenta_pago,usa_cuenta,1
+NEXO-147-00169,caso,3124201919,telefono,asocia_telefono,4
+NEXO-147-00170,caso,La Voz,alias,menciona_alias,3
+NEXO-147-00170,caso,CTA-DEMO-490,cuenta_pago,usa_cuenta,2
+NEXO-147-00170,caso,3725722116,telefono,asocia_telefono,4
+NEXO-147-00171,caso,El Norte,alias,menciona_alias,3
+NEXO-147-00171,caso,CTA-DEMO-583,cuenta_pago,usa_cuenta,2
+NEXO-147-00171,caso,3959561109,telefono,asocia_telefono,4
+NEXO-147-00172,caso,El Mensajero,alias,menciona_alias,4
+NEXO-147-00172,caso,CTA-DEMO-936,cuenta_pago,usa_cuenta,4
+NEXO-147-00172,caso,3938256459,telefono,asocia_telefono,4
+NEXO-147-00173,caso,Omega,alias,menciona_alias,1
+NEXO-147-00173,caso,CTA-DEMO-018,cuenta_pago,usa_cuenta,4
+NEXO-147-00173,caso,3158451630,telefono,asocia_telefono,4
+NEXO-147-00174,caso,Alias-426,alias,menciona_alias,2
+NEXO-147-00174,caso,CTA-DEMO-007,cuenta_pago,usa_cuenta,5
+NEXO-147-00174,caso,3224157734,telefono,asocia_telefono,4
+NEXO-147-00175,caso,Alias-562,alias,menciona_alias,3
+NEXO-147-00175,caso,CTA-DEMO-015,cuenta_pago,usa_cuenta,4
+NEXO-147-00175,caso,3397949082,telefono,asocia_telefono,4
+NEXO-147-00176,caso,Alias-331,alias,menciona_alias,5
+NEXO-147-00176,caso,CTA-DEMO-008,cuenta_pago,usa_cuenta,3
+NEXO-147-00176,caso,3771331880,telefono,asocia_telefono,1
+NEXO-147-00177,caso,Sombra,alias,menciona_alias,5
+NEXO-147-00177,caso,CTA-DEMO-017,cuenta_pago,usa_cuenta,5
+NEXO-147-00177,caso,3934977602,telefono,asocia_telefono,4
+NEXO-147-00178,caso,Alias-393,alias,menciona_alias,5
+NEXO-147-00178,caso,CTA-DEMO-694,cuenta_pago,usa_cuenta,3
+NEXO-147-00178,caso,3538073897,telefono,asocia_telefono,3
+NEXO-147-00179,caso,La Voz,alias,menciona_alias,3
+NEXO-147-00179,caso,CTA-DEMO-001,cuenta_pago,usa_cuenta,3
+NEXO-147-00179,caso,3733816849,telefono,asocia_telefono,4
+NEXO-147-00180,caso,Alias-172,alias,menciona_alias,1
+NEXO-147-00180,caso,CTA-DEMO-009,cuenta_pago,usa_cuenta,4
+NEXO-147-00180,caso,3718790785,telefono,asocia_telefono,1
+NEXO-147-00181,caso,Comando 17,alias,menciona_alias,5
+NEXO-147-00181,caso,CTA-DEMO-018,cuenta_pago,usa_cuenta,4
+NEXO-147-00181,caso,3798524069,telefono,asocia_telefono,4
+NEXO-147-00182,caso,La Voz,alias,menciona_alias,3
+NEXO-147-00182,caso,CTA-DEMO-007,cuenta_pago,usa_cuenta,4
+NEXO-147-00182,caso,3025791384,telefono,asocia_telefono,1
+NEXO-147-00183,caso,Comando 17,alias,menciona_alias,4
+NEXO-147-00183,caso,CTA-DEMO-016,cuenta_pago,usa_cuenta,1
+NEXO-147-00183,caso,3882634269,telefono,asocia_telefono,1
+NEXO-147-00184,caso,Omega,alias,menciona_alias,4
+NEXO-147-00184,caso,CTA-DEMO-874,cuenta_pago,usa_cuenta,2
+NEXO-147-00184,caso,3136592816,telefono,asocia_telefono,3
+NEXO-147-00185,caso,Alias-595,alias,menciona_alias,1
+NEXO-147-00185,caso,CTA-DEMO-012,cuenta_pago,usa_cuenta,1
+NEXO-147-00185,caso,3595923588,telefono,asocia_telefono,5
+NEXO-147-00186,caso,R-21,alias,menciona_alias,5
+NEXO-147-00186,caso,CTA-DEMO-694,cuenta_pago,usa_cuenta,5
+NEXO-147-00186,caso,3099276949,telefono,asocia_telefono,3
+NEXO-147-00187,caso,Alias-752,alias,menciona_alias,2
+NEXO-147-00187,caso,CTA-DEMO-011,cuenta_pago,usa_cuenta,2
+NEXO-147-00187,caso,3199925665,telefono,asocia_telefono,1
+NEXO-147-00188,caso,Sombra,alias,menciona_alias,4
+NEXO-147-00188,caso,CTA-DEMO-007,cuenta_pago,usa_cuenta,1
+NEXO-147-00188,caso,3203458780,telefono,asocia_telefono,3
+NEXO-147-00189,caso,El Primo,alias,menciona_alias,4
+NEXO-147-00189,caso,CTA-DEMO-547,cuenta_pago,usa_cuenta,2
+NEXO-147-00189,caso,3518043924,telefono,asocia_telefono,5
+NEXO-147-00190,caso,Alias-539,alias,menciona_alias,4
+NEXO-147-00190,caso,CTA-DEMO-260,cuenta_pago,usa_cuenta,1
+NEXO-147-00190,caso,3507475353,telefono,asocia_telefono,5
+NEXO-147-00191,caso,Comando 17,alias,menciona_alias,3
+NEXO-147-00191,caso,CTA-DEMO-324,cuenta_pago,usa_cuenta,5
+NEXO-147-00191,caso,3537401861,telefono,asocia_telefono,3
+NEXO-147-00192,caso,El Primo,alias,menciona_alias,2
+NEXO-147-00192,caso,CTA-DEMO-816,cuenta_pago,usa_cuenta,3
+NEXO-147-00192,caso,3289041443,telefono,asocia_telefono,1
+NEXO-147-00193,caso,Sombra,alias,menciona_alias,5
+NEXO-147-00193,caso,CTA-DEMO-698,cuenta_pago,usa_cuenta,5
+NEXO-147-00193,caso,3011191362,telefono,asocia_telefono,4
+NEXO-147-00194,caso,Comando 17,alias,menciona_alias,5
+NEXO-147-00194,caso,CTA-DEMO-013,cuenta_pago,usa_cuenta,1
+NEXO-147-00194,caso,3304854659,telefono,asocia_telefono,3
+NEXO-147-00195,caso,El Mensajero,alias,menciona_alias,3
+NEXO-147-00195,caso,CTA-DEMO-480,cuenta_pago,usa_cuenta,5
+NEXO-147-00195,caso,3797937266,telefono,asocia_telefono,2
+NEXO-147-00196,caso,El Primo,alias,menciona_alias,5
+NEXO-147-00196,caso,CTA-DEMO-406,cuenta_pago,usa_cuenta,3
+NEXO-147-00196,caso,3798524069,telefono,asocia_telefono,4
+NEXO-147-00197,caso,Delta,alias,menciona_alias,4
+NEXO-147-00197,caso,CTA-DEMO-011,cuenta_pago,usa_cuenta,2
+NEXO-147-00197,caso,3158451630,telefono,asocia_telefono,4
+NEXO-147-00198,caso,Delta,alias,menciona_alias,4
+NEXO-147-00198,caso,CTA-DEMO-003,cuenta_pago,usa_cuenta,4
+NEXO-147-00198,caso,3575331784,telefono,asocia_telefono,4
+NEXO-147-00199,caso,Alias-133,alias,menciona_alias,4
+NEXO-147-00199,caso,CTA-DEMO-953,cuenta_pago,usa_cuenta,2
+NEXO-147-00199,caso,3958127507,telefono,asocia_telefono,1
+NEXO-147-00200,caso,Comando 17,alias,menciona_alias,2
+NEXO-147-00200,caso,CTA-DEMO-004,cuenta_pago,usa_cuenta,1
+NEXO-147-00200,caso,3353385192,telefono,asocia_telefono,5
+NEXO-147-00201,caso,El Primo,alias,menciona_alias,1
+NEXO-147-00201,caso,CTA-DEMO-316,cuenta_pago,usa_cuenta,5
+NEXO-147-00201,caso,3542413703,telefono,asocia_telefono,1
+NEXO-147-00202,caso,Delta,alias,menciona_alias,2
+NEXO-147-00202,caso,CTA-DEMO-016,cuenta_pago,usa_cuenta,4
+NEXO-147-00202,caso,3197300167,telefono,asocia_telefono,4
+NEXO-147-00203,caso,Comando 17,alias,menciona_alias,4
+NEXO-147-00203,caso,CTA-DEMO-012,cuenta_pago,usa_cuenta,5
+NEXO-147-00203,caso,3247951124,telefono,asocia_telefono,1
+NEXO-147-00204,caso,El Mensajero,alias,menciona_alias,2
+NEXO-147-00204,caso,CTA-DEMO-013,cuenta_pago,usa_cuenta,5
+NEXO-147-00204,caso,3601260616,telefono,asocia_telefono,4
+NEXO-147-00205,caso,Comando 17,alias,menciona_alias,4
+NEXO-147-00205,caso,CTA-DEMO-515,cuenta_pago,usa_cuenta,2
+NEXO-147-00205,caso,3434183502,telefono,asocia_telefono,2
+NEXO-147-00206,caso,El Norte,alias,menciona_alias,3
+NEXO-147-00206,caso,CTA-DEMO-010,cuenta_pago,usa_cuenta,2
+NEXO-147-00206,caso,3044624928,telefono,asocia_telefono,4
+NEXO-147-00207,caso,Alias-935,alias,menciona_alias,4
+NEXO-147-00207,caso,CTA-DEMO-731,cuenta_pago,usa_cuenta,5
+NEXO-147-00207,caso,3032732601,telefono,asocia_telefono,1
+NEXO-147-00208,caso,Alias-370,alias,menciona_alias,2
+NEXO-147-00208,caso,CTA-DEMO-103,cuenta_pago,usa_cuenta,5
+NEXO-147-00208,caso,3397949082,telefono,asocia_telefono,5
+NEXO-147-00209,caso,El Primo,alias,menciona_alias,5
+NEXO-147-00209,caso,CTA-DEMO-921,cuenta_pago,usa_cuenta,1
+NEXO-147-00209,caso,3497830770,telefono,asocia_telefono,1
+NEXO-147-00210,caso,Alias-645,alias,menciona_alias,1
+NEXO-147-00210,caso,CTA-DEMO-006,cuenta_pago,usa_cuenta,2
+NEXO-147-00210,caso,3452898165,telefono,asocia_telefono,3
+NEXO-147-00211,caso,El Mensajero,alias,menciona_alias,3
+NEXO-147-00211,caso,CTA-DEMO-416,cuenta_pago,usa_cuenta,2
+NEXO-147-00211,caso,3802574574,telefono,asocia_telefono,1
+NEXO-147-00212,caso,La Voz,alias,menciona_alias,5
+NEXO-147-00212,caso,CTA-DEMO-649,cuenta_pago,usa_cuenta,3
+NEXO-147-00212,caso,3887403982,telefono,asocia_telefono,1
+NEXO-147-00213,caso,La Voz,alias,menciona_alias,2
+NEXO-147-00213,caso,CTA-DEMO-762,cuenta_pago,usa_cuenta,2
+NEXO-147-00213,caso,3469133588,telefono,asocia_telefono,2
+NEXO-147-00214,caso,Alias-229,alias,menciona_alias,1
+NEXO-147-00214,caso,CTA-DEMO-006,cuenta_pago,usa_cuenta,2
+NEXO-147-00214,caso,3382442374,telefono,asocia_telefono,2
+NEXO-147-00215,caso,El Norte,alias,menciona_alias,1
+NEXO-147-00215,caso,CTA-DEMO-015,cuenta_pago,usa_cuenta,1
+NEXO-147-00215,caso,3887403982,telefono,asocia_telefono,3
+NEXO-147-00216,caso,Alias-725,alias,menciona_alias,4
+NEXO-147-00216,caso,CTA-DEMO-469,cuenta_pago,usa_cuenta,3
+NEXO-147-00216,caso,3934977602,telefono,asocia_telefono,4
+NEXO-147-00217,caso,Alias-929,alias,menciona_alias,2
+NEXO-147-00217,caso,CTA-DEMO-825,cuenta_pago,usa_cuenta,2
+NEXO-147-00217,caso,3556674383,telefono,asocia_telefono,5
+NEXO-147-00218,caso,Alias-276,alias,menciona_alias,1
+NEXO-147-00218,caso,CTA-DEMO-017,cuenta_pago,usa_cuenta,5
+NEXO-147-00218,caso,3063785621,telefono,asocia_telefono,5
+NEXO-147-00219,caso,El Norte,alias,menciona_alias,1
+NEXO-147-00219,caso,CTA-DEMO-726,cuenta_pago,usa_cuenta,4
+NEXO-147-00219,caso,3922104031,telefono,asocia_telefono,2
+NEXO-147-00220,caso,Omega,alias,menciona_alias,4
+NEXO-147-00220,caso,CTA-DEMO-765,cuenta_pago,usa_cuenta,3
+NEXO-147-00220,caso,3298006690,telefono,asocia_telefono,5
+NEXO-147-00221,caso,El Primo,alias,menciona_alias,3
+NEXO-147-00221,caso,CTA-DEMO-548,cuenta_pago,usa_cuenta,5
+NEXO-147-00221,caso,3025791384,telefono,asocia_telefono,4
+NEXO-147-00222,caso,R-21,alias,menciona_alias,3
+NEXO-147-00222,caso,CTA-DEMO-019,cuenta_pago,usa_cuenta,4
+NEXO-147-00222,caso,3088307510,telefono,asocia_telefono,2
+NEXO-147-00223,caso,Sombra,alias,menciona_alias,2
+NEXO-147-00223,caso,CTA-DEMO-010,cuenta_pago,usa_cuenta,2
+NEXO-147-00223,caso,3887403982,telefono,asocia_telefono,1
+NEXO-147-00224,caso,Alias-219,alias,menciona_alias,3
+NEXO-147-00224,caso,CTA-DEMO-926,cuenta_pago,usa_cuenta,3
+NEXO-147-00224,caso,3503514948,telefono,asocia_telefono,5
+NEXO-147-00225,caso,R-21,alias,menciona_alias,4
+NEXO-147-00225,caso,CTA-DEMO-217,cuenta_pago,usa_cuenta,4
+NEXO-147-00225,caso,3282305265,telefono,asocia_telefono,5
+NEXO-147-00226,caso,Delta,alias,menciona_alias,1
+NEXO-147-00226,caso,CTA-DEMO-502,cuenta_pago,usa_cuenta,4
+NEXO-147-00226,caso,3534963511,telefono,asocia_telefono,2
+NEXO-147-00227,caso,La Voz,alias,menciona_alias,5
+NEXO-147-00227,caso,CTA-DEMO-312,cuenta_pago,usa_cuenta,4
+NEXO-147-00227,caso,3068541380,telefono,asocia_telefono,2
+NEXO-147-00228,caso,Alias-866,alias,menciona_alias,1
+NEXO-147-00228,caso,CTA-DEMO-014,cuenta_pago,usa_cuenta,5
+NEXO-147-00228,caso,3034812976,telefono,asocia_telefono,2
+NEXO-147-00229,caso,Omega,alias,menciona_alias,1
+NEXO-147-00229,caso,CTA-DEMO-015,cuenta_pago,usa_cuenta,1
+NEXO-147-00229,caso,3551680150,telefono,asocia_telefono,5
+NEXO-147-00230,caso,Alias-524,alias,menciona_alias,5
+NEXO-147-00230,caso,CTA-DEMO-017,cuenta_pago,usa_cuenta,5
+NEXO-147-00230,caso,3401387609,telefono,asocia_telefono,2
+NEXO-147-00231,caso,Sombra,alias,menciona_alias,3
+NEXO-147-00231,caso,CTA-DEMO-008,cuenta_pago,usa_cuenta,1
+NEXO-147-00231,caso,3382442374,telefono,asocia_telefono,1
+NEXO-147-00232,caso,Alias-102,alias,menciona_alias,4
+NEXO-147-00232,caso,CTA-DEMO-822,cuenta_pago,usa_cuenta,1
+NEXO-147-00232,caso,3965422009,telefono,asocia_telefono,1
+NEXO-147-00233,caso,El Mensajero,alias,menciona_alias,4
+NEXO-147-00233,caso,CTA-DEMO-014,cuenta_pago,usa_cuenta,2
+NEXO-147-00233,caso,3785779332,telefono,asocia_telefono,2
+NEXO-147-00234,caso,R-21,alias,menciona_alias,5
+NEXO-147-00234,caso,CTA-DEMO-019,cuenta_pago,usa_cuenta,3
+NEXO-147-00234,caso,3601229831,telefono,asocia_telefono,1
+NEXO-147-00235,caso,Alias-105,alias,menciona_alias,2
+NEXO-147-00235,caso,CTA-DEMO-574,cuenta_pago,usa_cuenta,1
+NEXO-147-00235,caso,3544467183,telefono,asocia_telefono,5
+NEXO-147-00236,caso,Alias-329,alias,menciona_alias,3
+NEXO-147-00236,caso,CTA-DEMO-212,cuenta_pago,usa_cuenta,5
+NEXO-147-00236,caso,3338166528,telefono,asocia_telefono,5
+NEXO-147-00237,caso,Alias-172,alias,menciona_alias,4
+NEXO-147-00237,caso,CTA-DEMO-833,cuenta_pago,usa_cuenta,5
+NEXO-147-00237,caso,3753933384,telefono,asocia_telefono,1
+NEXO-147-00238,caso,Alias-335,alias,menciona_alias,2
+NEXO-147-00238,caso,CTA-DEMO-013,cuenta_pago,usa_cuenta,1
+NEXO-147-00238,caso,3282305265,telefono,asocia_telefono,4
+NEXO-147-00239,caso,Alias-200,alias,menciona_alias,4
+NEXO-147-00239,caso,CTA-DEMO-013,cuenta_pago,usa_cuenta,2
+NEXO-147-00239,caso,3105811881,telefono,asocia_telefono,4
+NEXO-147-00240,caso,Delta,alias,menciona_alias,3
+NEXO-147-00240,caso,CTA-DEMO-204,cuenta_pago,usa_cuenta,1
+NEXO-147-00240,caso,3718790785,telefono,asocia_telefono,5
+NEXO-147-00241,caso,Alias-113,alias,menciona_alias,2
+NEXO-147-00241,caso,CTA-DEMO-831,cuenta_pago,usa_cuenta,1
+NEXO-147-00241,caso,3382442374,telefono,asocia_telefono,5
+NEXO-147-00242,caso,R-21,alias,menciona_alias,5
+NEXO-147-00242,caso,CTA-DEMO-408,cuenta_pago,usa_cuenta,5
+NEXO-147-00242,caso,3846273458,telefono,asocia_telefono,2
+NEXO-147-00243,caso,R-21,alias,menciona_alias,4
+NEXO-147-00243,caso,CTA-DEMO-605,cuenta_pago,usa_cuenta,3
+NEXO-147-00243,caso,3862384852,telefono,asocia_telefono,5
+NEXO-147-00244,caso,Alias-154,alias,menciona_alias,4
+NEXO-147-00244,caso,CTA-DEMO-164,cuenta_pago,usa_cuenta,5
+NEXO-147-00244,caso,3747436684,telefono,asocia_telefono,4
+NEXO-147-00245,caso,Delta,alias,menciona_alias,5
+NEXO-147-00245,caso,CTA-DEMO-847,cuenta_pago,usa_cuenta,3
+NEXO-147-00245,caso,3247951124,telefono,asocia_telefono,3
+NEXO-147-00246,caso,Delta,alias,menciona_alias,2
+NEXO-147-00246,caso,CTA-DEMO-006,cuenta_pago,usa_cuenta,1
+NEXO-147-00246,caso,3958127507,telefono,asocia_telefono,2
+NEXO-147-00247,caso,La Voz,alias,menciona_alias,5
+NEXO-147-00247,caso,CTA-DEMO-017,cuenta_pago,usa_cuenta,2
+NEXO-147-00247,caso,3308643446,telefono,asocia_telefono,2
+NEXO-147-00248,caso,R-21,alias,menciona_alias,4
+NEXO-147-00248,caso,CTA-DEMO-121,cuenta_pago,usa_cuenta,4
+NEXO-147-00248,caso,3595582013,telefono,asocia_telefono,3
+NEXO-147-00249,caso,La Voz,alias,menciona_alias,2
+NEXO-147-00249,caso,CTA-DEMO-169,cuenta_pago,usa_cuenta,3
+NEXO-147-00249,caso,3785502942,telefono,asocia_telefono,4
+NEXO-147-00250,caso,Alias-786,alias,menciona_alias,3
+NEXO-147-00250,caso,CTA-DEMO-001,cuenta_pago,usa_cuenta,5
+NEXO-147-00250,caso,3098635993,telefono,asocia_telefono,2
+NEXO-147-00251,caso,Omega,alias,menciona_alias,3
+NEXO-147-00251,caso,CTA-DEMO-593,cuenta_pago,usa_cuenta,1
+NEXO-147-00251,caso,3353385192,telefono,asocia_telefono,1
+NEXO-147-00252,caso,El Norte,alias,menciona_alias,4
+NEXO-147-00252,caso,CTA-DEMO-364,cuenta_pago,usa_cuenta,5
+NEXO-147-00252,caso,3718790785,telefono,asocia_telefono,1
+NEXO-147-00253,caso,El Norte,alias,menciona_alias,1
+NEXO-147-00253,caso,CTA-DEMO-641,cuenta_pago,usa_cuenta,1
+NEXO-147-00253,caso,3508338205,telefono,asocia_telefono,1
+NEXO-147-00254,caso,El Norte,alias,menciona_alias,2
+NEXO-147-00254,caso,CTA-DEMO-256,cuenta_pago,usa_cuenta,3
+NEXO-147-00254,caso,3643924219,telefono,asocia_telefono,3
+NEXO-147-00255,caso,Alias-584,alias,menciona_alias,4
+NEXO-147-00255,caso,CTA-DEMO-481,cuenta_pago,usa_cuenta,3
+NEXO-147-00255,caso,3043780745,telefono,asocia_telefono,5
+NEXO-147-00256,caso,Alias-249,alias,menciona_alias,2
+NEXO-147-00256,caso,CTA-DEMO-004,cuenta_pago,usa_cuenta,3
+NEXO-147-00256,caso,3887403982,telefono,asocia_telefono,5
+NEXO-147-00257,caso,El Primo,alias,menciona_alias,5
+NEXO-147-00257,caso,CTA-DEMO-011,cuenta_pago,usa_cuenta,4
+NEXO-147-00257,caso,3166157088,telefono,asocia_telefono,5
+NEXO-147-00258,caso,La Voz,alias,menciona_alias,3
+NEXO-147-00258,caso,CTA-DEMO-320,cuenta_pago,usa_cuenta,5
+NEXO-147-00258,caso,3434183502,telefono,asocia_telefono,3
+NEXO-147-00259,caso,Alias-540,alias,menciona_alias,3
+NEXO-147-00259,caso,CTA-DEMO-592,cuenta_pago,usa_cuenta,2
+NEXO-147-00259,caso,3106960950,telefono,asocia_telefono,5
+NEXO-147-00260,caso,El Mensajero,alias,menciona_alias,3
+NEXO-147-00260,caso,CTA-DEMO-003,cuenta_pago,usa_cuenta,3
+NEXO-147-00260,caso,3048956726,telefono,asocia_telefono,4
+NEXO-147-00261,caso,Alias-177,alias,menciona_alias,1
+NEXO-147-00261,caso,CTA-DEMO-598,cuenta_pago,usa_cuenta,4
+NEXO-147-00261,caso,3403309487,telefono,asocia_telefono,4
+NEXO-147-00262,caso,El Norte,alias,menciona_alias,2
+NEXO-147-00262,caso,CTA-DEMO-464,cuenta_pago,usa_cuenta,3
+NEXO-147-00262,caso,3358888763,telefono,asocia_telefono,1
+NEXO-147-00263,caso,Alias-209,alias,menciona_alias,5
+NEXO-147-00263,caso,CTA-DEMO-005,cuenta_pago,usa_cuenta,5
+NEXO-147-00263,caso,3609470818,telefono,asocia_telefono,3
+NEXO-147-00264,caso,Alias-402,alias,menciona_alias,1
+NEXO-147-00264,caso,CTA-DEMO-394,cuenta_pago,usa_cuenta,3
+NEXO-147-00264,caso,3353385192,telefono,asocia_telefono,2
+NEXO-147-00265,caso,Alias-508,alias,menciona_alias,3
+NEXO-147-00265,caso,CTA-DEMO-687,cuenta_pago,usa_cuenta,5
+NEXO-147-00265,caso,3382442374,telefono,asocia_telefono,5
+NEXO-147-00266,caso,Alias-656,alias,menciona_alias,2
+NEXO-147-00266,caso,CTA-DEMO-997,cuenta_pago,usa_cuenta,1
+NEXO-147-00266,caso,3282305265,telefono,asocia_telefono,1
+NEXO-147-00267,caso,Alias-187,alias,menciona_alias,1
+NEXO-147-00267,caso,CTA-DEMO-105,cuenta_pago,usa_cuenta,5
+NEXO-147-00267,caso,3353385192,telefono,asocia_telefono,2
+NEXO-147-00268,caso,La Voz,alias,menciona_alias,5
+NEXO-147-00268,caso,CTA-DEMO-682,cuenta_pago,usa_cuenta,3
+NEXO-147-00268,caso,3308524881,telefono,asocia_telefono,5
+NEXO-147-00269,caso,Delta,alias,menciona_alias,3
+NEXO-147-00269,caso,CTA-DEMO-883,cuenta_pago,usa_cuenta,1
+NEXO-147-00269,caso,3556674383,telefono,asocia_telefono,5
+NEXO-147-00270,caso,Alias-719,alias,menciona_alias,1
+NEXO-147-00270,caso,CTA-DEMO-658,cuenta_pago,usa_cuenta,4
+NEXO-147-00270,caso,3475124950,telefono,asocia_telefono,5
+NEXO-147-00271,caso,La Voz,alias,menciona_alias,4
+NEXO-147-00271,caso,CTA-DEMO-015,cuenta_pago,usa_cuenta,2
+NEXO-147-00271,caso,3316354737,telefono,asocia_telefono,1
+NEXO-147-00272,caso,Alias-313,alias,menciona_alias,4
+NEXO-147-00272,caso,CTA-DEMO-783,cuenta_pago,usa_cuenta,3
+NEXO-147-00272,caso,3718790785,telefono,asocia_telefono,5
+NEXO-147-00273,caso,Alias-126,alias,menciona_alias,4
+NEXO-147-00273,caso,CTA-DEMO-977,cuenta_pago,usa_cuenta,2
+NEXO-147-00273,caso,3324318222,telefono,asocia_telefono,4
+NEXO-147-00274,caso,Comando 17,alias,menciona_alias,5
+NEXO-147-00274,caso,CTA-DEMO-643,cuenta_pago,usa_cuenta,2
+NEXO-147-00274,caso,3862205068,telefono,asocia_telefono,5
+NEXO-147-00275,caso,R-21,alias,menciona_alias,5
+NEXO-147-00275,caso,CTA-DEMO-974,cuenta_pago,usa_cuenta,5
+NEXO-147-00275,caso,3861530582,telefono,asocia_telefono,5
+NEXO-147-00276,caso,Alias-686,alias,menciona_alias,2
+NEXO-147-00276,caso,CTA-DEMO-019,cuenta_pago,usa_cuenta,5
+NEXO-147-00276,caso,3923285666,telefono,asocia_telefono,5
+NEXO-147-00277,caso,Alias-883,alias,menciona_alias,4
+NEXO-147-00277,caso,CTA-DEMO-016,cuenta_pago,usa_cuenta,5
+NEXO-147-00277,caso,3433847460,telefono,asocia_telefono,2
+NEXO-147-00278,caso,Sombra,alias,menciona_alias,3
+NEXO-147-00278,caso,CTA-DEMO-520,cuenta_pago,usa_cuenta,1
+NEXO-147-00278,caso,3353385192,telefono,asocia_telefono,1
+NEXO-147-00279,caso,Alias-598,alias,menciona_alias,4
+NEXO-147-00279,caso,CTA-DEMO-020,cuenta_pago,usa_cuenta,4
+NEXO-147-00279,caso,3938871302,telefono,asocia_telefono,1
+NEXO-147-00280,caso,Delta,alias,menciona_alias,5
+NEXO-147-00280,caso,CTA-DEMO-002,cuenta_pago,usa_cuenta,3
+NEXO-147-00280,caso,3328289044,telefono,asocia_telefono,4
+NEXO-147-00281,caso,Alias-767,alias,menciona_alias,1
+NEXO-147-00281,caso,CTA-DEMO-004,cuenta_pago,usa_cuenta,5
+NEXO-147-00281,caso,3397949082,telefono,asocia_telefono,3
+NEXO-147-00282,caso,Alias-431,alias,menciona_alias,3
+NEXO-147-00282,caso,CTA-DEMO-016,cuenta_pago,usa_cuenta,1
+NEXO-147-00282,caso,3887403982,telefono,asocia_telefono,3
+NEXO-147-00283,caso,El Primo,alias,menciona_alias,1
+NEXO-147-00283,caso,CTA-DEMO-501,cuenta_pago,usa_cuenta,5
+NEXO-147-00283,caso,3241156214,telefono,asocia_telefono,5
+NEXO-147-00284,caso,El Mensajero,alias,menciona_alias,3
+NEXO-147-00284,caso,CTA-DEMO-813,cuenta_pago,usa_cuenta,2
+NEXO-147-00284,caso,3034812976,telefono,asocia_telefono,2
+NEXO-147-00285,caso,Delta,alias,menciona_alias,3
+NEXO-147-00285,caso,CTA-DEMO-439,cuenta_pago,usa_cuenta,2
+NEXO-147-00285,caso,3934977602,telefono,asocia_telefono,4
+NEXO-147-00286,caso,Alias-462,alias,menciona_alias,2
+NEXO-147-00286,caso,CTA-DEMO-791,cuenta_pago,usa_cuenta,3
+NEXO-147-00286,caso,3798524069,telefono,asocia_telefono,5
+NEXO-147-00287,caso,El Mensajero,alias,menciona_alias,4
+NEXO-147-00287,caso,CTA-DEMO-002,cuenta_pago,usa_cuenta,4
+NEXO-147-00287,caso,3771331880,telefono,asocia_telefono,2
+NEXO-147-00288,caso,Alias-640,alias,menciona_alias,4
+NEXO-147-00288,caso,CTA-DEMO-545,cuenta_pago,usa_cuenta,1
+NEXO-147-00288,caso,3862384852,telefono,asocia_telefono,1
+NEXO-147-00289,caso,Alias-287,alias,menciona_alias,1
+NEXO-147-00289,caso,CTA-DEMO-665,cuenta_pago,usa_cuenta,1
+NEXO-147-00289,caso,3609470818,telefono,asocia_telefono,4
+NEXO-147-00290,caso,Alias-204,alias,menciona_alias,5
+NEXO-147-00290,caso,CTA-DEMO-747,cuenta_pago,usa_cuenta,4
+NEXO-147-00290,caso,3518043924,telefono,asocia_telefono,1
+NEXO-147-00291,caso,Alias-672,alias,menciona_alias,2
+NEXO-147-00291,caso,CTA-DEMO-010,cuenta_pago,usa_cuenta,2
+NEXO-147-00291,caso,3849611295,telefono,asocia_telefono,1
+NEXO-147-00292,caso,Alias-559,alias,menciona_alias,3
+NEXO-147-00292,caso,CTA-DEMO-554,cuenta_pago,usa_cuenta,2
+NEXO-147-00292,caso,3378847842,telefono,asocia_telefono,3
+NEXO-147-00293,caso,Alias-454,alias,menciona_alias,1
+NEXO-147-00293,caso,CTA-DEMO-005,cuenta_pago,usa_cuenta,1
+NEXO-147-00293,caso,3423203095,telefono,asocia_telefono,5
+NEXO-147-00294,caso,Comando 17,alias,menciona_alias,1
+NEXO-147-00294,caso,CTA-DEMO-008,cuenta_pago,usa_cuenta,5
+NEXO-147-00294,caso,3067062974,telefono,asocia_telefono,2
+NEXO-147-00295,caso,Alias-475,alias,menciona_alias,5
+NEXO-147-00295,caso,CTA-DEMO-703,cuenta_pago,usa_cuenta,2
+NEXO-147-00295,caso,3347175056,telefono,asocia_telefono,3
+NEXO-147-00296,caso,Sombra,alias,menciona_alias,4
+NEXO-147-00296,caso,CTA-DEMO-015,cuenta_pago,usa_cuenta,2
+NEXO-147-00296,caso,3798524069,telefono,asocia_telefono,1
+NEXO-147-00297,caso,Alias-397,alias,menciona_alias,3
+NEXO-147-00297,caso,CTA-DEMO-721,cuenta_pago,usa_cuenta,1
+NEXO-147-00297,caso,3831977983,telefono,asocia_telefono,3
+NEXO-147-00298,caso,Alias-814,alias,menciona_alias,4
+NEXO-147-00298,caso,CTA-DEMO-001,cuenta_pago,usa_cuenta,5
+NEXO-147-00298,caso,3247951124,telefono,asocia_telefono,1
+NEXO-147-00299,caso,La Voz,alias,menciona_alias,3
+NEXO-147-00299,caso,CTA-DEMO-397,cuenta_pago,usa_cuenta,2
+NEXO-147-00299,caso,3227283267,telefono,asocia_telefono,2
+NEXO-147-00300,caso,Alias-651,alias,menciona_alias,1
+NEXO-147-00300,caso,CTA-DEMO-006,cuenta_pago,usa_cuenta,3
+NEXO-147-00300,caso,3038073855,telefono,asocia_telefono,4
+NEXO-147-00301,caso,Alias-658,alias,menciona_alias,1
+NEXO-147-00301,caso,CTA-DEMO-008,cuenta_pago,usa_cuenta,4
+NEXO-147-00301,caso,3166682005,telefono,asocia_telefono,2
+NEXO-147-00302,caso,El Primo,alias,menciona_alias,4
+NEXO-147-00302,caso,CTA-DEMO-485,cuenta_pago,usa_cuenta,2
+NEXO-147-00302,caso,3353385192,telefono,asocia_telefono,3
+NEXO-147-00303,caso,Sombra,alias,menciona_alias,2
+NEXO-147-00303,caso,CTA-DEMO-002,cuenta_pago,usa_cuenta,3
+NEXO-147-00303,caso,3713953322,telefono,asocia_telefono,3
+NEXO-147-00304,caso,Delta,alias,menciona_alias,2
+NEXO-147-00304,caso,CTA-DEMO-961,cuenta_pago,usa_cuenta,1
+NEXO-147-00304,caso,3812441954,telefono,asocia_telefono,3
+NEXO-147-00305,caso,Alias-922,alias,menciona_alias,4
+NEXO-147-00305,caso,CTA-DEMO-013,cuenta_pago,usa_cuenta,3
+NEXO-147-00305,caso,3825240849,telefono,asocia_telefono,4
+NEXO-147-00306,caso,Alias-122,alias,menciona_alias,1
+NEXO-147-00306,caso,CTA-DEMO-149,cuenta_pago,usa_cuenta,1
+NEXO-147-00306,caso,3958127507,telefono,asocia_telefono,4
+NEXO-147-00307,caso,R-21,alias,menciona_alias,3
+NEXO-147-00307,caso,CTA-DEMO-013,cuenta_pago,usa_cuenta,2
+NEXO-147-00307,caso,3595183314,telefono,asocia_telefono,1
+NEXO-147-00308,caso,El Primo,alias,menciona_alias,5
+NEXO-147-00308,caso,CTA-DEMO-013,cuenta_pago,usa_cuenta,5
+NEXO-147-00308,caso,3152386242,telefono,asocia_telefono,2
+NEXO-147-00309,caso,Alias-501,alias,menciona_alias,4
+NEXO-147-00309,caso,CTA-DEMO-635,cuenta_pago,usa_cuenta,2
+NEXO-147-00309,caso,3416120290,telefono,asocia_telefono,2
+NEXO-147-00310,caso,Alias-268,alias,menciona_alias,1
+NEXO-147-00310,caso,CTA-DEMO-011,cuenta_pago,usa_cuenta,3
+NEXO-147-00310,caso,3173621522,telefono,asocia_telefono,4
+NEXO-147-00311,caso,Alias-144,alias,menciona_alias,3
+NEXO-147-00311,caso,CTA-DEMO-254,cuenta_pago,usa_cuenta,2
+NEXO-147-00311,caso,3914193449,telefono,asocia_telefono,5
+NEXO-147-00312,caso,Sombra,alias,menciona_alias,5
+NEXO-147-00312,caso,CTA-DEMO-939,cuenta_pago,usa_cuenta,1
+NEXO-147-00312,caso,3034812976,telefono,asocia_telefono,3
+NEXO-147-00313,caso,Sombra,alias,menciona_alias,4
+NEXO-147-00313,caso,CTA-DEMO-017,cuenta_pago,usa_cuenta,3
+NEXO-147-00313,caso,3158451630,telefono,asocia_telefono,2
+NEXO-147-00314,caso,Alias-434,alias,menciona_alias,4
+NEXO-147-00314,caso,CTA-DEMO-007,cuenta_pago,usa_cuenta,5
+NEXO-147-00314,caso,3133130443,telefono,asocia_telefono,2
+NEXO-147-00315,caso,Omega,alias,menciona_alias,5
+NEXO-147-00315,caso,CTA-DEMO-012,cuenta_pago,usa_cuenta,5
+NEXO-147-00315,caso,3965479663,telefono,asocia_telefono,1
+NEXO-147-00316,caso,Omega,alias,menciona_alias,1
+NEXO-147-00316,caso,CTA-DEMO-272,cuenta_pago,usa_cuenta,1
+NEXO-147-00316,caso,3876918105,telefono,asocia_telefono,4
+NEXO-147-00317,caso,R-21,alias,menciona_alias,5
+NEXO-147-00317,caso,CTA-DEMO-424,cuenta_pago,usa_cuenta,3
+NEXO-147-00317,caso,3615150118,telefono,asocia_telefono,2
+NEXO-147-00318,caso,El Primo,alias,menciona_alias,2
+NEXO-147-00318,caso,CTA-DEMO-741,cuenta_pago,usa_cuenta,2
+NEXO-147-00318,caso,3048303031,telefono,asocia_telefono,1
+NEXO-147-00319,caso,Alias-169,alias,menciona_alias,5
+NEXO-147-00319,caso,CTA-DEMO-002,cuenta_pago,usa_cuenta,4
+NEXO-147-00319,caso,3158451630,telefono,asocia_telefono,5
+NEXO-147-00320,caso,Alias-519,alias,menciona_alias,1
+NEXO-147-00320,caso,CTA-DEMO-980,cuenta_pago,usa_cuenta,5
+NEXO-147-00320,caso,3281249497,telefono,asocia_telefono,1
+NEXO-147-00321,caso,Alias-951,alias,menciona_alias,1
+NEXO-147-00321,caso,CTA-DEMO-011,cuenta_pago,usa_cuenta,1
+NEXO-147-00321,caso,3771331880,telefono,asocia_telefono,3
+NEXO-147-00322,caso,Delta,alias,menciona_alias,1
+NEXO-147-00322,caso,CTA-DEMO-929,cuenta_pago,usa_cuenta,3
+NEXO-147-00322,caso,3557449429,telefono,asocia_telefono,4
+NEXO-147-00323,caso,Delta,alias,menciona_alias,2
+NEXO-147-00323,caso,CTA-DEMO-018,cuenta_pago,usa_cuenta,4
+NEXO-147-00323,caso,3282305265,telefono,asocia_telefono,5
+NEXO-147-00324,caso,El Norte,alias,menciona_alias,3
+NEXO-147-00324,caso,CTA-DEMO-374,cuenta_pago,usa_cuenta,5
+NEXO-147-00324,caso,3611895821,telefono,asocia_telefono,4
+NEXO-147-00325,caso,La Voz,alias,menciona_alias,1
+NEXO-147-00325,caso,CTA-DEMO-790,cuenta_pago,usa_cuenta,1
+NEXO-147-00325,caso,3219010142,telefono,asocia_telefono,4
+NEXO-147-00326,caso,Alias-236,alias,menciona_alias,2
+NEXO-147-00326,caso,CTA-DEMO-526,cuenta_pago,usa_cuenta,4
+NEXO-147-00326,caso,3538579611,telefono,asocia_telefono,2
+NEXO-147-00327,caso,Alias-359,alias,menciona_alias,4
+NEXO-147-00327,caso,CTA-DEMO-011,cuenta_pago,usa_cuenta,3
+NEXO-147-00327,caso,3034812976,telefono,asocia_telefono,3
+NEXO-147-00328,caso,El Norte,alias,menciona_alias,5
+NEXO-147-00328,caso,CTA-DEMO-016,cuenta_pago,usa_cuenta,4
+NEXO-147-00328,caso,3612029688,telefono,asocia_telefono,1
+NEXO-147-00329,caso,La Voz,alias,menciona_alias,5
+NEXO-147-00329,caso,CTA-DEMO-009,cuenta_pago,usa_cuenta,3
+NEXO-147-00329,caso,3282305265,telefono,asocia_telefono,5
+NEXO-147-00330,caso,Alias-392,alias,menciona_alias,4
+NEXO-147-00330,caso,CTA-DEMO-488,cuenta_pago,usa_cuenta,3
+NEXO-147-00330,caso,3798524069,telefono,asocia_telefono,5
+NEXO-147-00331,caso,El Mensajero,alias,menciona_alias,1
+NEXO-147-00331,caso,CTA-DEMO-014,cuenta_pago,usa_cuenta,4
+NEXO-147-00331,caso,3568341076,telefono,asocia_telefono,1
+NEXO-147-00332,caso,Alias-184,alias,menciona_alias,3
+NEXO-147-00332,caso,CTA-DEMO-016,cuenta_pago,usa_cuenta,1
+NEXO-147-00332,caso,3643801797,telefono,asocia_telefono,4
+NEXO-147-00333,caso,La Voz,alias,menciona_alias,4
+NEXO-147-00333,caso,CTA-DEMO-885,cuenta_pago,usa_cuenta,2
+NEXO-147-00333,caso,3049811606,telefono,asocia_telefono,5
+NEXO-147-00334,caso,Alias-703,alias,menciona_alias,4
+NEXO-147-00334,caso,CTA-DEMO-360,cuenta_pago,usa_cuenta,4
+NEXO-147-00334,caso,3354412581,telefono,asocia_telefono,4
+NEXO-147-00335,caso,Alias-200,alias,menciona_alias,5
+NEXO-147-00335,caso,CTA-DEMO-731,cuenta_pago,usa_cuenta,3
+NEXO-147-00335,caso,3589280911,telefono,asocia_telefono,5
+NEXO-147-00336,caso,Alias-523,alias,menciona_alias,2
+NEXO-147-00336,caso,CTA-DEMO-004,cuenta_pago,usa_cuenta,5
+NEXO-147-00336,caso,3752028775,telefono,asocia_telefono,1
+NEXO-147-00337,caso,Alias-572,alias,menciona_alias,2
+NEXO-147-00337,caso,CTA-DEMO-004,cuenta_pago,usa_cuenta,5
+NEXO-147-00337,caso,3694373971,telefono,asocia_telefono,3
+NEXO-147-00338,caso,Alias-991,alias,menciona_alias,1
+NEXO-147-00338,caso,CTA-DEMO-016,cuenta_pago,usa_cuenta,1
+NEXO-147-00338,caso,3314597187,telefono,asocia_telefono,5
+NEXO-147-00339,caso,Alias-172,alias,menciona_alias,2
+NEXO-147-00339,caso,CTA-DEMO-268,cuenta_pago,usa_cuenta,2
+NEXO-147-00339,caso,3158451630,telefono,asocia_telefono,1
+NEXO-147-00340,caso,Comando 17,alias,menciona_alias,3
+NEXO-147-00340,caso,CTA-DEMO-019,cuenta_pago,usa_cuenta,4
+NEXO-147-00340,caso,3609470818,telefono,asocia_telefono,5
+NEXO-147-00341,caso,Alias-395,alias,menciona_alias,3
+NEXO-147-00341,caso,CTA-DEMO-012,cuenta_pago,usa_cuenta,4
+NEXO-147-00341,caso,3158451630,telefono,asocia_telefono,4
+NEXO-147-00342,caso,Alias-692,alias,menciona_alias,4
+NEXO-147-00342,caso,CTA-DEMO-609,cuenta_pago,usa_cuenta,4
+NEXO-147-00342,caso,3933409939,telefono,asocia_telefono,5
+NEXO-147-00343,caso,El Norte,alias,menciona_alias,2
+NEXO-147-00343,caso,CTA-DEMO-003,cuenta_pago,usa_cuenta,3
+NEXO-147-00343,caso,3718790785,telefono,asocia_telefono,3
+NEXO-147-00344,caso,Alias-186,alias,menciona_alias,1
+NEXO-147-00344,caso,CTA-DEMO-002,cuenta_pago,usa_cuenta,3
+NEXO-147-00344,caso,3382442374,telefono,asocia_telefono,4
+NEXO-147-00345,caso,R-21,alias,menciona_alias,2
+NEXO-147-00345,caso,CTA-DEMO-770,cuenta_pago,usa_cuenta,3
+NEXO-147-00345,caso,3403590960,telefono,asocia_telefono,4
+NEXO-147-00346,caso,Sombra,alias,menciona_alias,4
+NEXO-147-00346,caso,CTA-DEMO-948,cuenta_pago,usa_cuenta,5
+NEXO-147-00346,caso,3338490696,telefono,asocia_telefono,3
+NEXO-147-00347,caso,El Mensajero,alias,menciona_alias,3
+NEXO-147-00347,caso,CTA-DEMO-547,cuenta_pago,usa_cuenta,5
+NEXO-147-00347,caso,3007735418,telefono,asocia_telefono,5
+NEXO-147-00348,caso,Sombra,alias,menciona_alias,1
+NEXO-147-00348,caso,CTA-DEMO-011,cuenta_pago,usa_cuenta,3
+NEXO-147-00348,caso,3612993716,telefono,asocia_telefono,3
+NEXO-147-00349,caso,R-21,alias,menciona_alias,3
+NEXO-147-00349,caso,CTA-DEMO-243,cuenta_pago,usa_cuenta,1
+NEXO-147-00349,caso,3725111489,telefono,asocia_telefono,3
+NEXO-147-00350,caso,Comando 17,alias,menciona_alias,3
+NEXO-147-00350,caso,CTA-DEMO-392,cuenta_pago,usa_cuenta,1
+NEXO-147-00350,caso,3856573770,telefono,asocia_telefono,1
+NEXO-147-00351,caso,Alias-527,alias,menciona_alias,1
+NEXO-147-00351,caso,CTA-DEMO-209,cuenta_pago,usa_cuenta,3
+NEXO-147-00351,caso,3525243208,telefono,asocia_telefono,2
+NEXO-147-00352,caso,Omega,alias,menciona_alias,5
+NEXO-147-00352,caso,CTA-DEMO-019,cuenta_pago,usa_cuenta,1
+NEXO-147-00352,caso,3958127507,telefono,asocia_telefono,1
+NEXO-147-00353,caso,Omega,alias,menciona_alias,2
+NEXO-147-00353,caso,CTA-DEMO-004,cuenta_pago,usa_cuenta,4
+NEXO-147-00353,caso,3763122010,telefono,asocia_telefono,5
+NEXO-147-00354,caso,Alias-616,alias,menciona_alias,3
+NEXO-147-00354,caso,CTA-DEMO-232,cuenta_pago,usa_cuenta,1
+NEXO-147-00354,caso,3371394245,telefono,asocia_telefono,3
+NEXO-147-00355,caso,Delta,alias,menciona_alias,5
+NEXO-147-00355,caso,CTA-DEMO-018,cuenta_pago,usa_cuenta,2
+NEXO-147-00355,caso,3335971381,telefono,asocia_telefono,4
+NEXO-147-00356,caso,El Norte,alias,menciona_alias,4
+NEXO-147-00356,caso,CTA-DEMO-169,cuenta_pago,usa_cuenta,3
+NEXO-147-00356,caso,3282305265,telefono,asocia_telefono,4
+NEXO-147-00357,caso,Alias-772,alias,menciona_alias,5
+NEXO-147-00357,caso,CTA-DEMO-806,cuenta_pago,usa_cuenta,5
+NEXO-147-00357,caso,3881534458,telefono,asocia_telefono,2
+NEXO-147-00358,caso,R-21,alias,menciona_alias,1
+NEXO-147-00358,caso,CTA-DEMO-851,cuenta_pago,usa_cuenta,5
+NEXO-147-00358,caso,3431489471,telefono,asocia_telefono,4
+NEXO-147-00359,caso,La Voz,alias,menciona_alias,3
+NEXO-147-00359,caso,CTA-DEMO-896,cuenta_pago,usa_cuenta,2
+NEXO-147-00359,caso,3798524069,telefono,asocia_telefono,3
+NEXO-147-00360,caso,Alias-718,alias,menciona_alias,5
+NEXO-147-00360,caso,CTA-DEMO-163,cuenta_pago,usa_cuenta,2
+NEXO-147-00360,caso,3874316184,telefono,asocia_telefono,4
+NEXO-147-00361,caso,R-21,alias,menciona_alias,4
+NEXO-147-00361,caso,CTA-DEMO-561,cuenta_pago,usa_cuenta,3
+NEXO-147-00361,caso,3713200536,telefono,asocia_telefono,5
+NEXO-147-00362,caso,R-21,alias,menciona_alias,3
+NEXO-147-00362,caso,CTA-DEMO-716,cuenta_pago,usa_cuenta,1
+NEXO-147-00362,caso,3247951124,telefono,asocia_telefono,2
+NEXO-147-00363,caso,La Voz,alias,menciona_alias,3
+NEXO-147-00363,caso,CTA-DEMO-014,cuenta_pago,usa_cuenta,2
+NEXO-147-00363,caso,3572388958,telefono,asocia_telefono,2
+NEXO-147-00364,caso,Omega,alias,menciona_alias,4
+NEXO-147-00364,caso,CTA-DEMO-004,cuenta_pago,usa_cuenta,4
+NEXO-147-00364,caso,3264266421,telefono,asocia_telefono,4
+NEXO-147-00365,caso,Alias-564,alias,menciona_alias,2
+NEXO-147-00365,caso,CTA-DEMO-015,cuenta_pago,usa_cuenta,2
+NEXO-147-00365,caso,3518043924,telefono,asocia_telefono,4
+NEXO-147-00366,caso,Alias-873,alias,menciona_alias,5
+NEXO-147-00366,caso,CTA-DEMO-016,cuenta_pago,usa_cuenta,5
+NEXO-147-00366,caso,3798524069,telefono,asocia_telefono,3
+NEXO-147-00367,caso,El Norte,alias,menciona_alias,3
+NEXO-147-00367,caso,CTA-DEMO-006,cuenta_pago,usa_cuenta,2
+NEXO-147-00367,caso,3026750461,telefono,asocia_telefono,4
+NEXO-147-00368,caso,La Voz,alias,menciona_alias,4
+NEXO-147-00368,caso,CTA-DEMO-446,cuenta_pago,usa_cuenta,2
+NEXO-147-00368,caso,3247951124,telefono,asocia_telefono,4
+NEXO-147-00369,caso,Alias-432,alias,menciona_alias,5
+NEXO-147-00369,caso,CTA-DEMO-174,cuenta_pago,usa_cuenta,3
+NEXO-147-00369,caso,3609470818,telefono,asocia_telefono,2
+NEXO-147-00370,caso,Delta,alias,menciona_alias,2
+NEXO-147-00370,caso,CTA-DEMO-785,cuenta_pago,usa_cuenta,3
+NEXO-147-00370,caso,3816029690,telefono,asocia_telefono,5
+NEXO-147-00371,caso,Alias-785,alias,menciona_alias,4
+NEXO-147-00371,caso,CTA-DEMO-009,cuenta_pago,usa_cuenta,5
+NEXO-147-00371,caso,3469133588,telefono,asocia_telefono,2
+NEXO-147-00372,caso,Omega,alias,menciona_alias,2
+NEXO-147-00372,caso,CTA-DEMO-424,cuenta_pago,usa_cuenta,3
+NEXO-147-00372,caso,3958127507,telefono,asocia_telefono,1
+NEXO-147-00373,caso,Alias-494,alias,menciona_alias,4
+NEXO-147-00373,caso,CTA-DEMO-014,cuenta_pago,usa_cuenta,1
+NEXO-147-00373,caso,3036035136,telefono,asocia_telefono,1
+NEXO-147-00374,caso,Omega,alias,menciona_alias,3
+NEXO-147-00374,caso,CTA-DEMO-020,cuenta_pago,usa_cuenta,3
+NEXO-147-00374,caso,3771331880,telefono,asocia_telefono,3
+NEXO-147-00375,caso,Alias-291,alias,menciona_alias,1
+NEXO-147-00375,caso,CTA-DEMO-233,cuenta_pago,usa_cuenta,5
+NEXO-147-00375,caso,3304849251,telefono,asocia_telefono,3
+NEXO-147-00376,caso,El Norte,alias,menciona_alias,5
+NEXO-147-00376,caso,CTA-DEMO-016,cuenta_pago,usa_cuenta,2
+NEXO-147-00376,caso,3754812493,telefono,asocia_telefono,4
+NEXO-147-00377,caso,Alias-996,alias,menciona_alias,1
+NEXO-147-00377,caso,CTA-DEMO-016,cuenta_pago,usa_cuenta,2
+NEXO-147-00377,caso,3206966115,telefono,asocia_telefono,3
+NEXO-147-00378,caso,Alias-763,alias,menciona_alias,4
+NEXO-147-00378,caso,CTA-DEMO-154,cuenta_pago,usa_cuenta,1
+NEXO-147-00378,caso,3806048214,telefono,asocia_telefono,2
+NEXO-147-00379,caso,Alias-123,alias,menciona_alias,3
+NEXO-147-00379,caso,CTA-DEMO-201,cuenta_pago,usa_cuenta,2
+NEXO-147-00379,caso,3072120476,telefono,asocia_telefono,1
+NEXO-147-00380,caso,Comando 17,alias,menciona_alias,2
+NEXO-147-00380,caso,CTA-DEMO-020,cuenta_pago,usa_cuenta,1
+NEXO-147-00380,caso,3021761565,telefono,asocia_telefono,4
+NEXO-147-00381,caso,El Norte,alias,menciona_alias,2
+NEXO-147-00381,caso,CTA-DEMO-495,cuenta_pago,usa_cuenta,2
+NEXO-147-00381,caso,3314597187,telefono,asocia_telefono,2
+NEXO-147-00382,caso,Alias-998,alias,menciona_alias,4
+NEXO-147-00382,caso,CTA-DEMO-011,cuenta_pago,usa_cuenta,2
+NEXO-147-00382,caso,3025791384,telefono,asocia_telefono,1
+NEXO-147-00383,caso,Alias-672,alias,menciona_alias,5
+NEXO-147-00383,caso,CTA-DEMO-516,cuenta_pago,usa_cuenta,1
+NEXO-147-00383,caso,3354795896,telefono,asocia_telefono,3
+NEXO-147-00384,caso,Alias-290,alias,menciona_alias,1
+NEXO-147-00384,caso,CTA-DEMO-185,cuenta_pago,usa_cuenta,5
+NEXO-147-00384,caso,3353385192,telefono,asocia_telefono,1
+NEXO-147-00385,caso,El Mensajero,alias,menciona_alias,3
+NEXO-147-00385,caso,CTA-DEMO-692,cuenta_pago,usa_cuenta,3
+NEXO-147-00385,caso,3891529226,telefono,asocia_telefono,2
+NEXO-147-00386,caso,Alias-913,alias,menciona_alias,5
+NEXO-147-00386,caso,CTA-DEMO-186,cuenta_pago,usa_cuenta,4
+NEXO-147-00386,caso,3862384852,telefono,asocia_telefono,5
+NEXO-147-00387,caso,Sombra,alias,menciona_alias,2
+NEXO-147-00387,caso,CTA-DEMO-740,cuenta_pago,usa_cuenta,4
+NEXO-147-00387,caso,3469133588,telefono,asocia_telefono,3
+NEXO-147-00388,caso,El Mensajero,alias,menciona_alias,4
+NEXO-147-00388,caso,CTA-DEMO-015,cuenta_pago,usa_cuenta,5
+NEXO-147-00388,caso,3742979468,telefono,asocia_telefono,2
+NEXO-147-00389,caso,R-21,alias,menciona_alias,3
+NEXO-147-00389,caso,CTA-DEMO-469,cuenta_pago,usa_cuenta,4
+NEXO-147-00389,caso,3518043924,telefono,asocia_telefono,1
+NEXO-147-00390,caso,El Primo,alias,menciona_alias,4
+NEXO-147-00390,caso,CTA-DEMO-013,cuenta_pago,usa_cuenta,5
+NEXO-147-00390,caso,3025791384,telefono,asocia_telefono,2
+NEXO-147-00391,caso,Delta,alias,menciona_alias,4
+NEXO-147-00391,caso,CTA-DEMO-014,cuenta_pago,usa_cuenta,3
+NEXO-147-00391,caso,3192532428,telefono,asocia_telefono,1
+NEXO-147-00392,caso,R-21,alias,menciona_alias,2
+NEXO-147-00392,caso,CTA-DEMO-550,cuenta_pago,usa_cuenta,5
+NEXO-147-00392,caso,3671311485,telefono,asocia_telefono,4
+NEXO-147-00393,caso,Alias-173,alias,menciona_alias,2
+NEXO-147-00393,caso,CTA-DEMO-657,cuenta_pago,usa_cuenta,5
+NEXO-147-00393,caso,3382442374,telefono,asocia_telefono,5
+NEXO-147-00394,caso,Alias-843,alias,menciona_alias,5
+NEXO-147-00394,caso,CTA-DEMO-016,cuenta_pago,usa_cuenta,2
+NEXO-147-00394,caso,3142822135,telefono,asocia_telefono,5
+NEXO-147-00395,caso,La Voz,alias,menciona_alias,2
+NEXO-147-00395,caso,CTA-DEMO-005,cuenta_pago,usa_cuenta,2
+NEXO-147-00395,caso,3247951124,telefono,asocia_telefono,4
+NEXO-147-00396,caso,Delta,alias,menciona_alias,2
+NEXO-147-00396,caso,CTA-DEMO-373,cuenta_pago,usa_cuenta,3
+NEXO-147-00396,caso,3971694484,telefono,asocia_telefono,4
+NEXO-147-00397,caso,Delta,alias,menciona_alias,4
+NEXO-147-00397,caso,CTA-DEMO-226,cuenta_pago,usa_cuenta,4
+NEXO-147-00397,caso,3235601218,telefono,asocia_telefono,2
+NEXO-147-00398,caso,Alias-986,alias,menciona_alias,3
+NEXO-147-00398,caso,CTA-DEMO-404,cuenta_pago,usa_cuenta,3
+NEXO-147-00398,caso,3382442374,telefono,asocia_telefono,3
+NEXO-147-00399,caso,Alias-650,alias,menciona_alias,3
+NEXO-147-00399,caso,CTA-DEMO-982,cuenta_pago,usa_cuenta,1
+NEXO-147-00399,caso,3239769776,telefono,asocia_telefono,5
+NEXO-147-00400,caso,Alias-941,alias,menciona_alias,4
+NEXO-147-00400,caso,CTA-DEMO-001,cuenta_pago,usa_cuenta,2
+NEXO-147-00400,caso,3255423309,telefono,asocia_telefono,5
+NEXO-147-00401,caso,Alias-291,alias,menciona_alias,2
+NEXO-147-00401,caso,CTA-DEMO-006,cuenta_pago,usa_cuenta,5
+NEXO-147-00401,caso,3196803406,telefono,asocia_telefono,4
+NEXO-147-00402,caso,El Primo,alias,menciona_alias,4
+NEXO-147-00402,caso,CTA-DEMO-436,cuenta_pago,usa_cuenta,2
+NEXO-147-00402,caso,3862404185,telefono,asocia_telefono,1
+NEXO-147-00403,caso,El Mensajero,alias,menciona_alias,5
+NEXO-147-00403,caso,CTA-DEMO-861,cuenta_pago,usa_cuenta,1
+NEXO-147-00403,caso,3397217526,telefono,asocia_telefono,3
+NEXO-147-00404,caso,Alias-461,alias,menciona_alias,5
+NEXO-147-00404,caso,CTA-DEMO-132,cuenta_pago,usa_cuenta,1
+NEXO-147-00404,caso,3257290874,telefono,asocia_telefono,3
+NEXO-147-00405,caso,Alias-361,alias,menciona_alias,5
+NEXO-147-00405,caso,CTA-DEMO-680,cuenta_pago,usa_cuenta,4
+NEXO-147-00405,caso,3357209986,telefono,asocia_telefono,1
+NEXO-147-00406,caso,Alias-837,alias,menciona_alias,5
+NEXO-147-00406,caso,CTA-DEMO-519,cuenta_pago,usa_cuenta,3
+NEXO-147-00406,caso,3993430776,telefono,asocia_telefono,2
+NEXO-147-00407,caso,Comando 17,alias,menciona_alias,2
+NEXO-147-00407,caso,CTA-DEMO-829,cuenta_pago,usa_cuenta,3
+NEXO-147-00407,caso,3366159556,telefono,asocia_telefono,4
+NEXO-147-00408,caso,Delta,alias,menciona_alias,1
+NEXO-147-00408,caso,CTA-DEMO-256,cuenta_pago,usa_cuenta,4
+NEXO-147-00408,caso,3911825285,telefono,asocia_telefono,4
+NEXO-147-00409,caso,El Primo,alias,menciona_alias,4
+NEXO-147-00409,caso,CTA-DEMO-010,cuenta_pago,usa_cuenta,4
+NEXO-147-00409,caso,3623768340,telefono,asocia_telefono,2
+NEXO-147-00410,caso,El Mensajero,alias,menciona_alias,4
+NEXO-147-00410,caso,CTA-DEMO-004,cuenta_pago,usa_cuenta,4
+NEXO-147-00410,caso,3956404085,telefono,asocia_telefono,5
+NEXO-147-00411,caso,R-21,alias,menciona_alias,4
+NEXO-147-00411,caso,CTA-DEMO-515,cuenta_pago,usa_cuenta,3
+NEXO-147-00411,caso,3404326471,telefono,asocia_telefono,1
+NEXO-147-00412,caso,El Primo,alias,menciona_alias,5
+NEXO-147-00412,caso,CTA-DEMO-005,cuenta_pago,usa_cuenta,4
+NEXO-147-00412,caso,3307020058,telefono,asocia_telefono,1
+NEXO-147-00413,caso,Alias-167,alias,menciona_alias,4
+NEXO-147-00413,caso,CTA-DEMO-797,cuenta_pago,usa_cuenta,2
+NEXO-147-00413,caso,3308643446,telefono,asocia_telefono,1
+NEXO-147-00414,caso,Alias-829,alias,menciona_alias,1
+NEXO-147-00414,caso,CTA-DEMO-706,cuenta_pago,usa_cuenta,4
+NEXO-147-00414,caso,3887919098,telefono,asocia_telefono,3
+NEXO-147-00415,caso,Comando 17,alias,menciona_alias,5
+NEXO-147-00415,caso,CTA-DEMO-783,cuenta_pago,usa_cuenta,5
+NEXO-147-00415,caso,3139909870,telefono,asocia_telefono,2
+NEXO-147-00416,caso,Alias-576,alias,menciona_alias,3
+NEXO-147-00416,caso,CTA-DEMO-012,cuenta_pago,usa_cuenta,4
+NEXO-147-00416,caso,3771331880,telefono,asocia_telefono,2
+NEXO-147-00417,caso,Omega,alias,menciona_alias,1
+NEXO-147-00417,caso,CTA-DEMO-663,cuenta_pago,usa_cuenta,5
+NEXO-147-00417,caso,3581200743,telefono,asocia_telefono,5
+NEXO-147-00418,caso,El Norte,alias,menciona_alias,1
+NEXO-147-00418,caso,CTA-DEMO-014,cuenta_pago,usa_cuenta,5
+NEXO-147-00418,caso,3609470818,telefono,asocia_telefono,5
+NEXO-147-00419,caso,Omega,alias,menciona_alias,5
+NEXO-147-00419,caso,CTA-DEMO-548,cuenta_pago,usa_cuenta,3
+NEXO-147-00419,caso,3389466384,telefono,asocia_telefono,1
+NEXO-147-00420,caso,Alias-661,alias,menciona_alias,3
+NEXO-147-00420,caso,CTA-DEMO-019,cuenta_pago,usa_cuenta,2
+NEXO-147-00420,caso,3417437875,telefono,asocia_telefono,3
+NEXO-147-00421,caso,Alias-343,alias,menciona_alias,3
+NEXO-147-00421,caso,CTA-DEMO-008,cuenta_pago,usa_cuenta,3
+NEXO-147-00421,caso,3241196269,telefono,asocia_telefono,1
+NEXO-147-00422,caso,El Norte,alias,menciona_alias,5
+NEXO-147-00422,caso,CTA-DEMO-010,cuenta_pago,usa_cuenta,2
+NEXO-147-00422,caso,3179576473,telefono,asocia_telefono,2
+NEXO-147-00423,caso,Comando 17,alias,menciona_alias,4
+NEXO-147-00423,caso,CTA-DEMO-819,cuenta_pago,usa_cuenta,3
+NEXO-147-00423,caso,3934977602,telefono,asocia_telefono,5
+NEXO-147-00424,caso,Alias-177,alias,menciona_alias,1
+NEXO-147-00424,caso,CTA-DEMO-007,cuenta_pago,usa_cuenta,4
+NEXO-147-00424,caso,3314597187,telefono,asocia_telefono,2
+NEXO-147-00425,caso,Sombra,alias,menciona_alias,2
+NEXO-147-00425,caso,CTA-DEMO-203,cuenta_pago,usa_cuenta,2
+NEXO-147-00425,caso,3137380161,telefono,asocia_telefono,5
+NEXO-147-00426,caso,Delta,alias,menciona_alias,5
+NEXO-147-00426,caso,CTA-DEMO-011,cuenta_pago,usa_cuenta,5
+NEXO-147-00426,caso,3046084492,telefono,asocia_telefono,2
+NEXO-147-00427,caso,Alias-231,alias,menciona_alias,4
+NEXO-147-00427,caso,CTA-DEMO-444,cuenta_pago,usa_cuenta,2
+NEXO-147-00427,caso,3744836049,telefono,asocia_telefono,1
+NEXO-147-00428,caso,Comando 17,alias,menciona_alias,5
+NEXO-147-00428,caso,CTA-DEMO-139,cuenta_pago,usa_cuenta,4
+NEXO-147-00428,caso,3109452805,telefono,asocia_telefono,4
+NEXO-147-00429,caso,Delta,alias,menciona_alias,3
+NEXO-147-00429,caso,CTA-DEMO-539,cuenta_pago,usa_cuenta,2
+NEXO-147-00429,caso,3313079131,telefono,asocia_telefono,2
+NEXO-147-00430,caso,Alias-744,alias,menciona_alias,4
+NEXO-147-00430,caso,CTA-DEMO-008,cuenta_pago,usa_cuenta,1
+NEXO-147-00430,caso,3434183502,telefono,asocia_telefono,2
+NEXO-147-00431,caso,Comando 17,alias,menciona_alias,2
+NEXO-147-00431,caso,CTA-DEMO-596,cuenta_pago,usa_cuenta,1
+NEXO-147-00431,caso,3434183502,telefono,asocia_telefono,3
+NEXO-147-00432,caso,Delta,alias,menciona_alias,5
+NEXO-147-00432,caso,CTA-DEMO-388,cuenta_pago,usa_cuenta,4
+NEXO-147-00432,caso,3927614975,telefono,asocia_telefono,5
+NEXO-147-00433,caso,Alias-238,alias,menciona_alias,3
+NEXO-147-00433,caso,CTA-DEMO-826,cuenta_pago,usa_cuenta,5
+NEXO-147-00433,caso,3314597187,telefono,asocia_telefono,1
+NEXO-147-00434,caso,Alias-326,alias,menciona_alias,1
+NEXO-147-00434,caso,CTA-DEMO-009,cuenta_pago,usa_cuenta,2
+NEXO-147-00434,caso,3977605603,telefono,asocia_telefono,2
+NEXO-147-00435,caso,El Mensajero,alias,menciona_alias,3
+NEXO-147-00435,caso,CTA-DEMO-007,cuenta_pago,usa_cuenta,5
+NEXO-147-00435,caso,3989231833,telefono,asocia_telefono,3
+NEXO-147-00436,caso,Alias-511,alias,menciona_alias,5
+NEXO-147-00436,caso,CTA-DEMO-014,cuenta_pago,usa_cuenta,4
+NEXO-147-00436,caso,3603888176,telefono,asocia_telefono,1
+NEXO-147-00437,caso,Alias-357,alias,menciona_alias,1
+NEXO-147-00437,caso,CTA-DEMO-705,cuenta_pago,usa_cuenta,1
+NEXO-147-00437,caso,3472259662,telefono,asocia_telefono,3
+NEXO-147-00438,caso,Sombra,alias,menciona_alias,1
+NEXO-147-00438,caso,CTA-DEMO-292,cuenta_pago,usa_cuenta,3
+NEXO-147-00438,caso,3386797477,telefono,asocia_telefono,5
+NEXO-147-00439,caso,R-21,alias,menciona_alias,2
+NEXO-147-00439,caso,CTA-DEMO-005,cuenta_pago,usa_cuenta,2
+NEXO-147-00439,caso,3602874727,telefono,asocia_telefono,3
+NEXO-147-00440,caso,R-21,alias,menciona_alias,4
+NEXO-147-00440,caso,CTA-DEMO-794,cuenta_pago,usa_cuenta,3
+NEXO-147-00440,caso,3763071160,telefono,asocia_telefono,5
+NEXO-147-00441,caso,El Mensajero,alias,menciona_alias,4
+NEXO-147-00441,caso,CTA-DEMO-516,cuenta_pago,usa_cuenta,1
+NEXO-147-00441,caso,3025791384,telefono,asocia_telefono,3
+NEXO-147-00442,caso,Omega,alias,menciona_alias,3
+NEXO-147-00442,caso,CTA-DEMO-280,cuenta_pago,usa_cuenta,4
+NEXO-147-00442,caso,3397949082,telefono,asocia_telefono,5
+NEXO-147-00443,caso,La Voz,alias,menciona_alias,1
+NEXO-147-00443,caso,CTA-DEMO-013,cuenta_pago,usa_cuenta,2
+NEXO-147-00443,caso,3219071086,telefono,asocia_telefono,4
+NEXO-147-00444,caso,R-21,alias,menciona_alias,2
+NEXO-147-00444,caso,CTA-DEMO-395,cuenta_pago,usa_cuenta,2
+NEXO-147-00444,caso,3744170326,telefono,asocia_telefono,1
+NEXO-147-00445,caso,Sombra,alias,menciona_alias,1
+NEXO-147-00445,caso,CTA-DEMO-432,cuenta_pago,usa_cuenta,3
+NEXO-147-00445,caso,3862384852,telefono,asocia_telefono,3
+NEXO-147-00446,caso,Alias-142,alias,menciona_alias,1
+NEXO-147-00446,caso,CTA-DEMO-866,cuenta_pago,usa_cuenta,4
+NEXO-147-00446,caso,3382442374,telefono,asocia_telefono,2
+NEXO-147-00447,caso,El Mensajero,alias,menciona_alias,3
+NEXO-147-00447,caso,CTA-DEMO-019,cuenta_pago,usa_cuenta,1
+NEXO-147-00447,caso,3958873115,telefono,asocia_telefono,2
+NEXO-147-00448,caso,Alias-357,alias,menciona_alias,2
+NEXO-147-00448,caso,CTA-DEMO-631,cuenta_pago,usa_cuenta,2
+NEXO-147-00448,caso,3034812976,telefono,asocia_telefono,5
+NEXO-147-00449,caso,Alias-334,alias,menciona_alias,4
+NEXO-147-00449,caso,CTA-DEMO-018,cuenta_pago,usa_cuenta,1
+NEXO-147-00449,caso,3994259185,telefono,asocia_telefono,2
+NEXO-147-00450,caso,Alias-777,alias,menciona_alias,3
+NEXO-147-00450,caso,CTA-DEMO-285,cuenta_pago,usa_cuenta,4
+NEXO-147-00450,caso,3397949082,telefono,asocia_telefono,5
+NEXO-147-00451,caso,El Primo,alias,menciona_alias,5
+NEXO-147-00451,caso,CTA-DEMO-144,cuenta_pago,usa_cuenta,2
+NEXO-147-00451,caso,3808167666,telefono,asocia_telefono,1
+NEXO-147-00452,caso,Alias-297,alias,menciona_alias,5
+NEXO-147-00452,caso,CTA-DEMO-891,cuenta_pago,usa_cuenta,3
+NEXO-147-00452,caso,3942805414,telefono,asocia_telefono,4
+NEXO-147-00453,caso,Comando 17,alias,menciona_alias,1
+NEXO-147-00453,caso,CTA-DEMO-881,cuenta_pago,usa_cuenta,5
+NEXO-147-00453,caso,3261577724,telefono,asocia_telefono,2
+NEXO-147-00454,caso,Alias-158,alias,menciona_alias,1
+NEXO-147-00454,caso,CTA-DEMO-010,cuenta_pago,usa_cuenta,5
+NEXO-147-00454,caso,3251931189,telefono,asocia_telefono,5
+NEXO-147-00455,caso,Alias-514,alias,menciona_alias,2
+NEXO-147-00455,caso,CTA-DEMO-012,cuenta_pago,usa_cuenta,1
+NEXO-147-00455,caso,3425219065,telefono,asocia_telefono,4
+NEXO-147-00456,caso,Omega,alias,menciona_alias,1
+NEXO-147-00456,caso,CTA-DEMO-018,cuenta_pago,usa_cuenta,4
+NEXO-147-00456,caso,3655239974,telefono,asocia_telefono,3
+NEXO-147-00457,caso,Comando 17,alias,menciona_alias,2
+NEXO-147-00457,caso,CTA-DEMO-499,cuenta_pago,usa_cuenta,3
+NEXO-147-00457,caso,3958127507,telefono,asocia_telefono,5
+NEXO-147-00458,caso,R-21,alias,menciona_alias,4
+NEXO-147-00458,caso,CTA-DEMO-014,cuenta_pago,usa_cuenta,1
+NEXO-147-00458,caso,3171843109,telefono,asocia_telefono,3
+NEXO-147-00459,caso,El Mensajero,alias,menciona_alias,2
+NEXO-147-00459,caso,CTA-DEMO-547,cuenta_pago,usa_cuenta,1
+NEXO-147-00459,caso,3442444909,telefono,asocia_telefono,5
+NEXO-147-00460,caso,Delta,alias,menciona_alias,3
+NEXO-147-00460,caso,CTA-DEMO-019,cuenta_pago,usa_cuenta,5
+NEXO-147-00460,caso,3482673624,telefono,asocia_telefono,4
+NEXO-147-00461,caso,R-21,alias,menciona_alias,5
+NEXO-147-00461,caso,CTA-DEMO-198,cuenta_pago,usa_cuenta,2
+NEXO-147-00461,caso,3573058652,telefono,asocia_telefono,1
+NEXO-147-00462,caso,Alias-155,alias,menciona_alias,3
+NEXO-147-00462,caso,CTA-DEMO-262,cuenta_pago,usa_cuenta,2
+NEXO-147-00462,caso,3432537399,telefono,asocia_telefono,5
+NEXO-147-00463,caso,R-21,alias,menciona_alias,1
+NEXO-147-00463,caso,CTA-DEMO-633,cuenta_pago,usa_cuenta,3
+NEXO-147-00463,caso,3025791384,telefono,asocia_telefono,5
+NEXO-147-00464,caso,El Primo,alias,menciona_alias,3
+NEXO-147-00464,caso,CTA-DEMO-542,cuenta_pago,usa_cuenta,5
+NEXO-147-00464,caso,3568652594,telefono,asocia_telefono,4
+NEXO-147-00465,caso,Alias-181,alias,menciona_alias,3
+NEXO-147-00465,caso,CTA-DEMO-810,cuenta_pago,usa_cuenta,2
+NEXO-147-00465,caso,3025791384,telefono,asocia_telefono,1
+NEXO-147-00466,caso,El Norte,alias,menciona_alias,1
+NEXO-147-00466,caso,CTA-DEMO-197,cuenta_pago,usa_cuenta,1
+NEXO-147-00466,caso,3946199547,telefono,asocia_telefono,5
+NEXO-147-00467,caso,Alias-988,alias,menciona_alias,2
+NEXO-147-00467,caso,CTA-DEMO-927,cuenta_pago,usa_cuenta,4
+NEXO-147-00467,caso,3314597187,telefono,asocia_telefono,5
+NEXO-147-00468,caso,Alias-615,alias,menciona_alias,5
+NEXO-147-00468,caso,CTA-DEMO-149,cuenta_pago,usa_cuenta,3
+NEXO-147-00468,caso,3798524069,telefono,asocia_telefono,5
+NEXO-147-00469,caso,El Norte,alias,menciona_alias,4
+NEXO-147-00469,caso,CTA-DEMO-229,cuenta_pago,usa_cuenta,2
+NEXO-147-00469,caso,3122074628,telefono,asocia_telefono,3
+NEXO-147-00470,caso,Alias-742,alias,menciona_alias,5
+NEXO-147-00470,caso,CTA-DEMO-019,cuenta_pago,usa_cuenta,5
+NEXO-147-00470,caso,3518043924,telefono,asocia_telefono,5
+NEXO-147-00471,caso,R-21,alias,menciona_alias,1
+NEXO-147-00471,caso,CTA-DEMO-769,cuenta_pago,usa_cuenta,3
+NEXO-147-00471,caso,3939432377,telefono,asocia_telefono,1
+NEXO-147-00472,caso,Alias-441,alias,menciona_alias,3
+NEXO-147-00472,caso,CTA-DEMO-005,cuenta_pago,usa_cuenta,5
+NEXO-147-00472,caso,3219731261,telefono,asocia_telefono,4
+NEXO-147-00473,caso,Alias-497,alias,menciona_alias,3
+NEXO-147-00473,caso,CTA-DEMO-168,cuenta_pago,usa_cuenta,1
+NEXO-147-00473,caso,3424894673,telefono,asocia_telefono,3
+NEXO-147-00474,caso,Comando 17,alias,menciona_alias,3
+NEXO-147-00474,caso,CTA-DEMO-018,cuenta_pago,usa_cuenta,4
+NEXO-147-00474,caso,3333200987,telefono,asocia_telefono,3
+NEXO-147-00475,caso,Sombra,alias,menciona_alias,3
+NEXO-147-00475,caso,CTA-DEMO-012,cuenta_pago,usa_cuenta,1
+NEXO-147-00475,caso,3887403982,telefono,asocia_telefono,2
+NEXO-147-00476,caso,Alias-544,alias,menciona_alias,4
+NEXO-147-00476,caso,CTA-DEMO-170,cuenta_pago,usa_cuenta,2
+NEXO-147-00476,caso,3862920680,telefono,asocia_telefono,3
+NEXO-147-00477,caso,Alias-275,alias,menciona_alias,4
+NEXO-147-00477,caso,CTA-DEMO-954,cuenta_pago,usa_cuenta,4
+NEXO-147-00477,caso,3569065167,telefono,asocia_telefono,1
+NEXO-147-00478,caso,Alias-106,alias,menciona_alias,2
+NEXO-147-00478,caso,CTA-DEMO-012,cuenta_pago,usa_cuenta,3
+NEXO-147-00478,caso,3948252905,telefono,asocia_telefono,3
+NEXO-147-00479,caso,La Voz,alias,menciona_alias,4
+NEXO-147-00479,caso,CTA-DEMO-543,cuenta_pago,usa_cuenta,1
+NEXO-147-00479,caso,3572839990,telefono,asocia_telefono,5
+NEXO-147-00480,caso,Alias-166,alias,menciona_alias,4
+NEXO-147-00480,caso,CTA-DEMO-736,cuenta_pago,usa_cuenta,1
+NEXO-147-00480,caso,3675302164,telefono,asocia_telefono,2
+NEXO-147-00481,caso,Comando 17,alias,menciona_alias,1
+NEXO-147-00481,caso,CTA-DEMO-018,cuenta_pago,usa_cuenta,2
+NEXO-147-00481,caso,3995156626,telefono,asocia_telefono,3
+NEXO-147-00482,caso,Comando 17,alias,menciona_alias,3
+NEXO-147-00482,caso,CTA-DEMO-131,cuenta_pago,usa_cuenta,5
+NEXO-147-00482,caso,3718125737,telefono,asocia_telefono,2
+NEXO-147-00483,caso,El Mensajero,alias,menciona_alias,4
+NEXO-147-00483,caso,CTA-DEMO-963,cuenta_pago,usa_cuenta,2
+NEXO-147-00483,caso,3469133588,telefono,asocia_telefono,5
+NEXO-147-00484,caso,El Norte,alias,menciona_alias,1
+NEXO-147-00484,caso,CTA-DEMO-629,cuenta_pago,usa_cuenta,4
+NEXO-147-00484,caso,3832730424,telefono,asocia_telefono,3
+NEXO-147-00485,caso,Delta,alias,menciona_alias,1
+NEXO-147-00485,caso,CTA-DEMO-257,cuenta_pago,usa_cuenta,5
+NEXO-147-00485,caso,3862384852,telefono,asocia_telefono,2
+NEXO-147-00486,caso,El Mensajero,alias,menciona_alias,4
+NEXO-147-00486,caso,CTA-DEMO-020,cuenta_pago,usa_cuenta,3
+NEXO-147-00486,caso,3518134374,telefono,asocia_telefono,1
+NEXO-147-00487,caso,Alias-997,alias,menciona_alias,3
+NEXO-147-00487,caso,CTA-DEMO-008,cuenta_pago,usa_cuenta,1
+NEXO-147-00487,caso,3695834833,telefono,asocia_telefono,5
+NEXO-147-00488,caso,El Norte,alias,menciona_alias,1
+NEXO-147-00488,caso,CTA-DEMO-685,cuenta_pago,usa_cuenta,4
+NEXO-147-00488,caso,3887403982,telefono,asocia_telefono,5
+NEXO-147-00489,caso,El Primo,alias,menciona_alias,4
+NEXO-147-00489,caso,CTA-DEMO-008,cuenta_pago,usa_cuenta,2
+NEXO-147-00489,caso,3353385192,telefono,asocia_telefono,1
+NEXO-147-00490,caso,Alias-423,alias,menciona_alias,5
+NEXO-147-00490,caso,CTA-DEMO-347,cuenta_pago,usa_cuenta,1
+NEXO-147-00490,caso,3556674383,telefono,asocia_telefono,2
+NEXO-147-00491,caso,Alias-701,alias,menciona_alias,1
+NEXO-147-00491,caso,CTA-DEMO-878,cuenta_pago,usa_cuenta,4
+NEXO-147-00491,caso,3709830052,telefono,asocia_telefono,2
+NEXO-147-00492,caso,R-21,alias,menciona_alias,4
+NEXO-147-00492,caso,CTA-DEMO-630,cuenta_pago,usa_cuenta,5
+NEXO-147-00492,caso,3056032476,telefono,asocia_telefono,5
+NEXO-147-00493,caso,Alias-314,alias,menciona_alias,4
+NEXO-147-00493,caso,CTA-DEMO-997,cuenta_pago,usa_cuenta,4
+NEXO-147-00493,caso,3245906230,telefono,asocia_telefono,2
+NEXO-147-00494,caso,El Primo,alias,menciona_alias,3
+NEXO-147-00494,caso,CTA-DEMO-320,cuenta_pago,usa_cuenta,2
+NEXO-147-00494,caso,3598826432,telefono,asocia_telefono,3
+NEXO-147-00495,caso,Alias-613,alias,menciona_alias,5
+NEXO-147-00495,caso,CTA-DEMO-497,cuenta_pago,usa_cuenta,2
+NEXO-147-00495,caso,3734800867,telefono,asocia_telefono,2
+NEXO-147-00496,caso,Comando 17,alias,menciona_alias,3
+NEXO-147-00496,caso,CTA-DEMO-001,cuenta_pago,usa_cuenta,5
+NEXO-147-00496,caso,3718790785,telefono,asocia_telefono,4
+NEXO-147-00497,caso,El Norte,alias,menciona_alias,1
+NEXO-147-00497,caso,CTA-DEMO-193,cuenta_pago,usa_cuenta,4
+NEXO-147-00497,caso,3469133588,telefono,asocia_telefono,2
+NEXO-147-00498,caso,La Voz,alias,menciona_alias,5
+NEXO-147-00498,caso,CTA-DEMO-018,cuenta_pago,usa_cuenta,3
+NEXO-147-00498,caso,3539032453,telefono,asocia_telefono,4
+NEXO-147-00499,caso,Comando 17,alias,menciona_alias,4
+NEXO-147-00499,caso,CTA-DEMO-010,cuenta_pago,usa_cuenta,5
+NEXO-147-00499,caso,3013492140,telefono,asocia_telefono,5
+NEXO-147-00500,caso,El Norte,alias,menciona_alias,2
+NEXO-147-00500,caso,CTA-DEMO-710,cuenta_pago,usa_cuenta,2
+NEXO-147-00500,caso,3129070929,telefono,asocia_telefono,1

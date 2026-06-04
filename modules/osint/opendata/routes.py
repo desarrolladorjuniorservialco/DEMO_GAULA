@@ -1,3 +1,5 @@
+import ipaddress
+import re
 import requests
 from flask import render_template, request
 from modules.osint.auth import login_required
@@ -5,6 +7,22 @@ from modules.osint.opendata import opendata_osint_bp
 
 HEADERS = {"User-Agent": "OSINT-Tool/1.0 (educational research)"}
 TIMEOUT = 8
+
+_DOMAIN_RE = re.compile(
+    r'^(?:[a-zA-Z0-9](?:[a-zA-Z0-9\-]{0,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{2,}$'
+)
+
+
+def _is_valid_ip(s):
+    try:
+        ipaddress.ip_address(s)
+        return True
+    except ValueError:
+        return False
+
+
+def _is_valid_domain(s):
+    return bool(_DOMAIN_RE.match(s)) and len(s) <= 253
 
 
 def _fetch_ip_geo(ip):
@@ -133,25 +151,41 @@ def lookup():
     ip_data = rdap_data = crt_data = None
     errors = []
 
+    is_ip     = _is_valid_ip(query)
+    is_domain = _is_valid_domain(query)
+
     if source == "ip":
-        ip_data, ip_errors = _fetch_ip_geo(query)
-        errors.extend(ip_errors)
+        if not is_ip:
+            errors.append(f"'{query}' no es una dirección IP válida (usa formato 1.2.3.4).")
+        else:
+            ip_data, ip_errors = _fetch_ip_geo(query)
+            errors.extend(ip_errors)
 
     elif source == "domain":
-        rdap_raw, rdap_errors = _fetch_domain_rdap(query)
-        rdap_data = _parse_rdap(rdap_raw)
-        errors.extend(rdap_errors)
-        crt_data, crt_errors = _fetch_crt_sh(query)
-        errors.extend(crt_errors)
+        if not is_domain:
+            errors.append(f"'{query}' no es un dominio válido. Incluye el TLD (ej: ejemplo.com).")
+        else:
+            rdap_raw, rdap_errors = _fetch_domain_rdap(query)
+            rdap_data = _parse_rdap(rdap_raw)
+            errors.extend(rdap_errors)
+            crt_data, crt_errors = _fetch_crt_sh(query)
+            errors.extend(crt_errors)
 
     elif source == "both":
-        ip_data, ip_errors = _fetch_ip_geo(query)
-        errors.extend(ip_errors)
-        rdap_raw, rdap_errors = _fetch_domain_rdap(query)
-        rdap_data = _parse_rdap(rdap_raw)
-        errors.extend(rdap_errors)
-        crt_data, crt_errors = _fetch_crt_sh(query)
-        errors.extend(crt_errors)
+        if is_ip:
+            ip_data, ip_errors = _fetch_ip_geo(query)
+            errors.extend(ip_errors)
+        elif is_domain:
+            rdap_raw, rdap_errors = _fetch_domain_rdap(query)
+            rdap_data = _parse_rdap(rdap_raw)
+            errors.extend(rdap_errors)
+            crt_data, crt_errors = _fetch_crt_sh(query)
+            errors.extend(crt_errors)
+        else:
+            errors.append(
+                f"'{query}' no es una IP ni un dominio válido. "
+                "Para IPs usa formato 1.2.3.4; para dominios incluye el TLD (ej: ejemplo.com)."
+            )
 
     return render_template(
         "osint/opendata_fragment.html",

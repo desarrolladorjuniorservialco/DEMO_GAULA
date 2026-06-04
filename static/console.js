@@ -77,6 +77,8 @@ document.addEventListener("DOMContentLoaded", () => {
       fetchRelaciones();
     } else if (panelId === "panel-dashboard") {
       fetchDashboardData();
+    } else if (panelId === "panel-hallazgos") {
+      fetchIntelDashboard();
     }
   }
 
@@ -318,7 +320,7 @@ document.addEventListener("DOMContentLoaded", () => {
     casesTableBody.innerHTML = `<tr><td colspan="6" class="text-center">Consultando nodo de reportes...</td></tr>`;
     
     try {
-      const response = await fetch("/api/casos");
+      const response = await fetch("/api/dataset/casos");
       if (response.ok) {
         casosGlobales = await response.json();
         renderCasos(casosGlobales);
@@ -398,6 +400,11 @@ document.addEventListener("DOMContentLoaded", () => {
     selectDetailStatus.value = caso.estado;
 
     caseDetailPanel.classList.remove("hidden");
+
+    if (btnSaveCaseStatus) {
+      btnSaveCaseStatus.disabled = true;
+      btnSaveCaseStatus.textContent = "Solo lectura (dataset demo)";
+    }
   };
 
   if (btnCloseDetail) {
@@ -640,7 +647,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // Si la lista de casos está vacía, cargamos casos primero
     if (casosGlobales.length === 0) {
       try {
-        const response = await fetch("/api/casos");
+        const response = await fetch("/api/dataset/casos");
         if (response.ok) casosGlobales = await response.json();
       } catch (err) {
         console.error(err);
@@ -649,6 +656,87 @@ document.addEventListener("DOMContentLoaded", () => {
 
     actualizarKPIsDashboard(casosGlobales);
     renderDistribucionDelitos(casosGlobales);
+  }
+
+  let intelDashboardLoaded = false;
+
+  async function fetchIntelDashboard() {
+    if (intelDashboardLoaded) return;
+
+    const loading = document.getElementById("intel-dashboard-loading");
+    const kpisEl = document.getElementById("intel-kpis");
+    const chartsEl = document.getElementById("intel-charts-container");
+    if (!chartsEl || !kpisEl) return;
+
+    loading && (loading.textContent = "Cargando dashboard de inteligencia...");
+
+    try {
+      const response = await fetch("/api/intel/dashboard");
+      if (!response.ok) throw new Error("HTTP " + response.status);
+      const data = await response.json();
+      const kpis = data.kpis || {};
+      const charts = data.charts || {};
+
+      kpisEl.innerHTML = `
+        <div class="dashboard-card double-bezel">
+          <div class="inner-core" style="display:flex;justify-content:space-between;align-items:center;">
+            <div>
+              <div style="font-size:0.75rem;text-transform:uppercase;letter-spacing:0.05em;color:#94a3b8;">Total Casos</div>
+              <div style="font-size:1.6rem;font-weight:700;color:#38bdf8;">${Number(kpis.total_casos || 0).toLocaleString()}</div>
+            </div>
+            <span style="font-size:2rem;color:#475569;">📁</span>
+          </div>
+        </div>
+        <div class="dashboard-card double-bezel">
+          <div class="inner-core" style="display:flex;justify-content:space-between;align-items:center;">
+            <div>
+              <div style="font-size:0.75rem;text-transform:uppercase;letter-spacing:0.05em;color:#94a3b8;">Impacto Económico</div>
+              <div style="font-size:1.6rem;font-weight:700;color:#38bdf8;">$${Number(kpis.total_monto || 0).toLocaleString()} COP</div>
+            </div>
+            <span style="font-size:2rem;color:#475569;">💰</span>
+          </div>
+        </div>
+        <div class="dashboard-card double-bezel">
+          <div class="inner-core" style="display:flex;justify-content:space-between;align-items:center;">
+            <div>
+              <div style="font-size:0.75rem;text-transform:uppercase;letter-spacing:0.05em;color:#94a3b8;">Score Riesgo Prom.</div>
+              <div style="font-size:1.6rem;font-weight:700;color:#38bdf8;">${Number(kpis.avg_riesgo || 0)}%</div>
+            </div>
+            <span style="font-size:2rem;color:#475569;">⚠️</span>
+          </div>
+        </div>
+        <div class="dashboard-card double-bezel">
+          <div class="inner-core" style="display:flex;justify-content:space-between;align-items:center;">
+            <div>
+              <div style="font-size:0.75rem;text-transform:uppercase;letter-spacing:0.05em;color:#94a3b8;">Alertas OSINT</div>
+              <div style="font-size:1.6rem;font-weight:700;color:#38bdf8;">${Number(kpis.total_alertas || 0).toLocaleString()}</div>
+            </div>
+            <span style="font-size:2rem;color:#475569;">👁️</span>
+          </div>
+        </div>
+      `;
+
+      chartsEl.innerHTML = `
+        <div style="display:grid;grid-template-columns:7fr 5fr;gap:16px;margin-bottom:16px;">
+          <div class="dashboard-card double-bezel"><div class="inner-core">${charts.line_casos || ""}</div></div>
+          <div class="dashboard-card double-bezel"><div class="inner-core">${charts.bar_monto || ""}</div></div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;">
+          <div class="dashboard-card double-bezel"><div class="inner-core">${charts.bar_dept || ""}</div></div>
+          <div class="dashboard-card double-bezel"><div class="inner-core">${charts.donut_tipo || ""}</div></div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;">
+          <div class="dashboard-card double-bezel"><div class="inner-core">${charts.bar_canal_prioridad || ""}</div></div>
+          <div class="dashboard-card double-bezel"><div class="inner-core">${charts.osint_indicador || ""}</div></div>
+        </div>
+      `;
+
+      if (loading) loading.style.display = "none";
+      intelDashboardLoaded = true;
+    } catch (err) {
+      console.error("Error cargando dashboard intel:", err);
+      if (loading) loading.textContent = "Error al cargar el dashboard de inteligencia.";
+    }
   }
 
   function renderDistribucionDelitos(casos) {
