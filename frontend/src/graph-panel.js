@@ -31,8 +31,8 @@ export function renderNodeDetail(nodeId, graph, onNavigate) {
   if (!body || !graph.hasNode(nodeId)) return;
 
   const attrs        = graph.getNodeAttributes(nodeId);
-  const typeLabel    = TYPE_LABELS[attrs.type] || attrs.type;
-  const typeColor    = TYPE_COLORS[attrs.type] || '#6b8aaa';
+  const typeLabel    = TYPE_LABELS[attrs.nodeKind] || attrs.nodeKind;
+  const typeColor    = TYPE_COLORS[attrs.nodeKind] || '#6b8aaa';
   const community    = attrs.community ?? 0;
   const commColor    = COMMUNITY_COLORS[community % COMMUNITY_COLORS.length];
   const risk         = attrs.risk_level || 'Bajo';

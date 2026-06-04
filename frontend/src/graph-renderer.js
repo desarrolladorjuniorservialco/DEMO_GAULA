@@ -53,7 +53,7 @@ export function createSigmaInstance(graph, container, state) {
     nodeReducer: (node, data) => {
       const attrs      = graph.getNodeAttributes(node);
       const commColor  = attrs.communityColor || '#4E91D9';
-      const typeColor  = TYPE_COLORS[attrs.type] || '#6b8aaa';
+      const typeColor  = TYPE_COLORS[attrs.nodeKind] || '#6b8aaa';
       const isTarget   = attrs.is_target || false;
 
       const base = {

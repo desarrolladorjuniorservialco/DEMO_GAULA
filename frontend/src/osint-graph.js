@@ -28,7 +28,7 @@ function load(apiData) {
   nodes.forEach(n => {
     _graph.addNode(n.id, {
       label:           n.label,
-      type:            n.type || 'person',
+      nodeKind:        n.type || 'person',
       is_target:       n.is_target || false,
       confidence:      n.confidence || 0.8,
       risk_level:      n.risk_level || 'Bajo',
