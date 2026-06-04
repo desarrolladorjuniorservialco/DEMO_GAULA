@@ -826,31 +826,212 @@
         </section>
 
 
-        <!-- PANEL HALLAZGOS INTEL + DASHBOARD PLOTLY -->
+        <!-- PANEL HALLAZGOS INTEL -->
         <section class="panel-section" id="panel-hallazgos">
-          <div class="section-header-tactical">
-            <h2>Dashboard de Tendencias NEXO-147</h2>
-            <p>Análisis de tendencias operativas y correlación OSINT sobre el dataset de demostración (500 casos + alertas).</p>
-          </div>
-
-          <div class="kpi-grid" id="intel-kpis" style="display:grid; grid-template-columns: repeat(4,1fr); gap:16px; margin-bottom:24px;">
-            <!-- Inyectado por fetchIntelDashboard() -->
-          </div>
-
-          <div class="dashboard-card double-bezel" style="margin-bottom:24px;">
-            <div class="inner-core">
-              <div style="border-left: 4px solid #38bdf8; padding-left:16px;">
-                <p style="margin-bottom:8px;"><strong>1. Anomalía y Pico Temporal (Q1-2026):</strong> Los datos muestran una estabilidad en 2025 que rompe abruptamente en marzo y abril de 2026, donde el volumen de casos se dispara superando los 80 incidentes por mes, concentrado bajo la modalidad de <strong>Extorsión</strong>.</p>
-                <p style="margin-bottom:8px;"><strong>2. Foco Demográfico y Económico:</strong> Bogotá D.C., Antioquia y Valle del Cauca centralizan el grueso operativo, representando pérdidas y exigencias acumuladas por más de <strong>$10,407 millones de pesos</strong>.</p>
-                <p style="margin-bottom:0;"><strong>3. Hallazgo Técnico OSINT:</strong> Las alertas tempranas correlacionadas revelan que los incidentes nocturnos y la reincidencia en números telefónicos específicos estructuran la principal firma de los ataques.</p>
+          <div class="section-header-tactical intel-section-header">
+            <div>
+              <h2>Dashboard analítico de reportes</h2>
+              <p>Explora tendencias, distribución geográfica, tipologías y riesgo usando la información de la Bandeja de Casos.</p>
+            </div>
+            <div class="intel-live-chip" id="intel-live-chip">
+              <span class="intel-live-dot"></span>
+              <div>
+                <strong>Motor de inteligencia activo</strong>
+                <span>Filtros globales y visuales sincronizados</span>
               </div>
             </div>
           </div>
 
-          <div id="intel-charts-container"></div>
+          <div class="dashboard-card double-bezel intel-hero-panel">
+            <div class="inner-core">
+              <div class="intel-hero-grid">
+                <div class="intel-hero-copy">
+                  <h3>Lectura operativa de la red de reportes</h3>
+                  <p>Esta vista prioriza la detección de concentraciones, cambios de comportamiento y focos de riesgo para análisis de inteligencia.</p>
+                </div>
+                <div class="intel-hero-signal">
+                  <div class="intel-signal-card">
+                    <span>Universo analizado</span>
+                    <strong id="intel-signal-total">0</strong>
+                  </div>
+                  <div class="intel-signal-card">
+                    <span>Ventana activa</span>
+                    <strong id="intel-signal-window">Sin filtro</strong>
+                  </div>
+                  <div class="intel-signal-card">
+                    <span>Lectura dominante</span>
+                    <strong id="intel-signal-theme">Esperando datos</strong>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
 
-          <div id="intel-dashboard-loading" class="helper-text-mono text-center" style="padding:40px 0;">
-            Cargando dashboard de inteligencia...
+          <div class="dashboard-card double-bezel intel-filter-panel">
+            <div class="inner-core">
+              <div class="intel-filter-grid">
+                <label class="intel-filter-field">
+                  <span>Fecha desde</span>
+                  <input type="date" id="intel-filter-date-from">
+                </label>
+                <label class="intel-filter-field">
+                  <span>Fecha hasta</span>
+                  <input type="date" id="intel-filter-date-to">
+                </label>
+                <label class="intel-filter-field">
+                  <span>Departamento</span>
+                  <select id="intel-filter-departamento"></select>
+                </label>
+                <label class="intel-filter-field">
+                  <span>Municipio</span>
+                  <select id="intel-filter-municipio"></select>
+                </label>
+                <label class="intel-filter-field">
+                  <span>Tipo de reporte</span>
+                  <select id="intel-filter-tipo"></select>
+                </label>
+                <label class="intel-filter-field">
+                  <span>Estado del caso</span>
+                  <select id="intel-filter-estado"></select>
+                </label>
+                <label class="intel-filter-field">
+                  <span>Prioridad</span>
+                  <select id="intel-filter-prioridad"></select>
+                </label>
+                <label class="intel-filter-field">
+                  <span>Agrupación temporal</span>
+                  <select id="intel-filter-group">
+                    <option value="daily">Diaria</option>
+                    <option value="monthly">Mensual</option>
+                  </select>
+                </label>
+              </div>
+              <div class="intel-filter-footer">
+                <div class="intel-filter-summary">
+                  <strong id="intel-filter-summary-count">0 reportes</strong>
+                  <span id="intel-filter-summary-detail">Esperando datos de la bandeja</span>
+                </div>
+                <button type="button" class="btn-secondary-tactical intel-reset-btn" id="intel-filter-reset">Limpiar filtros</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="kpi-grid intel-kpis" id="intel-kpis">
+            <!-- Inyectado por fetchIntelDashboard() -->
+          </div>
+
+          <div class="intel-status-strip" id="intel-dashboard-loading">
+            <span class="intel-status-bullet"></span>
+            <span>Cargando dataset de casos para construir los hallazgos...</span>
+          </div>
+
+          <div class="intel-empty-state hidden" id="intel-dashboard-empty">
+            <div>
+              <strong style="display:block;margin-bottom:8px;color:#f0f4fa;">Sin resultados para la selección actual</strong>
+              <p style="margin:0;color:var(--text-muted);">Ajusta la ventana temporal, cambia el municipio o limpia los filtros para recuperar la lectura analítica.</p>
+            </div>
+          </div>
+
+          <div class="dashboard-grid intel-chart-grid">
+            <div class="dashboard-card double-bezel col-span-6 intel-chart-card">
+              <div class="inner-core">
+                <div class="intel-chart-header">
+                  <div>
+                    <h3>Reportes por Ubicación</h3>
+                    <p>Top 10 municipios ordenados de mayor a menor.</p>
+                  </div>
+                  <span class="intel-chart-tag">Geografía</span>
+                </div>
+                <div id="intel-chart-municipios" class="intel-plot"></div>
+              </div>
+            </div>
+            <div class="dashboard-card double-bezel col-span-6 intel-chart-card">
+              <div class="inner-core">
+                <div class="intel-chart-header">
+                  <div>
+                    <h3>Reportes por Departamento</h3>
+                    <p>Volumen coloreado según concentración de casos.</p>
+                  </div>
+                  <span class="intel-chart-tag">Cobertura</span>
+                </div>
+                <div id="intel-chart-departamentos" class="intel-plot"></div>
+              </div>
+            </div>
+
+            <div class="dashboard-card double-bezel col-span-7 intel-chart-card">
+              <div class="inner-core">
+                <div class="intel-chart-header">
+                  <div>
+                    <h3>Reportes por Fecha</h3>
+                    <p>Agrupación diaria o mensual desde fecha_registro.</p>
+                  </div>
+                  <span class="intel-chart-tag">Tiempo</span>
+                </div>
+                <div id="intel-chart-fecha" class="intel-plot"></div>
+              </div>
+            </div>
+            <div class="dashboard-card double-bezel col-span-5 intel-chart-card">
+              <div class="inner-core">
+                <div class="intel-chart-header">
+                  <div>
+                    <h3>Evolución de Reportes</h3>
+                    <p>Comparación entre el periodo actual y el anterior.</p>
+                  </div>
+                  <span class="intel-chart-tag">Tendencia</span>
+                </div>
+                <div id="intel-chart-evolucion" class="intel-plot"></div>
+              </div>
+            </div>
+
+            <div class="dashboard-card double-bezel col-span-6 intel-chart-card">
+              <div class="inner-core">
+                <div class="intel-chart-header">
+                  <div>
+                    <h3>Distribución por Tipo de Reporte</h3>
+                    <p>Participación porcentual y volumen absoluto.</p>
+                  </div>
+                  <span class="intel-chart-tag">Tipología</span>
+                </div>
+                <div id="intel-chart-tipos" class="intel-plot"></div>
+              </div>
+            </div>
+            <div class="dashboard-card double-bezel col-span-6 intel-chart-card">
+              <div class="inner-core">
+                <div class="intel-chart-header">
+                  <div>
+                    <h3>Distribución por Modalidad</h3>
+                    <p>Lectura operativa de la mecánica del reporte.</p>
+                  </div>
+                  <span class="intel-chart-tag">Modalidad</span>
+                </div>
+                <div id="intel-chart-modalidades" class="intel-plot"></div>
+              </div>
+            </div>
+
+            <div class="dashboard-card double-bezel col-span-6 intel-chart-card">
+              <div class="inner-core">
+                <div class="intel-chart-header">
+                  <div>
+                    <h3>Distribución del Score de Riesgo</h3>
+                    <p>Histograma de intensidad operacional y criticidad.</p>
+                  </div>
+                  <span class="intel-chart-tag">Riesgo</span>
+                </div>
+                <div id="intel-chart-riesgo" class="intel-plot"></div>
+              </div>
+            </div>
+            <div class="dashboard-card double-bezel col-span-6 intel-chart-card">
+              <div class="inner-core">
+                <div class="intel-chart-header">
+                  <div>
+                    <h3>Riesgo Promedio por Municipio</h3>
+                    <p>Comparación entre territorios con mayor exposición media.</p>
+                  </div>
+                  <span class="intel-chart-tag">Promedio</span>
+                </div>
+                <div id="intel-chart-riesgo-municipio" class="intel-plot"></div>
+              </div>
+            </div>
           </div>
         </section>
 

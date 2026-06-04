@@ -38,6 +38,11 @@
 }
 
 @media (max-width: 900px) {
+  /* --- INTEL FILTER GRID --- */
+  .intel-filter-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
   /* --- SPLIT PANEL DE CASOS --- */
   .cases-panel-split {
     flex-direction: column;
@@ -136,5 +141,45 @@
   .db-status-bar {
     flex-direction: column;
     gap: 8px;
+  }
+
+  .intel-section-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .intel-live-chip {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .intel-hero-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .intel-filter-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .intel-filter-footer {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .intel-reset-btn {
+    width: 100%;
+  }
+
+  .intel-chart-card .inner-core {
+    min-height: 320px;
+  }
+
+  .intel-plot {
+    min-height: 260px;
+  }
+
+  .intel-chart-header {
+    flex-direction: column;
+    align-items: flex-start;
   }
 }

@@ -658,84 +658,766 @@ document.addEventListener("DOMContentLoaded", () => {
     renderDistribucionDelitos(casosGlobales);
   }
 
-  let intelDashboardLoaded = false;
+  const intelDashboardState = {
+    loaded: false,
+    loading: false,
+    rawCases: [],
+    filters: {
+      dateFrom: "",
+      dateTo: "",
+      departamento: "",
+      municipio: "",
+      tipo: "",
+      estado: "",
+      prioridad: "",
+      group: "daily",
+    },
+  };
+
+  const intelFilterIds = [
+    "intel-filter-date-from",
+    "intel-filter-date-to",
+    "intel-filter-departamento",
+    "intel-filter-municipio",
+    "intel-filter-tipo",
+    "intel-filter-estado",
+    "intel-filter-prioridad",
+    "intel-filter-group",
+  ];
+
+  const intelChartIds = [
+    "intel-chart-municipios",
+    "intel-chart-departamentos",
+    "intel-chart-fecha",
+    "intel-chart-evolucion",
+    "intel-chart-tipos",
+    "intel-chart-modalidades",
+    "intel-chart-riesgo",
+    "intel-chart-riesgo-municipio",
+  ];
+
+  function normalizeIntelValue(value) {
+    return (value ?? "").toString().trim();
+  }
+
+  function normalizeIntelKey(value) {
+    return normalizeIntelValue(value).toLowerCase();
+  }
+
+  function parseIntelDate(value) {
+    if (!value) return null;
+    const raw = normalizeIntelValue(value);
+    const datePart = raw.length >= 10 ? raw.slice(0, 10) : raw;
+    const parsed = new Date(datePart + "T00:00:00");
+    return Number.isNaN(parsed.getTime()) ? null : parsed;
+  }
+
+  function formatIntelDate(date) {
+    if (!date) return "";
+    return date.toISOString().slice(0, 10);
+  }
+
+  function formatIntelLabel(date, mode) {
+    if (!date) return "";
+    if (mode === "monthly") {
+      return date.toLocaleDateString("es-CO", { month: "short", year: "numeric" });
+    }
+    return date.toLocaleDateString("es-CO", { day: "2-digit", month: "short" });
+  }
+
+  function parseIntelScore(value) {
+    const parsed = Number.parseFloat(normalizeIntelValue(value));
+    return Number.isFinite(parsed) ? parsed : 0;
+  }
+
+  function buildIntelChartLayout(overrides = {}) {
+    return {
+      paper_bgcolor: "rgba(0,0,0,0)",
+      plot_bgcolor: "rgba(0,0,0,0)",
+      font: {
+        color: "#f0f4fa",
+        family: "Nunito Sans, sans-serif",
+      },
+      margin: { l: 48, r: 28, t: 12, b: 48 },
+      hovermode: "closest",
+      showlegend: true,
+      legend: {
+        orientation: "h",
+        y: -0.18,
+        font: { color: "#8b99ae", size: 11 },
+      },
+      xaxis: {
+        gridcolor: "rgba(255,255,255,0.06)",
+        zerolinecolor: "rgba(255,255,255,0.08)",
+        tickfont: { color: "#8b99ae", size: 11 },
+        linecolor: "rgba(255,255,255,0.08)",
+        automargin: true,
+      },
+      yaxis: {
+        gridcolor: "rgba(255,255,255,0.06)",
+        zerolinecolor: "rgba(255,255,255,0.08)",
+        tickfont: { color: "#8b99ae", size: 11 },
+        linecolor: "rgba(255,255,255,0.08)",
+        automargin: true,
+      },
+      ...overrides,
+    };
+  }
+
+  function renderIntelPlot(targetId, traces, layoutOverrides = {}) {
+    const target = document.getElementById(targetId);
+    if (!target || typeof Plotly === "undefined") return;
+    const layout = buildIntelChartLayout(layoutOverrides);
+    Plotly.react(target, traces, layout, {
+      responsive: true,
+      displayModeBar: false,
+      staticPlot: false,
+    });
+  }
+
+  function getIntelFilters() {
+    return { ...intelDashboardState.filters };
+  }
+
+  function applyIntelNonDateFilters(records) {
+    const filters = getIntelFilters();
+    return records.filter(record => {
+      const dept = normalizeIntelKey(record.departamento);
+      const muni = normalizeIntelKey(record.municipio);
+      const tipo = normalizeIntelKey(record.tipo_reporte);
+      const estado = normalizeIntelKey(record.estado);
+      const prioridad = normalizeIntelKey(record.prioridad);
+
+      return (!filters.departamento || dept === normalizeIntelKey(filters.departamento)) &&
+        (!filters.municipio || muni === normalizeIntelKey(filters.municipio)) &&
+        (!filters.tipo || tipo === normalizeIntelKey(filters.tipo)) &&
+        (!filters.estado || estado === normalizeIntelKey(filters.estado)) &&
+        (!filters.prioridad || prioridad === normalizeIntelKey(filters.prioridad));
+    });
+  }
+
+  function applyIntelDateFilters(records) {
+    const filters = getIntelFilters();
+    const dateFrom = filters.dateFrom ? parseIntelDate(filters.dateFrom) : null;
+    const dateTo = filters.dateTo ? parseIntelDate(filters.dateTo) : null;
+    if (!dateFrom && !dateTo) return records.slice();
+
+    return records.filter(record => {
+      const date = parseIntelDate(record.fecha_registro);
+      if (!date) return false;
+      if (dateFrom && date < dateFrom) return false;
+      if (dateTo) {
+        const end = new Date(dateTo);
+        end.setHours(23, 59, 59, 999);
+        if (date > end) return false;
+      }
+      return true;
+    });
+  }
+
+  function groupIntelRecords(records, keyGetter, valueGetter = () => 1) {
+    const bucket = new Map();
+    records.forEach(record => {
+      const key = keyGetter(record) || "Sin dato";
+      const current = bucket.get(key) || 0;
+      bucket.set(key, current + valueGetter(record));
+    });
+    return Array.from(bucket.entries());
+  }
+
+  function sortIntelBucket(entries, desc = true) {
+    return entries.sort((a, b) => desc ? b[1] - a[1] : a[1] - b[1]);
+  }
+
+  function getIntelWindow(records) {
+    const filters = getIntelFilters();
+    const dates = records
+      .map(record => parseIntelDate(record.fecha_registro))
+      .filter(Boolean)
+      .sort((a, b) => a - b);
+
+    if (!dates.length) {
+      return { currentStart: null, currentEnd: null, previousStart: null, previousEnd: null };
+    }
+
+    let currentStart = filters.dateFrom ? parseIntelDate(filters.dateFrom) : null;
+    let currentEnd = filters.dateTo ? parseIntelDate(filters.dateTo) : null;
+
+    if (!currentStart || !currentEnd) {
+      currentEnd = dates[dates.length - 1];
+      currentStart = new Date(currentEnd);
+      currentStart.setDate(currentStart.getDate() - 29);
+    }
+
+    if (currentStart && currentEnd && currentEnd < currentStart) {
+      const swap = currentStart;
+      currentStart = currentEnd;
+      currentEnd = swap;
+    }
+
+    const spanDays = Math.max(1, Math.round((currentEnd - currentStart) / 86400000) + 1);
+    const previousEnd = new Date(currentStart);
+    previousEnd.setDate(previousEnd.getDate() - 1);
+    const previousStart = new Date(previousEnd);
+    previousStart.setDate(previousStart.getDate() - (spanDays - 1));
+
+    return { currentStart, currentEnd, previousStart, previousEnd };
+  }
+
+  function formatIntelWindowLabel(start, end) {
+    if (!start || !end) return "Sin filtro";
+    const startLabel = start.toLocaleDateString("es-CO", { day: "2-digit", month: "short" });
+    const endLabel = end.toLocaleDateString("es-CO", { day: "2-digit", month: "short" });
+    if (startLabel === endLabel) return startLabel;
+    return `${startLabel} a ${endLabel}`;
+  }
+
+  function fillIntelSeries(records, start, end, groupBy) {
+    if (!start || !end) return [];
+
+    const normalized = new Map();
+    records.forEach(record => {
+      const date = parseIntelDate(record.fecha_registro);
+      if (!date || date < start || date > end) return;
+      const keyDate = new Date(date);
+      const bucketKey = groupBy === "monthly"
+        ? `${keyDate.getFullYear()}-${String(keyDate.getMonth() + 1).padStart(2, "0")}`
+        : formatIntelDate(keyDate);
+      normalized.set(bucketKey, (normalized.get(bucketKey) || 0) + 1);
+    });
+
+    const cursor = new Date(start);
+    const points = [];
+    while (cursor <= end) {
+      const key = groupBy === "monthly"
+        ? `${cursor.getFullYear()}-${String(cursor.getMonth() + 1).padStart(2, "0")}`
+        : formatIntelDate(cursor);
+      if (groupBy === "monthly") {
+        if (!points.length || points[points.length - 1].key !== key) {
+          points.push({ key, label: formatIntelLabel(cursor, groupBy), value: normalized.get(key) || 0 });
+        } else {
+          points[points.length - 1].value += normalized.get(key) || 0;
+        }
+        const nextMonth = new Date(cursor.getFullYear(), cursor.getMonth() + 1, 1);
+        cursor.setFullYear(nextMonth.getFullYear(), nextMonth.getMonth(), 1);
+      } else {
+        points.push({ key, label: formatIntelLabel(cursor, groupBy), value: normalized.get(key) || 0 });
+        cursor.setDate(cursor.getDate() + 1);
+      }
+    }
+
+    return points;
+  }
+
+  function setSelectOptions(selectId, values, placeholder) {
+    const select = document.getElementById(selectId);
+    if (!select) return;
+
+    const currentValue = select.value;
+    select.innerHTML = "";
+    const defaultOption = document.createElement("option");
+    defaultOption.value = "";
+    defaultOption.textContent = placeholder;
+    select.appendChild(defaultOption);
+
+    values.forEach(value => {
+      const option = document.createElement("option");
+      option.value = value;
+      option.textContent = value;
+      select.appendChild(option);
+    });
+
+    if (currentValue && values.includes(currentValue)) {
+      select.value = currentValue;
+    }
+  }
+
+  function populateIntelFilters(records) {
+    const departments = Array.from(new Set(records.map(r => normalizeIntelValue(r.departamento)).filter(Boolean))).sort((a, b) => a.localeCompare(b, "es"));
+    const municipalities = Array.from(new Set(records.map(r => normalizeIntelValue(r.municipio)).filter(Boolean))).sort((a, b) => a.localeCompare(b, "es"));
+    const types = Array.from(new Set(records.map(r => normalizeIntelValue(r.tipo_reporte)).filter(Boolean))).sort((a, b) => a.localeCompare(b, "es"));
+    const states = Array.from(new Set(records.map(r => normalizeIntelValue(r.estado)).filter(Boolean))).sort((a, b) => a.localeCompare(b, "es"));
+    const priorities = Array.from(new Set(records.map(r => normalizeIntelValue(r.prioridad)).filter(Boolean))).sort((a, b) => a.localeCompare(b, "es"));
+
+    setSelectOptions("intel-filter-departamento", departments, "Todos los departamentos");
+    setSelectOptions("intel-filter-municipio", municipalities, "Todos los municipios");
+    setSelectOptions("intel-filter-tipo", types, "Todos los tipos");
+    setSelectOptions("intel-filter-estado", states, "Todos los estados");
+    setSelectOptions("intel-filter-prioridad", priorities, "Todas las prioridades");
+
+    const dates = records.map(r => parseIntelDate(r.fecha_registro)).filter(Boolean).sort((a, b) => a - b);
+    const dateFrom = document.getElementById("intel-filter-date-from");
+    const dateTo = document.getElementById("intel-filter-date-to");
+    if (dates.length) {
+      const minDate = formatIntelDate(dates[0]);
+      const maxDate = formatIntelDate(dates[dates.length - 1]);
+      if (dateFrom && !dateFrom.value) dateFrom.min = minDate;
+      if (dateTo && !dateTo.value) dateTo.min = minDate;
+      if (dateFrom && !dateFrom.value) dateFrom.max = maxDate;
+      if (dateTo && !dateTo.value) dateTo.max = maxDate;
+    }
+  }
+
+  function buildIntelKpis(allRecords, filteredRecords, currentRecords, previousRecords) {
+    const total = filteredRecords.length;
+    const avgScore = total ? filteredRecords.reduce((sum, record) => sum + parseIntelScore(record.score_riesgo), 0) / total : 0;
+    const critical = filteredRecords.filter(record => {
+      const score = parseIntelScore(record.score_riesgo);
+      return score >= 80 || normalizeIntelKey(record.prioridad) === "crítica" || normalizeIntelKey(record.prioridad) === "critica";
+    }).length;
+    const municipalityBuckets = sortIntelBucket(groupIntelRecords(filteredRecords, record => normalizeIntelValue(record.municipio)));
+    const typeBuckets = sortIntelBucket(groupIntelRecords(filteredRecords, record => normalizeIntelValue(record.tipo_reporte)));
+    const modalityBuckets = sortIntelBucket(groupIntelRecords(filteredRecords, record => normalizeIntelValue(record.modalidad)));
+    const topMunicipality = municipalityBuckets[0] ? municipalityBuckets[0][0] : "Sin dato";
+    const topType = typeBuckets[0] ? typeBuckets[0][0] : "Sin dato";
+    const topModality = modalityBuckets[0] ? modalityBuckets[0][0] : "Sin dato";
+    const currentTotal = currentRecords.length;
+    const previousTotal = previousRecords.length;
+    const growth = previousTotal > 0 ? ((currentTotal - previousTotal) / previousTotal) * 100 : (currentTotal > 0 ? 100 : 0);
+    const activeMunicipios = new Set(filteredRecords.map(record => normalizeIntelValue(record.municipio)).filter(Boolean)).size;
+
+    const growthClass = growth > 0 ? "intel-kpi-positive" : growth < 0 ? "intel-kpi-negative" : "intel-kpi-neutral";
+    const growthLabel = `${growth >= 0 ? "+" : ""}${growth.toFixed(1)}% vs periodo previo`;
+
+    return `
+      <article class="kpi-card double-bezel intel-kpi-card">
+        <div class="inner-core">
+          <span>Reportes filtrados</span>
+          <strong>${total.toLocaleString("es-CO")}</strong>
+          <small>${allRecords.length.toLocaleString("es-CO")} en universo total</small>
+        </div>
+      </article>
+      <article class="kpi-card double-bezel intel-kpi-card">
+        <div class="inner-core">
+          <span>Score riesgo promedio</span>
+          <strong>${avgScore.toFixed(1)}%</strong>
+          <small>Lectura media del universo activo</small>
+        </div>
+      </article>
+      <article class="kpi-card double-bezel alert-kpi intel-kpi-card">
+        <div class="inner-core">
+          <span>Casos críticos</span>
+          <strong>${critical.toLocaleString("es-CO")}</strong>
+          <small>Score alto o prioridad crítica</small>
+        </div>
+      </article>
+      <article class="kpi-card double-bezel intel-kpi-card">
+        <div class="inner-core">
+          <span>Municipios activos</span>
+          <strong>${activeMunicipios.toLocaleString("es-CO")}</strong>
+          <small>Huella territorial observada</small>
+        </div>
+      </article>
+      <article class="kpi-card double-bezel intel-kpi-card ${growthClass}">
+        <div class="inner-core">
+          <span>Crecimiento temporal</span>
+          <strong>${growthLabel}</strong>
+          <small>${currentTotal} en ventana actual, ${previousTotal} en la anterior</small>
+        </div>
+      </article>
+      <article class="kpi-card double-bezel intel-kpi-card">
+        <div class="inner-core">
+          <span>Lectura dominante</span>
+          <strong>${topType}</strong>
+          <small>${topMunicipality} | ${topModality}</small>
+        </div>
+      </article>
+    `;
+  }
+
+  function clearIntelCharts() {
+    intelChartIds.forEach(id => {
+      const node = document.getElementById(id);
+      if (node) node.innerHTML = "";
+    });
+  }
+
+  function renderIntelDashboardCharts(baseRecords) {
+    const filters = getIntelFilters();
+    const groupBy = filters.group === "monthly" ? "monthly" : "daily";
+    const nonDateFiltered = applyIntelNonDateFilters(baseRecords);
+    const filteredRecords = applyIntelDateFilters(nonDateFiltered);
+    const windowInfo = getIntelWindow(nonDateFiltered.length ? nonDateFiltered : filteredRecords);
+    const currentWindowRecords = nonDateFiltered.filter(record => {
+      const date = parseIntelDate(record.fecha_registro);
+      if (!date || !windowInfo.currentStart || !windowInfo.currentEnd) return false;
+      return date >= windowInfo.currentStart && date <= windowInfo.currentEnd;
+    });
+    const previousWindowRecords = nonDateFiltered.filter(record => {
+      const date = parseIntelDate(record.fecha_registro);
+      if (!date || !windowInfo.previousStart || !windowInfo.previousEnd) return false;
+      return date >= windowInfo.previousStart && date <= windowInfo.previousEnd;
+    });
+    const filtered = filteredRecords;
+
+    const totalNode = document.getElementById("intel-signal-total");
+    const windowNode = document.getElementById("intel-signal-window");
+    const themeNode = document.getElementById("intel-signal-theme");
+    const summaryCount = document.getElementById("intel-filter-summary-count");
+    const summaryDetail = document.getElementById("intel-filter-summary-detail");
+
+    if (totalNode) totalNode.textContent = filtered.length.toLocaleString("es-CO");
+    if (windowNode) windowNode.textContent = formatIntelWindowLabel(windowInfo.currentStart, windowInfo.currentEnd);
+    if (themeNode) {
+      const modalityBuckets = sortIntelBucket(groupIntelRecords(filtered, record => normalizeIntelValue(record.modalidad)));
+      const topModality = modalityBuckets[0] ? modalityBuckets[0][0] : "Sin dato";
+      themeNode.textContent = topModality;
+    }
+    if (summaryCount) summaryCount.textContent = `${filtered.length.toLocaleString("es-CO")} reportes`;
+    if (summaryDetail) {
+      summaryDetail.textContent = `${nonDateFiltered.length.toLocaleString("es-CO")} en el universo filtrado antes de la ventana temporal`;
+    }
+
+    const kpisNode = document.getElementById("intel-kpis");
+    if (kpisNode) {
+      kpisNode.innerHTML = buildIntelKpis(baseRecords, filtered, currentWindowRecords, previousWindowRecords);
+    }
+
+    const emptyState = document.getElementById("intel-dashboard-empty");
+
+    if (!filtered.length) {
+      clearIntelCharts();
+      const loading = document.getElementById("intel-dashboard-loading");
+      if (emptyState) emptyState.classList.remove("hidden");
+      if (loading) {
+        loading.style.display = "none";
+      }
+      return;
+    }
+
+    if (emptyState) emptyState.classList.add("hidden");
+
+    const municipioTop = sortIntelBucket(groupIntelRecords(filtered, record => normalizeIntelValue(record.municipio))).slice(0, 10);
+    const deptBuckets = sortIntelBucket(groupIntelRecords(filtered, record => normalizeIntelValue(record.departamento)));
+    const fechaBuckets = sortIntelRecordsByDate(filtered, groupBy);
+    const typeBuckets = sortIntelBucket(groupIntelRecords(filtered, record => normalizeIntelValue(record.tipo_reporte)));
+    const modalityBuckets = sortIntelBucket(groupIntelRecords(filtered, record => normalizeIntelValue(record.modalidad)));
+    const scoreValues = filtered.map(record => parseIntelScore(record.score_riesgo)).filter(value => Number.isFinite(value));
+    const riskMunicipioBuckets = Array.from(
+      new Map(
+        filtered
+          .map(record => normalizeIntelValue(record.municipio))
+          .filter(Boolean)
+          .map(municipio => {
+            const municipioRecords = filtered.filter(record => normalizeIntelValue(record.municipio) === municipio);
+            const avg = municipioRecords.reduce((sum, record) => sum + parseIntelScore(record.score_riesgo), 0) / Math.max(1, municipioRecords.length);
+            return [municipio, avg];
+          })
+      ).entries()
+    )
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 10);
+
+    renderIntelTopMunicipios(municipioTop);
+    renderIntelDepartamentos(deptBuckets);
+    renderIntelTrend(fechaBuckets, groupBy);
+    renderIntelEvolution(currentWindowRecords, previousWindowRecords, groupBy, windowInfo);
+    renderIntelTipos(typeBuckets);
+    renderIntelModalidades(modalityBuckets);
+    renderIntelRiskHistogram(scoreValues);
+    renderIntelRiskMunicipio(riskMunicipioBuckets);
+  }
+
+  function sortIntelRecordsByDate(records, groupBy) {
+    const map = new Map();
+    records.forEach(record => {
+      const date = parseIntelDate(record.fecha_registro);
+      if (!date) return;
+      const key = groupBy === "monthly"
+        ? `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}`
+        : formatIntelDate(date);
+      map.set(key, (map.get(key) || 0) + 1);
+    });
+
+    const result = Array.from(map.entries()).sort((a, b) => a[0].localeCompare(b[0]));
+    return result;
+  }
+
+  function renderIntelTopMunicipios(entries) {
+    const labels = entries.map(entry => entry[0]);
+    const values = entries.map(entry => entry[1]);
+    renderIntelPlot("intel-chart-municipios", [{
+      type: "bar",
+      x: values,
+      y: labels,
+      orientation: "h",
+      marker: {
+        color: values,
+        colorscale: [
+          [0, "rgba(0, 229, 255, 0.35)"],
+          [1, "#00e5ff"],
+        ],
+        line: { color: "rgba(0,229,255,0.35)", width: 1 },
+      },
+      text: values.map(value => value.toString()),
+      textposition: "outside",
+      hovertemplate: "%{y}<br>Reportes: %{x}<extra></extra>",
+    }], {
+      margin: { l: 160, r: 24, t: 12, b: 36 },
+      xaxis: { title: "Cantidad de reportes" },
+      yaxis: { automargin: true, autorange: "reversed" },
+    });
+  }
+
+  function renderIntelDepartamentos(entries) {
+    const labels = entries.map(entry => entry[0]);
+    const values = entries.map(entry => entry[1]);
+    renderIntelPlot("intel-chart-departamentos", [{
+      type: "bar",
+      x: values,
+      y: labels,
+      orientation: "h",
+      marker: {
+        color: values,
+        colorscale: [
+          [0, "rgba(111,202,82,0.35)"],
+          [0.5, "rgba(0,229,255,0.72)"],
+          [1, "rgba(255,90,31,0.95)"],
+        ],
+      },
+      hovertemplate: "%{y}<br>Casos: %{x}<extra></extra>",
+    }], {
+      margin: { l: 140, r: 24, t: 12, b: 36 },
+      xaxis: { title: "Número de reportes" },
+      yaxis: { automargin: true, autorange: "reversed" },
+      showlegend: false,
+    });
+  }
+
+  function renderIntelTrend(entries, groupBy) {
+    const labels = entries.map(entry => entry[0]);
+    const values = entries.map(entry => entry[1]);
+    renderIntelPlot("intel-chart-fecha", [{
+      type: "bar",
+      x: labels,
+      y: values,
+      marker: {
+        color: values,
+        colorscale: "Blues",
+        line: { color: "rgba(0,229,255,0.32)", width: 1 },
+      },
+      hovertemplate: "%{x}<br>Reportes: %{y}<extra></extra>",
+    }], {
+      xaxis: { title: groupBy === "monthly" ? "Mes registro" : "Fecha registro" },
+      yaxis: { title: "Número de reportes" },
+      showlegend: false,
+    });
+  }
+
+  function renderIntelEvolution(currentRecords, previousRecords, groupBy, windowInfo) {
+    const currentSeries = fillIntelSeries(currentRecords, windowInfo.currentStart, windowInfo.currentEnd, groupBy);
+    const previousSeries = fillIntelSeries(previousRecords, windowInfo.previousStart, windowInfo.previousEnd, groupBy);
+    const currentX = currentSeries.map(point => point.label);
+    const previousX = previousSeries.map(point => point.label);
+
+    renderIntelPlot("intel-chart-evolucion", [
+      {
+        type: "scatter",
+        mode: "lines+markers",
+        x: currentX,
+        y: currentSeries.map(point => point.value),
+        name: "Periodo actual",
+        line: { color: "#00e5ff", width: 3 },
+        marker: { color: "#00e5ff", size: 6 },
+        hovertemplate: "%{x}<br>Actual: %{y}<extra></extra>",
+      },
+      {
+        type: "scatter",
+        mode: "lines+markers",
+        x: previousX,
+        y: previousSeries.map(point => point.value),
+        name: "Periodo anterior",
+        line: { color: "#ff5a1f", width: 3, dash: "dot" },
+        marker: { color: "#ff5a1f", size: 6 },
+        hovertemplate: "%{x}<br>Anterior: %{y}<extra></extra>",
+      },
+    ], {
+      xaxis: { title: groupBy === "monthly" ? "Mes" : "Fecha" },
+      yaxis: { title: "Reportes" },
+      showlegend: true,
+      legend: { orientation: "h", y: -0.18, font: { color: "#8b99ae", size: 11 } },
+    });
+  }
+
+  function renderIntelTipos(entries) {
+    const labels = entries.map(entry => entry[0]);
+    const values = entries.map(entry => entry[1]);
+    renderIntelPlot("intel-chart-tipos", [{
+      type: "pie",
+      labels,
+      values,
+      hole: 0.46,
+      sort: false,
+      textinfo: "label+percent",
+      textposition: "outside",
+      marker: {
+        colors: labels.map((_, index) => `hsl(${190 + index * 16}, 88%, ${52 - Math.min(index * 2, 18)}%)`),
+        line: { color: "rgba(7,8,12,0.8)", width: 2 },
+      },
+      hovertemplate: "%{label}<br>Cantidad: %{value}<extra></extra>",
+    }], {
+      margin: { l: 8, r: 8, t: 12, b: 18 },
+      showlegend: false,
+    });
+  }
+
+  function renderIntelModalidades(entries) {
+    const labels = entries.map(entry => entry[0]);
+    const values = entries.map(entry => entry[1]);
+    renderIntelPlot("intel-chart-modalidades", [{
+      type: "pie",
+      labels,
+      values,
+      hole: 0.58,
+      sort: false,
+      textinfo: "label+percent",
+      textposition: "outside",
+      marker: {
+        colors: labels.map((_, index) => `hsl(${25 + index * 26}, 92%, ${54 - Math.min(index * 2, 16)}%)`),
+        line: { color: "rgba(7,8,12,0.8)", width: 2 },
+      },
+      hovertemplate: "%{label}<br>Cantidad: %{value}<extra></extra>",
+    }], {
+      margin: { l: 8, r: 8, t: 12, b: 18 },
+      showlegend: false,
+    });
+  }
+
+  function renderIntelRiskHistogram(values) {
+    renderIntelPlot("intel-chart-riesgo", [{
+      type: "histogram",
+      x: values,
+      nbinsx: 12,
+      marker: {
+        color: "rgba(0,229,255,0.85)",
+        line: { color: "rgba(255,255,255,0.2)", width: 1 },
+      },
+      hovertemplate: "Score: %{x}<extra></extra>",
+    }], {
+      xaxis: { title: "Score de riesgo" },
+      yaxis: { title: "Frecuencia" },
+      showlegend: false,
+    });
+  }
+
+  function renderIntelRiskMunicipio(entries) {
+    const labels = entries.map(entry => entry[0]);
+    const values = entries.map(entry => entry[1]);
+    renderIntelPlot("intel-chart-riesgo-municipio", [{
+      type: "bar",
+      x: labels,
+      y: values,
+      marker: {
+        color: values,
+        colorscale: [
+          [0, "rgba(0,230,118,0.35)"],
+          [0.5, "rgba(255,214,0,0.75)"],
+          [1, "rgba(255,90,31,0.95)"],
+        ],
+      },
+      hovertemplate: "%{x}<br>Score promedio: %{y:.1f}<extra></extra>",
+    }], {
+      xaxis: { title: "Municipio" },
+      yaxis: { title: "Score promedio" },
+      showlegend: false,
+      margin: { l: 52, r: 24, t: 12, b: 110 },
+    });
+  }
+
+  function syncIntelFilterState() {
+    intelDashboardState.filters.dateFrom = document.getElementById("intel-filter-date-from")?.value || "";
+    intelDashboardState.filters.dateTo = document.getElementById("intel-filter-date-to")?.value || "";
+    intelDashboardState.filters.departamento = document.getElementById("intel-filter-departamento")?.value || "";
+    intelDashboardState.filters.municipio = document.getElementById("intel-filter-municipio")?.value || "";
+    intelDashboardState.filters.tipo = document.getElementById("intel-filter-tipo")?.value || "";
+    intelDashboardState.filters.estado = document.getElementById("intel-filter-estado")?.value || "";
+    intelDashboardState.filters.prioridad = document.getElementById("intel-filter-prioridad")?.value || "";
+    intelDashboardState.filters.group = document.getElementById("intel-filter-group")?.value || "daily";
+  }
+
+  function bindIntelDashboardEvents() {
+    intelFilterIds.forEach(id => {
+      const node = document.getElementById(id);
+      if (!node || node.dataset.intelBound === "1") return;
+      node.dataset.intelBound = "1";
+      node.addEventListener("change", () => {
+        syncIntelFilterState();
+        renderIntelDashboardCharts(intelDashboardState.rawCases);
+      });
+    });
+
+    const resetBtn = document.getElementById("intel-filter-reset");
+    if (resetBtn && resetBtn.dataset.intelBound !== "1") {
+      resetBtn.dataset.intelBound = "1";
+      resetBtn.addEventListener("click", () => {
+        intelDashboardState.filters = {
+          dateFrom: "",
+          dateTo: "",
+          departamento: "",
+          municipio: "",
+          tipo: "",
+          estado: "",
+          prioridad: "",
+          group: "daily",
+        };
+        intelFilterIds.forEach(id => {
+          const node = document.getElementById(id);
+          if (node) node.value = node.tagName === "SELECT" && id === "intel-filter-group" ? "daily" : "";
+        });
+        renderIntelDashboardCharts(intelDashboardState.rawCases);
+      });
+    }
+  }
 
   async function fetchIntelDashboard() {
-    if (intelDashboardLoaded) return;
-
     const loading = document.getElementById("intel-dashboard-loading");
     const kpisEl = document.getElementById("intel-kpis");
-    const chartsEl = document.getElementById("intel-charts-container");
-    if (!chartsEl || !kpisEl) return;
+    if (!kpisEl) return;
 
-    loading && (loading.textContent = "Cargando dashboard de inteligencia...");
+    bindIntelDashboardEvents();
+
+    if (intelDashboardState.loaded) {
+      renderIntelDashboardCharts(intelDashboardState.rawCases);
+      if (loading) loading.style.display = "none";
+      return;
+    }
+
+    if (intelDashboardState.loading) return;
+    intelDashboardState.loading = true;
+    if (loading) {
+      loading.style.display = "flex";
+      loading.innerHTML = '<span class="intel-status-bullet"></span><span>Consultando bandeja de casos y calculando hallazgos...</span>';
+    }
 
     try {
-      const response = await fetch("/api/intel/dashboard");
+      const response = await fetch("/api/dataset/casos");
       if (!response.ok) throw new Error("HTTP " + response.status);
       const data = await response.json();
-      const kpis = data.kpis || {};
-      const charts = data.charts || {};
+      intelDashboardState.rawCases = Array.isArray(data) ? data : [];
+      intelDashboardState.loaded = true;
 
-      kpisEl.innerHTML = `
-        <div class="dashboard-card double-bezel">
-          <div class="inner-core" style="display:flex;justify-content:space-between;align-items:center;">
-            <div>
-              <div style="font-size:0.75rem;text-transform:uppercase;letter-spacing:0.05em;color:#94a3b8;">Total Casos</div>
-              <div style="font-size:1.6rem;font-weight:700;color:#38bdf8;">${Number(kpis.total_casos || 0).toLocaleString()}</div>
-            </div>
-            <span style="font-size:2rem;color:#475569;">📁</span>
-          </div>
-        </div>
-        <div class="dashboard-card double-bezel">
-          <div class="inner-core" style="display:flex;justify-content:space-between;align-items:center;">
-            <div>
-              <div style="font-size:0.75rem;text-transform:uppercase;letter-spacing:0.05em;color:#94a3b8;">Impacto Económico</div>
-              <div style="font-size:1.6rem;font-weight:700;color:#38bdf8;">$${Number(kpis.total_monto || 0).toLocaleString()} COP</div>
-            </div>
-            <span style="font-size:2rem;color:#475569;">💰</span>
-          </div>
-        </div>
-        <div class="dashboard-card double-bezel">
-          <div class="inner-core" style="display:flex;justify-content:space-between;align-items:center;">
-            <div>
-              <div style="font-size:0.75rem;text-transform:uppercase;letter-spacing:0.05em;color:#94a3b8;">Score Riesgo Prom.</div>
-              <div style="font-size:1.6rem;font-weight:700;color:#38bdf8;">${Number(kpis.avg_riesgo || 0)}%</div>
-            </div>
-            <span style="font-size:2rem;color:#475569;">⚠️</span>
-          </div>
-        </div>
-        <div class="dashboard-card double-bezel">
-          <div class="inner-core" style="display:flex;justify-content:space-between;align-items:center;">
-            <div>
-              <div style="font-size:0.75rem;text-transform:uppercase;letter-spacing:0.05em;color:#94a3b8;">Alertas OSINT</div>
-              <div style="font-size:1.6rem;font-weight:700;color:#38bdf8;">${Number(kpis.total_alertas || 0).toLocaleString()}</div>
-            </div>
-            <span style="font-size:2rem;color:#475569;">👁️</span>
-          </div>
-        </div>
-      `;
-
-      chartsEl.innerHTML = `
-        <div style="display:grid;grid-template-columns:7fr 5fr;gap:16px;margin-bottom:16px;">
-          <div class="dashboard-card double-bezel"><div class="inner-core">${charts.line_casos || ""}</div></div>
-          <div class="dashboard-card double-bezel"><div class="inner-core">${charts.bar_monto || ""}</div></div>
-        </div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;">
-          <div class="dashboard-card double-bezel"><div class="inner-core">${charts.bar_dept || ""}</div></div>
-          <div class="dashboard-card double-bezel"><div class="inner-core">${charts.donut_tipo || ""}</div></div>
-        </div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;">
-          <div class="dashboard-card double-bezel"><div class="inner-core">${charts.bar_canal_prioridad || ""}</div></div>
-          <div class="dashboard-card double-bezel"><div class="inner-core">${charts.osint_indicador || ""}</div></div>
-        </div>
-      `;
+      populateIntelFilters(intelDashboardState.rawCases);
+      syncIntelFilterState();
+      renderIntelDashboardCharts(intelDashboardState.rawCases);
 
       if (loading) loading.style.display = "none";
-      intelDashboardLoaded = true;
     } catch (err) {
       console.error("Error cargando dashboard intel:", err);
-      if (loading) loading.textContent = "Error al cargar el dashboard de inteligencia.";
+      if (loading) {
+        loading.style.display = "flex";
+        loading.innerHTML = '<span class="intel-status-bullet"></span><span>Error al cargar los casos. Revisa la conexión o el endpoint /api/dataset/casos.</span>';
+      }
+      clearIntelCharts();
+      kpisEl.innerHTML = `
+        <article class="dashboard-card double-bezel col-span-12">
+          <div class="inner-core">
+            <strong style="display:block;margin-bottom:8px;color:#ff5a1f;">No fue posible construir el dashboard</strong>
+            <p class="helper-text-mono" style="margin:0;">${err.message}</p>
+          </div>
+        </article>
+      `;
+    } finally {
+      intelDashboardState.loading = false;
     }
   }
 
