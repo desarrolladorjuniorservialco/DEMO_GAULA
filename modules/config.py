@@ -3,13 +3,14 @@ import os
 from sqlalchemy.pool import StaticPool
 
 _basedir = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+_data_dir = "/tmp/data" if os.environ.get("VERCEL") else os.path.join(_basedir, "data")
 
 class Config:
     SECRET_KEY = os.environ.get("SECRET_KEY", "demo-gaula-nexo-147")
-    SQLALCHEMY_DATABASE_URI = "sqlite:///" + os.path.join(_basedir, "data", "nexo147.db")
+    SQLALCHEMY_DATABASE_URI = "sqlite:///" + os.path.join(_data_dir, "nexo147.db")
     SQLALCHEMY_BINDS = {
-        "intel": "sqlite:///" + os.path.join(_basedir, "data", "intel.db"),
-        "osint": "sqlite:///" + os.path.join(_basedir, "data", "osint.db"),
+        "intel": "sqlite:///" + os.path.join(_data_dir, "intel.db"),
+        "osint": "sqlite:///" + os.path.join(_data_dir, "osint.db"),
     }
     SQLALCHEMY_ENGINE_OPTIONS = {
         "connect_args": {"check_same_thread": False},

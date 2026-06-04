@@ -23,7 +23,8 @@ def create_app(config=None):
     _register_blueprints(app)
 
     with app.app_context():
-        os.makedirs(os.path.join(_basedir, "data"), exist_ok=True)
+        _data_dir = "/tmp/data" if os.environ.get("VERCEL") else os.path.join(_basedir, "data")
+        os.makedirs(_data_dir, exist_ok=True)
         db.create_all()
         if not app.config.get("TESTING"):
             _seed_db()
