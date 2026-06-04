@@ -39,8 +39,11 @@ def api_dataset_casos():
 def api_intel_dashboard():
     dark = "plotly_dark"
 
-    casos_df  = pd.read_csv(_CSV_CASOS,   dtype=str).fillna("")
-    alertas_df = pd.read_csv(_CSV_ALERTAS, dtype=str).fillna("")
+    try:
+        casos_df  = pd.read_csv(_CSV_CASOS,   dtype=str).fillna("")
+        alertas_df = pd.read_csv(_CSV_ALERTAS, dtype=str).fillna("")
+    except (FileNotFoundError, pd.errors.ParserError, OSError) as exc:
+        return jsonify({"error": f"Dataset no disponible: {exc}"}), 503
 
     # Numeric conversions needed for calculations
     casos_df["monto_exigido_perdida_estimada"] = pd.to_numeric(
@@ -61,8 +64,11 @@ def api_intel_dashboard():
     total_alertas = int(len(alertas_df))
 
     # G1: Monthly trend
-    monthly_types = casos_df.groupby(["mes_anio", "tipo_reporte"], as_index=False).size()
-    monthly_types.columns = ["mes_anio", "tipo_reporte", "cantidad"]
+    monthly_types = (
+        casos_df.groupby(["mes_anio", "tipo_reporte"], as_index=False)
+        .size()
+        .rename(columns={"size": "cantidad"})
+    )
     fig_line = px.line(monthly_types, x="mes_anio", y="cantidad", color="tipo_reporte",
                        title="Tendencia Mensual de Casos por Tipo de Reporte",
                        labels={"mes_anio": "Mes/Año", "cantidad": "Número de Casos", "tipo_reporte": "Tipo"},
@@ -77,28 +83,35 @@ def api_intel_dashboard():
 
     # G3: Cases by department
     dept_counts = casos_df["departamento"].value_counts().reset_index()
-    dept_counts.columns = ["departamento", "cantidad"]
+    dept_counts = dept_counts.rename(columns={"count": "cantidad"})
     fig_bar_dept = px.bar(dept_counts, x="cantidad", y="departamento", orientation="h",
                           title="Volumen de Casos Totales por Departamento",
                           labels={"cantidad": "Número de Casos", "departamento": "Departamento"},
                           template=dark, color="cantidad", color_continuous_scale="Blues")
 
     # G4: Crime type share (donut)
-    fig_donut = px.pie(casos_df, names="tipo_reporte", hole=0.4,
+    tipo_counts = casos_df["tipo_reporte"].value_counts().reset_index()
+    tipo_counts = tipo_counts.rename(columns={"count": "cantidad"})
+    fig_donut = px.pie(tipo_counts, names="tipo_reporte", values="cantidad", hole=0.4,
                        title="Participación Absoluta por Delito",
                        template=dark, color_discrete_sequence=px.colors.qualitative.Pastel)
 
     # G5: Channel vs Priority
-    fig_canal = px.bar(casos_df, x="canal", color="prioridad",
+    canal_prioridad = (
+        casos_df.groupby(["canal", "prioridad"], as_index=False)
+        .size()
+        .rename(columns={"size": "cantidad"})
+    )
+    fig_canal = px.bar(canal_prioridad, x="canal", y="cantidad", color="prioridad",
                        title="Casos por Canal de Recepción y Nivel de Prioridad",
-                       labels={"canal": "Canal de Recepción", "count": "Casos", "prioridad": "Prioridad"},
+                       labels={"canal": "Canal de Recepción", "cantidad": "Casos", "prioridad": "Prioridad"},
                        template=dark, barmode="stack",
                        color_discrete_map={"Crítica": "#ef4444", "Alta": "#f97316",
                                            "Media": "#eab308", "Baja": "#22c55e"})
 
     # G6: OSINT indicators
     ind_counts = alertas_df["indicador"].value_counts().reset_index()
-    ind_counts.columns = ["indicador", "cantidad"]
+    ind_counts = ind_counts.rename(columns={"count": "cantidad"})
     fig_osint = px.bar(ind_counts, x="indicador", y="cantidad",
                        title="Principales Indicadores de Riesgo OSINT Detectados",
                        labels={"indicador": "Indicador Técnico", "cantidad": "Número de Alertas"},
