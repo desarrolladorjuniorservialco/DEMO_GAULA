@@ -1383,6 +1383,8 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function buildProjectionAnalysis(escenario, tendencia, totalCasos, monto) {
+    const safeTotal = Number.isFinite(totalCasos) ? totalCasos : 0;
+    const safeMonto = Number.isFinite(monto)      ? monto      : 0;
     const escenarioConfig = {
       optimista: {
         icon: "🟢", label: "OPTIMISTA", borderColor: "#22c55e",
@@ -1414,17 +1416,18 @@ document.addEventListener("DOMContentLoaded", () => {
     };
 
     const cfg = escenarioConfig[escenario] || escenarioConfig.realista;
+    const safeColor = /^#[0-9a-fA-F]{3,8}$/.test(cfg.borderColor) ? cfg.borderColor : "#eab308";
     const tendenciaLabel = tendencia > 0 ? "al alza ↑" : tendencia < 0 ? "a la baja ↓" : "estable →";
 
     const el = document.getElementById("intel-projection-analysis-body");
-    if (!el) return;
+    if (!el) { console.warn("buildProjectionAnalysis: #intel-projection-analysis-body not found"); return; }
     el.innerHTML = `
-      <div style="border-left:4px solid ${cfg.borderColor};padding-left:1rem;">
+      <div style="border-left:4px solid ${safeColor};padding-left:1rem;">
         <div style="display:flex;align-items:center;gap:.75rem;margin-bottom:.75rem;">
           <span style="font-size:1.5rem;">${cfg.icon}</span>
           <div>
-            <strong style="color:${cfg.borderColor};font-size:1rem;">ESCENARIO ${cfg.label}</strong>
-            <span class="helper-text-mono" style="display:block;font-size:.75rem;">Tendencia histórica: ${tendenciaLabel} · ${totalCasos.toLocaleString("es-CO")} casos · $${monto.toLocaleString("es-CO")} COP</span>
+            <strong style="color:${safeColor};font-size:1rem;">ESCENARIO ${cfg.label}</strong>
+            <span class="helper-text-mono" style="display:block;font-size:.75rem;">Tendencia histórica: ${tendenciaLabel} · ${safeTotal.toLocaleString("es-CO")} casos · $${safeMonto.toLocaleString("es-CO")} COP</span>
           </div>
         </div>
         <p style="margin-bottom:.75rem;color:#c0ccdc;">${cfg.resumen}</p>
