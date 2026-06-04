@@ -1371,6 +1371,71 @@ document.addEventListener("DOMContentLoaded", () => {
     return { mods: linspace(0.97, 1.03, steps), color: "#eab308" };  // realista
   }
 
+  function buildProjectionSeries(historicMonths, historicValues, escenario) {
+    const n = historicValues.length;
+    if (n < 2) return { futureMonths: [], futureValues: [] };
+    const xArr = historicValues.map((_, i) => i);
+    const { slope, intercept } = calcLinearRegression(xArr, historicValues);
+    const { mods } = getScenarioModifiers(escenario, 6);
+    const futureMonths = buildFutureMonths(historicMonths[historicMonths.length - 1], 6);
+    const futureValues = mods.map((mod, i) => Math.max(0, Math.round((slope * (n + i) + intercept) * mod)));
+    return { futureMonths, futureValues };
+  }
+
+  function buildProjectionAnalysis(escenario, tendencia, totalCasos, monto) {
+    const escenarioConfig = {
+      optimista: {
+        icon: "🟢", label: "OPTIMISTA", borderColor: "#22c55e",
+        resumen: "El modelo de contención proyecta una inflexión negativa en la curva. Las medidas preventivas muestran efectividad.",
+        acciones: [
+          "Mantener cobertura física en cuadrantes críticos identificados.",
+          "Migrar recursos logísticos remanentes hacia cibervigilancia.",
+          "Sincronizar bases locales con la central para consolidar la tendencia.",
+        ],
+      },
+      pesimista: {
+        icon: "🔴", label: "PESIMISTA", borderColor: "#ef4444",
+        resumen: "ANOMALÍA CRÍTICA: La simulación de estrés proyecta un brote operativo inminente. El volumen superará los umbrales de contención.",
+        acciones: [
+          "Urgente: instaurar Puesto de Mando Unificado (PMU) con autoridades locales.",
+          "Desplegar unidades tácticas especiales para mitigar el vector de amenaza.",
+          "Activar protocolos de bloqueo preventivo sobre estructuras de financiamiento.",
+        ],
+      },
+      realista: {
+        icon: "🟡", label: "REALISTA", borderColor: "#eab308",
+        resumen: "La proyección no detecta desvíos atípicos. El vector mantiene una tasa estable dentro de los rangos previstos.",
+        acciones: [
+          "Sostener el monitoreo operativo Fase 2 sobre el vector delictivo.",
+          "Actualizar semanalmente los diccionarios de inteligencia digital y fuentes OSINT.",
+          "Optimizar la tasa de respuesta del canal 147 para romper ciclos delictivos.",
+        ],
+      },
+    };
+
+    const cfg = escenarioConfig[escenario] || escenarioConfig.realista;
+    const tendenciaLabel = tendencia > 0 ? "al alza ↑" : tendencia < 0 ? "a la baja ↓" : "estable →";
+
+    const el = document.getElementById("intel-projection-analysis-body");
+    if (!el) return;
+    el.innerHTML = `
+      <div style="border-left:4px solid ${cfg.borderColor};padding-left:1rem;">
+        <div style="display:flex;align-items:center;gap:.75rem;margin-bottom:.75rem;">
+          <span style="font-size:1.5rem;">${cfg.icon}</span>
+          <div>
+            <strong style="color:${cfg.borderColor};font-size:1rem;">ESCENARIO ${cfg.label}</strong>
+            <span class="helper-text-mono" style="display:block;font-size:.75rem;">Tendencia histórica: ${tendenciaLabel} · ${totalCasos.toLocaleString("es-CO")} casos · $${monto.toLocaleString("es-CO")} COP</span>
+          </div>
+        </div>
+        <p style="margin-bottom:.75rem;color:#c0ccdc;">${cfg.resumen}</p>
+        <strong style="display:block;margin-bottom:.5rem;color:#8b99ae;font-size:.8rem;letter-spacing:.07em;">ACCIONES SUGERIDAS:</strong>
+        <ul style="margin:0;padding-left:1.25rem;">
+          ${cfg.acciones.map(a => `<li style="color:#f0f4fa;margin-bottom:.35rem;">${a}</li>`).join("")}
+        </ul>
+      </div>
+    `;
+  }
+
   function syncIntelFilterState() {
     intelDashboardState.filters.dateFrom = document.getElementById("intel-filter-date-from")?.value || "";
     intelDashboardState.filters.dateTo = document.getElementById("intel-filter-date-to")?.value || "";
