@@ -1439,6 +1439,103 @@ document.addEventListener("DOMContentLoaded", () => {
     `;
   }
 
+  function renderIntelProjections(filteredRecords, escenario) {
+    const STEPS = 6;
+    const projChartIds = ["proj-chart-volumen", "proj-chart-monto", "proj-chart-riesgo", "proj-chart-tipos"];
+
+    if (filteredRecords.length < 2) {
+      projChartIds.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.innerHTML = '<p style="color:#8b99ae;padding:1rem;font-size:.8rem;">Datos insuficientes para proyección (mínimo 2 meses).</p>';
+      });
+      return;
+    }
+
+    const { color: projColor } = getScenarioModifiers(escenario, STEPS);
+
+    function monthBuckets(records, valueFn) {
+      const map = new Map();
+      records.forEach(r => {
+        const d = parseIntelDate(r.fecha_registro);
+        if (!d) return;
+        const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
+        const prev = map.get(key) || { sum: 0, count: 0 };
+        const v = valueFn(r);
+        map.set(key, { sum: prev.sum + v, count: prev.count + 1 });
+      });
+      return Array.from(map.entries())
+        .sort((a, b) => a[0].localeCompare(b[0]))
+        .map(([k, v]) => ({ month: k, sum: v.sum, count: v.count, avg: v.sum / v.count }));
+    }
+
+    const histLayout = (xTitle, yTitle) => ({
+      xaxis: { title: xTitle },
+      yaxis: { title: yTitle },
+      showlegend: true,
+      margin: { l: 52, r: 24, t: 12, b: 60 },
+    });
+
+    const volData    = monthBuckets(filteredRecords, () => 1);
+    const volMonths  = volData.map(d => d.month);
+    const volValues  = volData.map(d => d.count);
+    const volSlope   = calcLinearRegression(volValues.map((_, i) => i), volValues).slope;
+    const montoDataPre  = monthBuckets(filteredRecords, r => Number(normalizeIntelValue(r.valor_exigido).replace(/[^0-9.]/g, "")) || 0);
+    const totalMontoPre = montoDataPre.reduce((s, d) => s + d.sum, 0);
+    buildProjectionAnalysis(escenario, volSlope, filteredRecords.length, totalMontoPre);
+
+    // ── G1: Volumen de casos ────────────────────────────────────────────────
+    const { futureMonths: volFM, futureValues: volFV } = buildProjectionSeries(volMonths, volValues, escenario);
+
+    renderIntelPlot("proj-chart-volumen", [
+      { type: "scatter", mode: "lines+markers", name: "Histórico",  x: volMonths, y: volValues, line: { color: "#94a3b8" } },
+      { type: "scatter", mode: "lines+markers", name: "Proyección", x: volFM,     y: volFV,     line: { color: projColor, dash: "dot" }, marker: { symbol: "diamond" } },
+    ], histLayout("Mes/Año", "Casos"));
+
+    // ── G2: Impacto económico ───────────────────────────────────────────────
+    const montoData   = montoDataPre;
+    const montoMonths = montoData.map(d => d.month);
+    const montoValues = montoData.map(d => d.sum);
+    const { futureMonths: montoFM, futureValues: montoFV } = buildProjectionSeries(montoMonths, montoValues, escenario);
+
+    renderIntelPlot("proj-chart-monto", [
+      { type: "bar",     name: "Histórico ($)",    x: montoMonths, y: montoValues, marker: { color: "#38bdf8" } },
+      { type: "scatter", mode: "lines+markers", name: "Proyección ($)", x: montoFM, y: montoFV, line: { color: projColor, dash: "dot" }, marker: { symbol: "diamond" } },
+    ], histLayout("Mes/Año", "Monto ($)"));
+
+    // ── G3: Score de riesgo promedio ────────────────────────────────────────
+    const riesgoData   = monthBuckets(filteredRecords, r => parseIntelScore(r.score_riesgo));
+    const riesgoMonths = riesgoData.map(d => d.month);
+    const riesgoValues = riesgoData.map(d => parseFloat(d.avg.toFixed(1)));
+    const { futureMonths: riesgoFM, futureValues: riesgoFV } = buildProjectionSeries(riesgoMonths, riesgoValues, escenario);
+
+    renderIntelPlot("proj-chart-riesgo", [
+      { type: "scatter", mode: "lines+markers", name: "Score histórico", x: riesgoMonths, y: riesgoValues, line: { color: "#94a3b8" } },
+      { type: "scatter", mode: "lines+markers", name: "Proyección",      x: riesgoFM,     y: riesgoFV,     line: { color: projColor, dash: "dot" }, marker: { symbol: "diamond" } },
+    ], histLayout("Mes/Año", "Score promedio"));
+
+    // ── G4: Top 3 tipos de delito ───────────────────────────────────────────
+    const tipoCount = new Map();
+    filteredRecords.forEach(r => {
+      const t = normalizeIntelValue(r.tipo_reporte);
+      if (t) tipoCount.set(t, (tipoCount.get(t) || 0) + 1);
+    });
+    const top3 = Array.from(tipoCount.entries()).sort((a, b) => b[1] - a[1]).slice(0, 3).map(e => e[0]);
+    const tipoColors = ["#38bdf8", "#a78bfa", "#fb923c"];
+
+    const tipoTraces = top3.flatMap((tipo, idx) => {
+      const tipoRecords = filteredRecords.filter(r => normalizeIntelValue(r.tipo_reporte) === tipo);
+      const tData = monthBuckets(tipoRecords, () => 1);
+      const tMonths = tData.map(d => d.month);
+      const tValues = tData.map(d => d.count);
+      const { futureMonths: tFM, futureValues: tFV } = buildProjectionSeries(tMonths, tValues, escenario);
+      return [
+        { type: "scatter", mode: "lines", name: tipo,              x: tMonths, y: tValues, line: { color: tipoColors[idx], width: 2 } },
+        { type: "scatter", mode: "lines", name: `${tipo} (proy.)`, x: tFM,     y: tFV,     line: { color: tipoColors[idx], dash: "dot", width: 1.5 }, showlegend: false },
+      ];
+    });
+    renderIntelPlot("proj-chart-tipos", tipoTraces, histLayout("Mes/Año", "Casos por tipo"));
+  }
+
   function syncIntelFilterState() {
     intelDashboardState.filters.dateFrom = document.getElementById("intel-filter-date-from")?.value || "";
     intelDashboardState.filters.dateTo = document.getElementById("intel-filter-date-to")?.value || "";
