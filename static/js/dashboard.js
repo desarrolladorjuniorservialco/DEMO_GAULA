@@ -15,8 +15,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // --- STATE AND HELPER GLOBALS ---
   let chartInstances = {};
-  let etlInterval = null;
-
   // Cleanup helper for Chart.js instances
   function destroyChart(id) {
     if (chartInstances[id]) {
@@ -36,19 +34,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Handle panel changes triggered programmatically or on startup
   function cargarDatosDashboard(panelId) {
-    // Clear ETL auto-refresh if moving away from ETL panel
-    if (panelId !== "panel-etl" && etlInterval) {
-      clearInterval(etlInterval);
-      etlInterval = null;
-    }
-
-    if (panelId === "panel-etl") {
-      fetchETLStatus();
-      // Setup periodic refresh every 30 seconds
-      if (!etlInterval) {
-        etlInterval = setInterval(fetchETLStatus, 30000);
-      }
-    } else if (panelId === "panel-datamart") {
+    if (panelId === "panel-datamart") {
       fetchDataMart();
     }
   }
@@ -425,21 +411,9 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  // --- 3. MOTOR ETL Y PIPELINE ---
-  const btnRefreshEtl = document.getElementById("btn-refresh-etl");
-  if (btnRefreshEtl) {
-    btnRefreshEtl.addEventListener("click", () => {
-      fetchETLStatus();
-    });
-  }
-
-  // --- 3. MOTOR ETL Y CASOS PROGRESS TIMELINE ---
+  // --- 3. CASOS PROGRESS TIMELINE ---
   let timelineCases = [];
   let selectedCase = null;
-
-  async function fetchETLStatus() {
-    await fetchTimelineCases();
-  }
 
   async function fetchTimelineCases() {
     try {

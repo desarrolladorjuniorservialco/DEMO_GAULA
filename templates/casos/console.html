@@ -86,22 +86,11 @@
         <!-- DATOS Y ANALÍTICA -->
         {% if session.get("role") in ["admin", "director", "analista"] %}
         <span class="nav-category">DATOS Y ANALÍTICA</span>
-        <a href="#etl" class="nav-item" data-panel="panel-etl">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
-          <span>Motor ETL</span>
-        </a>
         <a href="#datamart" class="nav-item" data-panel="panel-datamart">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
           <span>Data Mart IA</span>
         </a>
         {% endif %}
-
-        <!-- DASHBOARD (Director y Admin, lectura restringida para Analista) -->
-        <span class="nav-category">ESTADÍSTICAS</span>
-        <a href="#dashboard" class="nav-item" data-panel="panel-dashboard">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
-          <span>Dashboard Ejecutivo</span>
-        </a>
 
         <!-- ADMINISTRACIÓN Y CONFIGURACIÓN -->
         <span class="nav-category">ADMINISTRACIÓN</span>
@@ -1112,108 +1101,6 @@
         </section>
 
 
-        <!-- PANEL MOTOR ETL Y CORRELACIÓN -->
-        <section class="panel-section" id="panel-etl">
-          <div class="section-header-tactical">
-            <h2>Trazabilidad de Investigaciones y Avance de Casos</h2>
-            <p>Monitoreo del ciclo de vida y avance operacional de cada caso registrado en la Línea 147.</p>
-          </div>
-          
-          <div class="dashboard-grid">
-            <div class="dashboard-card double-bezel col-span-12">
-              <div class="inner-core">
-                <div style="display: flex; gap: 15px; align-items: center; margin-bottom: 20px; flex-wrap: wrap;">
-                  <span class="helper-text-mono" style="margin:0;">Seleccionar Caso:</span>
-                  <select id="etl-case-selector" class="select-tactical" style="padding: 8px 16px; border-radius: 8px; min-width: 250px; font-family: var(--font-mono);">
-                    <!-- Carga dinámica de casos -->
-                  </select>
-                  <button id="btn-refresh-trazabilidad" class="btn btn-secondary-tactical" style="padding: 8px 16px; border-radius: 8px;">↻ Recargar Datos</button>
-                </div>
-                
-                <!-- Contenedor del Flow de Trazabilidad Horizontal -->
-                <div class="timeline-wrapper" style="display: flex; padding: 40px 10px; overflow-x: auto; background-color: rgba(4,13,25,0.4); border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.08); margin-bottom: 25px;">
-                             <!-- Contexto del Caso (Izquierda) -->
-                    <div class="timeline-context" style="width: 180px; flex-shrink: 0; padding: 10px 20px 10px 0; border-right: 1px solid rgba(255,255,255,0.1);">
-                      <h3 id="timeline-case-code" style="font-size: 28px; font-weight: 800; color: #fff; margin-bottom: 4px;">CASE-0000</h3>
-                      <p id="timeline-case-gaula" style="font-size: 12px; color: var(--text-muted); margin-bottom: 8px;">GAULA Militar</p>
-                      <span id="timeline-case-status" class="badge-status-table info">RECIBIDO</span>
-                    </div>
-                    
-                    <!-- Línea y Pasos de la Línea de Tiempo -->
-                    <div class="timeline-steps" style="display: flex; flex: 1; justify-content: space-between; position: relative; padding: 10px 40px;">
-                      
-                      <!-- Línea de Conexión Gris de Fondo -->
-                      <div class="timeline-line-bg" style="position: absolute; top: 42px; left: 50px; right: 50px; height: 3px; background-color: rgba(255,255,255,0.1); z-index: 1;"></div>
-                      
-                      <!-- Línea de Progreso Activo -->
-                      <div id="timeline-line-progress" style="position: absolute; top: 42px; left: 50px; width: calc(100% - 100px); height: 3px; background-color: var(--accent-cyan); transform-origin: left; transform: scaleX(0); transition: transform 0.8s ease; z-index: 2;"></div>
-                      
-                      <!-- Paso 1: Inicio -->
-                      <div class="timeline-step active" data-step="1" style="position: relative; z-index: 3; display: flex; flex-direction: column; align-items: center; width: 120px;">
-                        <span style="font-size: 12px; font-family: var(--font-mono); color: var(--text-muted); text-align: center; height: 30px; display: flex; align-items: flex-end; justify-content: center; margin-bottom: 10px;">Inicio del Caso<br>Línea 147</span>
-                        <div class="step-circle" style="width: 44px; height: 44px; border-radius: 50%; background-color: var(--bg-deep); border: 2px solid var(--accent-cyan); display: flex; align-items: center; justify-content: center; color: var(--accent-cyan); cursor: pointer; transition: all 0.3s ease;">
-                          <i data-lucide="phone-call" style="width: 18px; height: 18px;"></i>
-                        </div>
-                      </div>
-                      
-                      <!-- Paso 2: Recolección de información inicial -->
-                      <div class="timeline-step" data-step="2" style="position: relative; z-index: 3; display: flex; flex-direction: column; align-items: center; width: 120px;">
-                        <span style="font-size: 12px; font-family: var(--font-mono); color: var(--text-muted); text-align: center; height: 30px; display: flex; align-items: flex-end; justify-content: center; margin-bottom: 10px;">Recolección de<br>info inicial</span>
-                        <div class="step-circle" style="width: 44px; height: 44px; border-radius: 50%; background-color: var(--bg-deep); border: 2px solid rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center; color: var(--text-muted); cursor: pointer; transition: all 0.3s ease;">
-                          <i data-lucide="clipboard-list" style="width: 18px; height: 18px;"></i>
-                        </div>
-                      </div>
-                      
-                      <!-- Paso 3: Investigación inteligencia -->
-                      <div class="timeline-step" data-step="3" style="position: relative; z-index: 3; display: flex; flex-direction: column; align-items: center; width: 120px;">
-                        <span style="font-size: 12px; font-family: var(--font-mono); color: var(--text-muted); text-align: center; height: 30px; display: flex; align-items: flex-end; justify-content: center; margin-bottom: 10px;">Investigación<br>Inteligencia</span>
-                        <div class="step-circle" style="width: 44px; height: 44px; border-radius: 50%; background-color: var(--bg-deep); border: 2px solid rgba(255, 255, 255, 0.2); display: flex; align-items: center; justify-content: center; color: var(--text-muted); cursor: pointer; transition: all 0.3s ease;">
-                          <i data-lucide="user-search" style="width: 18px; height: 18px;"></i>
-                        </div>
-                      </div>
-                      
-                      <!-- Paso 4: Operaciones en campo -->
-                      <div class="timeline-step" data-step="4" style="position: relative; z-index: 3; display: flex; flex-direction: column; align-items: center; width: 120px;">
-                        <span style="font-size: 12px; font-family: var(--font-mono); color: var(--text-muted); text-align: center; height: 30px; display: flex; align-items: flex-end; justify-content: center; margin-bottom: 10px;">Operaciones<br>en campo</span>
-                        <div class="step-circle" style="width: 44px; height: 44px; border-radius: 50%; background-color: var(--bg-deep); border: 2px solid rgba(255, 255, 255, 0.2); display: flex; align-items: center; justify-content: center; color: var(--text-muted); cursor: pointer; transition: all 0.3s ease;">
-                          <i data-lucide="map-pin" style="width: 18px; height: 18px;"></i>
-                        </div>
-                      </div>
-                      
-                      <!-- Paso 5: Autoridades aliadas -->
-                      <div class="timeline-step" data-step="5" style="position: relative; z-index: 3; display: flex; flex-direction: column; align-items: center; width: 120px;">
-                        <span style="font-size: 12px; font-family: var(--font-mono); color: var(--text-muted); text-align: center; height: 30px; display: flex; align-items: flex-end; justify-content: center; margin-bottom: 10px;">Autoridades<br>aliadas / Cierre</span>
-                        <div class="step-circle" style="width: 44px; height: 44px; border-radius: 50%; background-color: var(--bg-deep); border: 2px solid rgba(255, 255, 255, 0.2); display: flex; align-items: center; justify-content: center; color: var(--text-muted); cursor: pointer; transition: all 0.3s ease;">
-                          <i data-lucide="shield" style="width: 18px; height: 18px;"></i>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                
-                <!-- Panel de Detalles de la Tapa Seleccionada -->
-                <div id="timeline-step-detail-card" class="double-bezel" style="margin-top: 20px;">
-                  <div class="inner-core" style="padding: 20px;">
-                    <h2 id="timeline-detail-title" style="font-size: 18px; margin-bottom: 8px; color: var(--accent-cyan); border-left: none; padding-left: 0;">Inicio del Caso Línea 147</h2>
-                    <p id="timeline-detail-desc" style="font-size: 12px; color: var(--text-muted); line-height: 1.5; margin-bottom: 15px;">El caso ha sido reportado en la línea telefónica nacional 147 y los datos del reportante han sido capturados.</p>
-                    
-                    <div style="border-top: 1px solid rgba(255,255,255,0.06); padding-top: 15px;">
-                      <span class="helper-text-mono" style="display: block; margin-bottom: 8px;">Detalles Operacionales del Caso:</span>
-                      <div class="table-wrap">
-                        <table style="width: 100%; font-size: 12px;">
-                          <tbody id="timeline-detail-table-body">
-                            <!-- Datos del caso cargados vía JS -->
-                          </tbody>
-                        </table>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-              </div>
-            </div>
-        </section>
-
 
         <!-- PANEL DATA MART IA / GIS / ANALÍTICA -->
         <section class="panel-section" id="panel-datamart">
@@ -1307,92 +1194,6 @@
             </div>
           </div>
         </section>
-
-
-        <!-- PANEL DASHBOARD EJECUTIVO (DIRECTOR / ADMIN) -->
-        <section class="panel-section" id="panel-dashboard">
-          <div class="section-header-tactical">
-            <h2>Centro de Mando Operacional - Estadísticas</h2>
-            <p>KPIs consolidados para la toma de decisiones estratégicas a nivel nacional.</p>
-          </div>
-
-          <div class="kpi-grid">
-            <article class="kpi-card double-bezel">
-              <div class="inner-core">
-                <span>Casos Activos</span>
-                <strong id="kpi-active-cases">48</strong>
-              </div>
-            </article>
-            <article class="kpi-card double-bezel alert-kpi">
-              <div class="inner-core">
-                <span>Casos Críticos</span>
-                <strong id="kpi-critical-cases">12</strong>
-              </div>
-            </article>
-            <article class="kpi-card double-bezel">
-              <div class="inner-core">
-                <span>GAULAs Conectados</span>
-                <strong>34</strong>
-              </div>
-            </article>
-            <article class="kpi-card double-bezel">
-              <div class="inner-core">
-                <span>Respuesta Promedio</span>
-                <strong>08m</strong>
-              </div>
-            </article>
-          </div>
-
-          <div class="dashboard-grid">
-            <!-- Gráfica Tipo Reporte -->
-            <div class="dashboard-card double-bezel col-span-6">
-              <div class="inner-core">
-                <h3>Tipología de Delito - Distribución</h3>
-                <div class="distribution-bars-container" id="kpi-distribution-bars">
-                  <!-- Se inyecta dinámicamente -->
-                </div>
-              </div>
-            </div>
-
-            <!-- Radar Tactico -->
-            <div class="dashboard-card double-bezel col-span-6">
-              <div class="inner-core flex-center">
-                <h3>Radar de Criticidad Activo</h3>
-                <div class="radar-box-tactical">
-                  <div class="radar-circle r1"></div>
-                  <div class="radar-circle r2"></div>
-                  <div class="radar-circle r3"></div>
-                  <div class="radar-sweep"></div>
-                  <div class="radar-dot d1"></div>
-                  <div class="radar-dot d2"></div>
-                  <div class="radar-dot d3"></div>
-                  <div class="radar-center">147</div>
-                </div>
-              </div>
-            </div>
-
-            <!-- Mapa Nacional -->
-            <div class="dashboard-card double-bezel col-span-12">
-              <div class="inner-core">
-                <h3>Georreferenciación Operacional (Proyección de Mapa Nacional)</h3>
-                <div class="map-grid-console">
-                  <div class="map-grid-lines"></div>
-                  <div class="map-target z1">BOGOTÁ</div>
-                  <div class="map-target z2">ANTIOQUIA</div>
-                  <div class="map-target z3">VALLE DEL CAUCA</div>
-                  <div class="map-target z4">META</div>
-                  
-                  <div class="map-pulse-c c1"></div>
-                  <div class="map-pulse-c c2"></div>
-                  <div class="map-pulse-c c3"></div>
-                  
-                  <span class="map-disclaimer">NEXO-147: Visualización táctica de nodos GAULA activos y alertas reportadas.</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
 
         <!-- PANEL ADMINISTRACIÓN (SOLO ADMIN) -->
         <section class="panel-section" id="panel-administracion">

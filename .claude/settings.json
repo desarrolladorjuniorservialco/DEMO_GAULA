@@ -118,7 +118,8 @@
       "Bash(.venv\\\\Scripts\\\\python.exe -c \"from modules.dataset.routes import api_dataset_casos; print\\('OK'\\)\")",
       "Bash(.venv\\\\Scripts\\\\python.exe -c \"import pandas as pd; df = pd.read_csv\\('data/Data_Set/nexo147_dataset_relacional_csv/nexo147_casos_demo_500.csv', nrows=0\\); print\\(list\\(df.columns\\)\\)\")",
       "Bash(.venv\\\\Scripts\\\\python.exe -c \"import pandas as pd; df = pd.read_csv\\('data/Data_Set/nexo147_dataset_relacional_csv/nexo147_alertas_osint_demo.csv', nrows=0\\); print\\(list\\(df.columns\\)\\)\")",
-      "Bash(python -c \"import pandas as pd; df = pd.read_csv\\('data/Data_Set/nexo147_dataset_relacional_csv/nexo147_alertas_osint_demo.csv', nrows=0\\); print\\(list\\(df.columns\\)\\)\")"
+      "Bash(python -c \"import pandas as pd; df = pd.read_csv\\('data/Data_Set/nexo147_dataset_relacional_csv/nexo147_alertas_osint_demo.csv', nrows=0\\); print\\(list\\(df.columns\\)\\)\")",
+      "Bash(git push *)"
     ],
     "additionalDirectories": [
       "C:\\Users\\Victor Pulido\\Documents\\GIT\\DEMO_GAULA\\docs\\superpowers\\specs",

@@ -75,8 +75,6 @@ document.addEventListener("DOMContentLoaded", () => {
       fetchEntidades();
     } else if (panelId === "panel-inteligencia") {
       fetchRelaciones();
-    } else if (panelId === "panel-dashboard") {
-      fetchDashboardData();
     } else if (panelId === "panel-hallazgos") {
       fetchIntelDashboard();
     }
@@ -129,13 +127,6 @@ document.addEventListener("DOMContentLoaded", () => {
       `;
     } else if (userRole === "director" || userRole === "admin") {
       shortcutsHTML = `
-        <button class="shortcut-card double-bezel" data-target="panel-dashboard">
-          <div class="inner-core">
-            <span class="icon"><i class="shortcut-icon" data-lucide="bar-chart-2"></i></span>
-            <strong>Centro de Mando</strong>
-            <p>Monitorear KPIs, radar táctico y mapas de calor</p>
-          </div>
-        </button>
         <button class="shortcut-card double-bezel" data-target="panel-casos">
           <div class="inner-core">
             <span class="icon"><i class="shortcut-icon" data-lucide="folder-open"></i></span>
@@ -1698,7 +1689,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const navItemCasos = document.querySelector('[data-panel="panel-casos"]');
       if (navItemCasos) navItemCasos.click();
     } else if (userRole === "director") {
-      const navItemDash = document.querySelector('[data-panel="panel-dashboard"]');
+      const navItemDash = document.querySelector('[data-panel="panel-datamart"]');
       if (navItemDash) navItemDash.click();
     } else {
       // Admin o generales
