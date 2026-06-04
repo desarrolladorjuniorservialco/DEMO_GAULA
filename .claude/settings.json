@@ -120,7 +120,8 @@
       "Bash(.venv\\\\Scripts\\\\python.exe -c \"import pandas as pd; df = pd.read_csv\\('data/Data_Set/nexo147_dataset_relacional_csv/nexo147_alertas_osint_demo.csv', nrows=0\\); print\\(list\\(df.columns\\)\\)\")",
       "Bash(python -c \"import pandas as pd; df = pd.read_csv\\('data/Data_Set/nexo147_dataset_relacional_csv/nexo147_alertas_osint_demo.csv', nrows=0\\); print\\(list\\(df.columns\\)\\)\")",
       "Bash(git push *)",
-      "Bash(git rm *)"
+      "Bash(git rm *)",
+      "Bash(dir /b \"c:\\\\Users\\\\Victor Pulido\\\\Documents\\\\GIT_Repositories\\\\DEMO_GAULA\")"
     ],
     "additionalDirectories": [
       "C:\\Users\\Victor Pulido\\Documents\\GIT\\DEMO_GAULA\\docs\\superpowers\\specs",

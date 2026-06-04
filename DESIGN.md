@@ -2,222 +2,262 @@
 name: NEXO-147
 description: Plataforma demo para recepción, clasificación y seguimiento operativo de reportes GAULA — Línea 147
 colors:
-  operational-cyan: "#2596be"
-  command-signal: "#41d2ff"
-  cyan-deep: "#176f8d"
-  status-green: "#6fca52"
-  status-green-bright: "#74e04b"
-  command-black: "#07111f"
-  ops-navy: "#0d1b2e"
-  clear-signal: "#eefbff"
-  ops-mist: "#b7d2dc"
-  critical-red: "#ff5a5a"
+  primary-green: "#2f6b4f"
+  primary-green-light: "#4f8a68"
+  olive: "#5d6f52"
+  military-gold: "#b59a5a"
+  military-gold-warm: "#c2a35a"
+  steel-dark: "#0f1419"
+  panel-dark: "#121820"
+  surface: "#1e2835"
+  surface-hover: "#253242"
+  text-primary: "#f2f4f5"
+  text-secondary: "#b0bcc7"
+  text-muted: "#7d8a95"
+  state-danger: "#a64f4f"
+  state-info: "#5a7d99"
 typography:
   display:
-    fontFamily: "Montserrat, sans-serif"
-    fontSize: "clamp(44px, 5vw, 76px)"
-    fontWeight: 900
-    lineHeight: 0.98
-    letterSpacing: "-2px"
-  headline:
-    fontFamily: "Montserrat, sans-serif"
-    fontSize: "clamp(32px, 4vw, 52px)"
-    fontWeight: 900
+    fontFamily: "Inter, IBM Plex Sans, sans-serif"
+    fontSize: "28px"
+    fontWeight: 800
     lineHeight: 1.08
+    letterSpacing: "-0.02em"
+  headline:
+    fontFamily: "Inter, IBM Plex Sans, sans-serif"
+    fontSize: "22px"
+    fontWeight: 700
+    lineHeight: 1.1
   title:
-    fontFamily: "Montserrat, sans-serif"
-    fontSize: "20px"
-    fontWeight: 900
+    fontFamily: "Inter, IBM Plex Sans, sans-serif"
+    fontSize: "18px"
+    fontWeight: 700
     lineHeight: 1.3
   body:
-    fontFamily: "Montserrat, sans-serif"
-    fontSize: "15px"
+    fontFamily: "Inter, IBM Plex Sans, sans-serif"
+    fontSize: "13-14px"
     fontWeight: 400
-    lineHeight: 1.7
+    lineHeight: 1.55
   label:
-    fontFamily: "Montserrat, sans-serif"
-    fontSize: "12px"
-    fontWeight: 800
-    letterSpacing: "0.8px"
+    fontFamily: "IBM Plex Mono, Courier New, monospace"
+    fontSize: "10-11px"
+    fontWeight: 700
+    letterSpacing: "0.5-1px"
+    textTransform: "uppercase"
 rounded:
-  pill: "999px"
-  xl: "44px"
-  lg: "34px"
-  md: "26px"
-  sm: "18px"
-  icon: "18px"
+  outer: "8px"
+  inner: "6px"
 spacing:
   xs: "8px"
-  sm: "16px"
-  md: "24px"
-  lg: "44px"
-  xl: "76px"
-  section: "90px"
+  sm: "12px"
+  md: "20px"
+  lg: "32px"
+  xl: "48px"
 components:
   button-primary:
-    backgroundColor: "{colors.operational-cyan}"
-    textColor: "{colors.clear-signal}"
-    rounded: "{rounded.pill}"
-    padding: "17px 30px"
+    backgroundColor: "#2f6b4f"
+    textColor: "#e8f0ec"
+    borderRadius: "6px"
+    padding: "12px 20px"
   button-primary-hover:
-    backgroundColor: "{colors.command-signal}"
-    textColor: "{colors.clear-signal}"
-  button-ghost:
-    backgroundColor: "transparent"
-    textColor: "{colors.clear-signal}"
-    rounded: "{rounded.pill}"
-    padding: "17px 30px"
-  tag-badge:
-    backgroundColor: "{colors.operational-cyan}"
-    textColor: "{colors.clear-signal}"
-    rounded: "{rounded.pill}"
-    padding: "9px 15px"
+    backgroundColor: "#3d7d5e"
+    boxShadow: "0 4px 16px rgba(47,107,79,0.22)"
+  button-secondary:
+    backgroundColor: "rgba(255,255,255,0.03)"
+    textColor: "#f2f4f5"
+    border: "1px solid rgba(255,255,255,0.08)"
+    borderRadius: "6px"
+  nav-item-active:
+    borderLeft: "3px solid #4f8a68"
+    background: "rgba(47,107,79,0.12)"
+    textColor: "#f2f4f5"
   input-field:
-    backgroundColor: "{colors.command-black}"
-    textColor: "{colors.clear-signal}"
-    rounded: "{rounded.sm}"
-    padding: "17px 18px"
+    backgroundColor: "rgba(0,0,0,0.22)"
+    border: "1px solid rgba(255,255,255,0.07)"
+    borderRadius: "6px"
+    padding: "12px 14px"
+    focusBorder: "rgba(79,138,104,0.20)"
+    focusShadow: "0 0 0 3px rgba(47,107,79,0.14)"
   kpi-card:
-    backgroundColor: "{colors.ops-navy}"
-    textColor: "{colors.clear-signal}"
-    rounded: "{rounded.md}"
-    padding: "24px"
+    backgroundColor: "#1e2835"
+    valueColor: "#4f8a68"
+    alertValueColor: "#b59a5a"
+    borderRadius: "8px"
+    padding: "20px 24px"
+  badge-status-ok:
+    background: "rgba(79,138,104,0.12)"
+    color: "#4f8a68"
+    border: "1px solid rgba(79,138,104,0.22)"
+  badge-status-warning:
+    background: "rgba(194,163,90,0.12)"
+    color: "#c2a35a"
+    border: "1px solid rgba(194,163,90,0.22)"
+  badge-status-danger:
+    background: "rgba(166,79,79,0.12)"
+    color: "#c07070"
+    border: "1px solid rgba(166,79,79,0.22)"
 ---
 
-# Design System: NEXO-147
+# Design System: NEXO-147 — Institutional Military Theme
 
 ## 1. Overview
 
-**Creative North Star: "El Centro de Operaciones"**
+**Creative North Star: "Centro de Comando Estratégico"**
 
-NEXO-147 vive en una sala de mando. La interfaz es oscura por necesidad operativa: bajo nivel de luz ambiental, largas jornadas, monitores compartidos. El fondo negro profundo (`#07111f`) no es estética — es ergonomía institucional. El cian operativo (`#2596be`) y el verde de estado (`#6fca52`) son los únicos puntos de color de alto contraste porque en una sala de mando, el color es señal, no decoración.
+NEXO-147 opera como un sistema de inteligencia gubernamental. La interfaz transmite autoridad institucional, precisión operativa y sobriedad profesional — características de plataformas C4ISR, centros nacionales de monitoreo y sistemas GIS de seguridad.
 
-El sistema rechaza explícitamente la densidad torpe de los sistemas gubernamentales heredados: campos grises apilados, tipografía sin jerarquía, formularios que parecen impresos escaneados. NEXO-147 debe sentirse como herramienta de profesionales de seguridad, no como sistema de la década del 2000.
-
-La profundidad visual se construye con capas de vidrio tintado (`backdrop-filter: blur`), sombras difusas amplias, y gradientes radiales sutiles — nunca con bordes sólidos ni sombras duras. El sistema es cohesivo y deliberado: cada superficie emite la misma señal de autoridad institucional moderna.
+El fondo negro acero (`#0f1419`) no es estética: es ergonomía operativa para salas de mando con iluminación controlada. El verde institucional (`#4f8a68`) y el dorado militar (`#b59a5a`) son los únicos colores funcionales porque en un centro de operaciones, el color es señal de estado, no decoración.
 
 **Key Characteristics:**
-- Fondo negro profundo como base permanente — no hay tema claro
-- Cian y verde como únicos colores funcionales; todo lo demás es neutro
-- Tipografía Montserrat en pesos extremos (900) para máxima legibilidad en pantallas oscuras
-- Glassmorfismo estructural, no decorativo — las superficies de vidrio organizan el contenido
-- Animaciones de estado, nunca decorativas — el radar gira, las órbitas rotan, los pulsos indican actividad real
+- Fondos en acero oscuro profundo — sin tema claro, sin gradientes llamativos
+- Verde institucional como color primario de acción y estado activo
+- Dorado militar para advertencias y estados de criticidad secundaria
+- Tipografía Inter (sans institucional) + IBM Plex Mono (datos / labels)
+- Sin neón, sin glows, sin efectos CRT, sin animaciones decorativas
+- Textura topográfica de marca de agua a opacidad 0.03 (cartografía militar)
+- Animaciones funcionales solamente: indicadores de estado, radar de criticidad
 
-## 2. Colors: La Paleta de Mando
+## 2. Colors: Paleta Táctica Institucional
 
-Los colores de NEXO-147 son señales, no estética. Cada tono tiene un rol operativo único.
+Cada tono tiene un rol operativo único. El color que no comunica estado o jerarquía no debe aparecer.
 
-### Primary
-- **Cian Operativo** (`#2596be`): Color de acción primaria. Botones CTA, bordes de énfasis, glow en elementos interactivos. Es el color que dice "este es el camino".
-- **Señal de Mando** (`#41d2ff`): Variante más brillante del cian, reservada para el dashboard y elementos de estado activo de alta prominencia. Más eléctrica, más urgente.
+### Fondos — Capas de acero
+- **Fondo base** (`#0f1419`): El sustrato. Profundo, sin temperatura de color dominante.
+- **Panel** (`#121820`): Sidebar, topbar, statusbar. Ligeramente más claro que el fondo.
+- **Superficie** (`#1e2835`): Cards, formularios, panels de contenido.
+- **Hover** (`#253242`): Estado interactivo de superficies.
 
-### Secondary
-- **Verde Estado** (`#6fca52` / `#74e04b`): Color de datos positivos, KPIs, confirmaciones, valores en tiempo real. Verde = sistema operando correctamente. Nunca usado como decoración.
+### Verde Institucional (acción primaria)
+- **Verde primario** (`#2f6b4f`): Background de botón primario, elementos de acción más prominentes.
+- **Verde claro** (`#4f8a68`): Texto de acción, KPI values positivos, estado activo en nav, bordes de énfasis.
+- **Verde soft** (`rgba(47,107,79,0.12)`): Fondos de badges, hover de nav activo.
+- **Verde borde** (`rgba(79,138,104,0.20)`): Bordes de elementos con énfasis verde.
 
-### Tertiary
-- **Rojo Crítico** (`#ff5a5a`): Exclusivo para alertas, casos críticos, estados de error. Aparece solo cuando algo requiere atención inmediata.
+### Dorado Militar (advertencia, criticidad)
+- **Dorado** (`#b59a5a`): Alertas KPI, valores de criticidad, el color que dice "atención pero no urgencia máxima".
+- **Dorado cálido** (`#c2a35a`): Estado amber en badges y barras de progreso.
 
-### Neutral
-- **Negro de Comando** (`#07111f`): Background del cuerpo. El más oscuro. Fondo permanente del sistema.
-- **Azul Operaciones** (`#0d1b2e`): Superficie secundaria. Cards, formularios, panels. Ligeramente más claro que el fondo.
-- **Señal Clara** (`#eefbff`): Texto principal sobre fondo oscuro. Alto contraste garantizado.
-- **Niebla Ops** (`#b7d2dc`): Texto secundario, labels, metadata. Legible pero subordinado.
-- **Cian Profundo** (`#176f8d`): Variante oscura del primario. Hover states, borders profundos.
+### Estados Operacionales
+- **Danger** (`#a64f4f`): Exclusivo para alertas de máxima urgencia, dots de error.
+- **Info** (`#5a7d99`): Azul acero para información contextual.
 
-### Named Rules
-**La Regla del Color como Señal.** El color cian y el verde son señales operativas. Si no hay acción que tomar ni estado que comunicar, no hay color. Fondos, separadores y contenido estático son siempre neutrales.
+### Texto
+- **Primary** (`#f2f4f5`): Texto de alto contraste sobre fondos oscuros.
+- **Secondary** (`#b0bcc7`): Texto descriptivo, valores en tables.
+- **Muted** (`#7d8a95`): Labels, metadata, texto subordinado.
 
-**La Regla del Rojo Escaso.** El rojo crítico aparece en ≤5% de la pantalla en cualquier momento. Su poder viene de su rareza. Un dashboard lleno de rojo deja de comunicar urgencia.
+### Reglas de Color
+**La Regla del Verde como Señal.** El verde institucional aparece en: botones de acción primaria, indicador de nav activo, KPI positivos, focus de formularios, badges de estado OK. Fuera de estos contextos, no hay verde.
+
+**La Regla del Dorado Escaso.** El dorado aparece en: alertas de criticidad media, KPI de advertencia, badges warning. Nunca como decoración.
+
+**La Regla del Rojo Mínimo.** El rojo (`#a64f4f`) aparece en ≤5% de la pantalla. Su impacto viene de su rareza.
 
 ## 3. Typography
 
-**Display / Body Font:** Montserrat (con fallback sans-serif genérico)
-**Fuente única** — NEXO-147 usa Montserrat en todos los niveles. La jerarquía se logra con variación agresiva de peso (400 a 900) y escala de tamaño, no con familias diferentes.
+**Tipografía principal:** Inter (con fallback IBM Plex Sans)
+**Tipografía mono:** IBM Plex Mono (con fallback Courier New)
 
-**Character:** Montserrat en peso 900 tiene autoridad institucional sin rigidez burocrática. Su geometría limpia es legible en pantallas oscuras de baja resolución y en displays de alta densidad por igual. Los pesos medios (600-700) trabajan como body text sin esfuerzo.
+Inter es la tipografía de sistemas de inteligencia y herramientas gubernamentales modernas: legible, neutral, con autoridad institucional sin rigidez burocrática. IBM Plex Mono refuerza el carácter operativo en labels, timestamps, y datos numéricos.
 
 ### Hierarchy
-- **Display** (900, clamp 44-76px, line-height 0.98): Solo para el nombre del producto y titulares del hero. Letra-espaciado -2px. No más de 6 palabras.
-- **Headline** (900, clamp 32-52px, line-height 1.08): Títulos de sección principales. Máximo 2 niveles por página.
-- **Title** (900, 20-21px, line-height 1.3): Encabezados de cards, secciones de formulario, paneles del dashboard.
-- **Body** (400-700, 14-18px, line-height 1.65-1.75): Texto descriptivo, contenido de formularios. Máximo 65-75ch de ancho.
-- **Label** (800-900, 12-13px, 0.7-1.4px tracking, UPPERCASE): Tags, badges, encabezados de tabla, metadatos de campo.
+- **Display** (700-800, 28px, line-height 1.08): Títulos de sección principales.
+- **Title** (700, 18-22px, line-height 1.1-1.3): Encabezados de cards y paneles.
+- **Body** (400, 13-14px, line-height 1.55): Contenido operativo.
+- **Label Mono** (IBM Plex Mono, 700, 10-11px, uppercase, letter-spacing 0.5-1px): Categorías, timestamps, KPI labels, encabezados de tabla.
 
-### Named Rules
-**La Regla del Peso Extremo.** En pantallas oscuras, el texto delgado desaparece. NEXO-147 no usa pesos menores a 600 en elementos interactivos ni en encabezados. El peso 900 es la norma, no la excepción.
+### Reglas
+**Sin pesos inferiores a 500 en elementos interactivos.** La legibilidad en pantallas oscuras lo exige.
+**Inter para interfaces, IBM Plex Mono solo para datos.** No mezclar en el mismo elemento.
 
 ## 4. Elevation
 
-NEXO-147 usa un sistema de elevación **atmosférica**: las superficies no se levantan con sombras duras sino con sombras difusas amplias y tintado por capas. La profundidad es espacial, no material.
+Sistema de capas por sustrato oscuro:
 
-Tres capas bien definidas:
-1. **Background** (`#07111f`): El suelo. Sin elevación.
-2. **Surface** (`#0d1b2e` + glassmorfismo): Cards, panels, formularios. Elevados con backdrop-blur y fondo semitransparente.
-3. **Overlay**: Headers flotantes, cards de alert. La capa más alta, con sombras de hasta 100px de dispersión.
+1. **Background** (`#0f1419`): Suelo. Sin elevación.
+2. **Panel** (`#121820`): Sidebar, topbar, statusbar. Borde `rgba(255,255,255,0.05)`.
+3. **Surface** (`#1e2835`): Cards y panels. Shadow `0 8px 32px rgba(0,0,0,0.28)`.
+4. **Overlay**: Modales, elementos flotantes. Shadow `0 24px 64px rgba(0,0,0,0.45)`.
 
 ### Shadow Vocabulary
-- **Sombra difusa de card** (`0 24px 60-70px rgba(0,0,0,.26-.35)`): Sombra estándar de superficie. Produce sensación de flotación sin borde.
-- **Sombra de capa alta** (`0 34px 100px rgba(0,0,0,.42)`): Modales, headers fijos, elementos over content.
-- **Glow operativo** (`0 0 24-70px rgba(37,150,190,.38-.70)`): Reservado para elementos activos, botones primarios en hover, núcleos de animación. Indica estado, no profundidad.
-- **Glow verde** (`0 0 22-45px rgba(111,202,82,.55-.80)`): Usado en puntos de mapa, dots activos, indicadores de señal.
-
-### Named Rules
-**La Regla del Glow como Estado.** El resplandor (glow) indica actividad o acción disponible, nunca decoración en reposo. Un elemento con glow permanente en reposo pierde su capacidad de señalar estado activo.
+- **Card shadow**: `0 8px 32px rgba(0,0,0,0.28)` — flotación suave, no material.
+- **Login shadow**: `0 24px 64px rgba(0,0,0,0.45)` — superficie principal.
+- **Button hover shadow**: `0 4px 16px rgba(47,107,79,0.22)` — feedback de acción.
+- **Sin glows de neón.** El resplandor neon no existe en este sistema.
 
 ## 5. Components
 
-### Buttons
-**Forma:** Totalmente redondeados (`border-radius: 999px`). La píldora es la forma universal de acción en NEXO-147.
+### Botones
+- **Primary**: Fondo `#2f6b4f`, texto `#e8f0ec`, borde `rgba(79,138,104,0.3)`. Hover: `#3d7d5e` + sombra suave. Sin gradientes, sin glows.
+- **Secondary**: Fondo `rgba(255,255,255,0.03)`, borde `rgba(255,255,255,0.08)`. Hover: fondo ligeramente más opaco.
+- **Todos los botones**: `border-radius: 6px`. Sin píldoras consumer, sin cuadrados burocrátcos.
 
-- **Primary** (`#2596be` → `#48cbe8` gradiente lineal 135°, texto blanco, padding 17px 30px): Para la acción principal de cada pantalla. Box-shadow con glow cian en reposo; en hover, translateY(-4px) + sombra amplificada.
-- **Ghost** (fondo rgba(255,255,255,.06), border cian, texto claro): Para acciones secundarias. En hover, fondo verde suave.
-- **Estados críticos:** Ningún botón debe aparecer sin estado hover visible. El glow es la señal de interactividad.
+### Nav Items
+- **Default**: Texto muted, sin borde.
+- **Active**: `border-left: 3px solid #4f8a68` + `background: rgba(47,107,79,0.12)` + texto primary. El indicador de línea vertical es la señal de localización en el sistema.
+- **Hover**: Fondo `rgba(255,255,255,0.04)`, texto primary.
 
-### Tags / Badges
-Píldora con fondo rgba(37,150,190,.15), border cian suave, texto UPPERCASE 12px peso 900. Usados como clasificadores de contexto — "Demo institucional privada", "Centro de mando demo". Solo en mayúsculas completas porque son etiquetas de categoría, no frases.
+### Cards / Panels
+- Background: `#1e2835`
+- Border: `1px solid rgba(255,255,255,0.05)`
+- Shadow: `0 8px 32px rgba(0,0,0,0.28)`
+- Radius: `8px` (outer), `6px` (inner)
+- Padding: `24px`
 
-### Cards / Containers
-- **Corner Style:** 26-34px (`.dashboard-card`, `.kpi-card`), 42-44px (secciones hero, hero panel). Las secciones más grandes tienen radios más grandes.
-- **Background:** Glassmorfismo — `rgba(255,255,255,.08-.10)` + `backdrop-filter: blur(14-18px)` + gradiente radial sutil.
-- **Shadow:** Difusa, 0 24-34px 60-100px rgba(0,0,0,.26-.42).
-- **Border:** 1px solid rgba(37,150,190,.24-.34). El borde es la delimitación, no la sombra.
-- **Internal Padding:** 22-30px en cards de dashboard; 28px en service cards; 42-46px en login card.
+### Formularios
+- Input background: `rgba(0,0,0,0.22)`, border `rgba(255,255,255,0.07)`
+- Focus: border `rgba(79,138,104,0.20)` + shadow `0 0 0 3px rgba(47,107,79,0.14)`
+- Label: IBM Plex Mono, 700, 11px, uppercase, color muted
 
-### Inputs / Fields
-- **Style:** Fondo `rgba(4,13,25,.74)`, border 1px rgba(37,150,190,.30), border-radius 18px, padding 17px 18px.
-- **Focus:** Border-color cambia a verde estado (`#6fca52`) + box-shadow glow verde (`0 0 0 4px rgba(111,202,82,.17)`).
-- **Placeholder:** `rgba(238,251,255,.55)` — suficientemente visible para orientar, lo suficientemente sutil para no confundir con valor real.
-- **Select:** Fondo `#061827` en options para mantener el tema oscuro.
+### KPI Cards
+- Valor: IBM Plex Mono, 700, 32px, color `#4f8a68` (verde institucional)
+- Valor crítico: color `#b59a5a` (dorado militar)
+- Label: IBM Plex Mono, 11px, uppercase, color muted
+- Sin gradientes de acento, sin backgrounds de color
 
-### Navigation
-- **Style:** Links de píldora, padding 11px 14px, texto muted 13px peso 800. Sin subrayado ni indicadores visuales pasivos.
-- **Hover:** Fondo `rgba(37,150,190,.15)` + glow cian. El hover es la única señal de interactividad.
-- **Active:** No hay estado active implementado — pendiente de mejora.
-- **Mobile:** Collapse a flex-wrap centrado a partir de 1050px. Los links reducen a 12px.
+### Badges de Estado
+- OK: verde soft `rgba(79,138,104,0.12)` + borde `rgba(79,138,104,0.22)` + texto `#4f8a68`
+- Warning: dorado soft + texto `#c2a35a`
+- Neutral: `rgba(255,255,255,0.05)` + texto muted
+- Info: sin estilo especial, solo texto muted
 
-### KPI Cards (componente firma)
-Cards de métrica operativa con gradiente radial top-right en cian o rojo (para casos críticos), borde cian, sombra difusa. El número es blanco 34px peso 900; el label es muted 12px uppercase. Esta es la unidad visual más repetida en el dashboard.
+### Radar / Mapa
+- Círculos radar: `rgba(79,138,104,0.14)` — sutiles, no brillantes
+- Sweep: `conic-gradient rgba(47,107,79,0.12)` — rotación lenta y funcional
+- Dots radar: `#a64f4f` (rojo de amenaza) — señal real
+- Grid de mapa: `rgba(79,138,104,0.04)` — cuadrícula cartográfica casi invisible
 
-### Orbit / Radar (componentes visuales)
-Elementos decorativos-funcionales que comunican el tema operativo: anillos rotantes concéntricos, radares con sweep, puntos de mapa con pulse. No son puramente decorativos — señalan que el sistema está "activo" y "monitoreando". Deben mantener `prefers-reduced-motion` consideration.
+## 6. Motion
 
-## 6. Do's and Don'ts
+- **Duración**: 200-300ms en transiciones de estado. Sin coreografías.
+- **Easing**: `cubic-bezier(0.16, 1, 0.3, 1)` para paneles; `ease` para hover.
+- **Animaciones funcionales permitidas**: radar sweep (indica monitoreo activo), pulse de status indicator (sistema operativo), blip del radar (amenazas detectadas), fadeIn de panels.
+- **Animaciones prohibidas**: orbes animados, neón pulsante, efectos CRT, scanlines, bounce/elastic.
+- **Reduced motion**: Todas las animaciones tienen `@media (prefers-reduced-motion: reduce)`.
+
+## 7. Texture
+
+Textura topográfica (`body::before`):
+- SVG de elipses concéntricas + líneas cartesianas, color `#4f8a68`
+- `background-size: 280px 280px`
+- `opacity: 0.03` — nunca visible directamente, solo perceptible en fondos sólidos grandes
+- Inspirada en: cartografía militar, capas SIG, mapas de elevación, coordenadas de navegación
+
+## 8. Do's and Don'ts
 
 ### Do:
-- **Do** usar `#07111f` como único background de body. Nunca sustituir con beige, arena, crema u otro neutro cálido.
-- **Do** reservar el color cian (`#2596be` / `#41d2ff`) para acciones primarias y estados activos exclusivamente.
-- **Do** usar peso 900 en todos los headings y elementos de navegación. El peso 400 es solo para body text y descripciones.
-- **Do** aplicar `backdrop-filter: blur(14-18px)` en todas las cards y panels flotantes para mantener coherencia de elevación.
-- **Do** usar el verde estado (`#6fca52`) para KPIs positivos, confirmaciones y focus states de formulario.
-- **Do** separar el contenido de Admin y Operador visualmente. El operador ve solo el formulario; el admin ve el sistema completo. La diferencia de roles debe ser obvia sin texto explicativo.
-- **Do** mantener el glow como señal de estado activo o interactividad — nunca en elementos en reposo sin propósito.
+- Usar `#0f1419` como único background de body.
+- Reservar el verde institucional para acciones primarias, nav activo, KPI positivos y focus.
+- Usar IBM Plex Mono para labels, timestamps y datos numéricos.
+- Mantener sombras estructurales (darkness-based), no de color.
+- Separar Admin y Operador visualmente. La diferencia de rol debe ser obvia sin texto.
+- Usar `border-left: 3px solid #4f8a68` exclusivamente para el indicador de nav activo.
 
 ### Don't:
-- **Don't** usar sistemas gubernamentales legacy como referencia: sin campos grises apilados, sin tablas planas sin jerarquía, sin tipografía de peso regular en elementos de control.
-- **Don't** agregar colores adicionales más allá del vocabulario definido. Cian, verde y rojo son los únicos colores funcionales. Todo lo demás es neutro.
-- **Don't** usar `border-left` mayor a 1px como acento de color en cards o elementos de lista.
-- **Don't** aplicar `background-clip: text` con gradientes para texto decorativo.
-- **Don't** poner texto gris muted sobre fondos de color tintado sin verificar contraste. Sobre fondos con tinte cian, usar tono de cian oscuro o blanco — nunca el gris muted genérico.
-- **Don't** usar el rojo crítico fuera de estados de error, alerta máxima o casos críticos. Un formulario estándar no tiene rojo.
-- **Don't** animar propiedades de layout (width, height, top, left) sin necesidad operativa. Las animaciones de NEXO-147 usan transform y opacity.
-- **Don't** mostrar el dashboard (sección admin) a usuarios con rol operador. La separación de roles es funcional, no solo visual.
+- Usar neón, glows de color brillante, efectos CRT, scanlines o bordes de neón.
+- Agregar colores más allá del vocabulario definido. Verde, dorado y rojo son los únicos funcionales.
+- Usar gradientes de color en texto.
+- Animar propiedades de layout (width, height, top, left).
+- Usar `border-radius` mayor a 8px en panels — los ángulos institucionales no son pills consumer.
+- Usar Montserrat u otras tipografías display en labels y datos — solo Inter/IBM Plex Mono.
+- Mostrar el dashboard admin a usuarios con rol operador.

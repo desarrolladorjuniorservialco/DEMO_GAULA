@@ -9,12 +9,12 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='styles_media.css') }}">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
     body {
-      background-color: #07080c;
-      color: #f0f4fa;
-      font-family: 'Nunito Sans', sans-serif;
+      background-color: #0f1419;
+      color: #f2f4f5;
+      font-family: 'Inter', 'IBM Plex Sans', sans-serif;
     }
     @keyframes radarSweepAnim {
       from { transform: rotate(0deg); }
@@ -710,10 +710,10 @@
           </div>
 
           <!-- Sub-tabs -->
-          <div class="osint-tabs" style="display:flex;gap:.5rem;margin-bottom:1rem;border-bottom:1px solid #1e2535;padding-bottom:.5rem">
+          <div class="osint-tabs" style="display:flex;gap:.5rem;margin-bottom:1rem;border-bottom:1px solid rgba(79,138,104,0.16);padding-bottom:.5rem">
             <button class="osint-tab-btn btn btn-secondary-tactical active" data-tab="social" onclick="osintSwitchTab('social')">Redes Sociales</button>
-            <button class="osint-tab-btn btn btn-secondary-tactical" data-tab="opendata" onclick="osintSwitchTab('opendata')">Datos Abiertos <span id="osint-od-badge" style="display:none;background:#c8a84b;color:#07080c;font-size:.65rem;padding:1px 5px;border-radius:8px;margin-left:4px;font-weight:700">✓</span></button>
-            <button class="osint-tab-btn btn btn-secondary-tactical" data-tab="graph" onclick="osintSwitchTab('graph')">Grafo de Relaciones <span id="osint-graph-badge" style="display:none;background:#4bc8a8;color:#07080c;font-size:.65rem;padding:1px 5px;border-radius:8px;margin-left:4px;font-weight:700">✓</span></button>
+            <button class="osint-tab-btn btn btn-secondary-tactical" data-tab="opendata" onclick="osintSwitchTab('opendata')">Datos Abiertos <span id="osint-od-badge" style="display:none;background:#b59a5a;color:#0f1419;font-size:.65rem;padding:1px 5px;border-radius:4px;margin-left:4px;font-weight:700">✓</span></button>
+            <button class="osint-tab-btn btn btn-secondary-tactical" data-tab="graph" onclick="osintSwitchTab('graph')">Grafo de Relaciones <span id="osint-graph-badge" style="display:none;background:#4f8a68;color:#0f1419;font-size:.65rem;padding:1px 5px;border-radius:4px;margin-left:4px;font-weight:700">✓</span></button>
           </div>
 
           <!-- Tab: Redes Sociales -->
@@ -736,7 +736,7 @@
                   </select>
                   <button class="btn btn-primary-tactical" onclick="osintFetchSocial()">EJECUTAR</button>
                 </div>
-                <div id="osint-social-spinner" style="display:none;color:#4bc8a8;font-size:.8rem;margin-bottom:.5rem">⟳ Ejecutando búsqueda...</div>
+                <div id="osint-social-spinner" style="display:none;color:#4f8a68;font-size:.8rem;margin-bottom:.5rem">⟳ Ejecutando búsqueda...</div>
                 <div id="osint-social-results" style="max-height:500px;overflow-y:auto"></div>
               </div>
             </div>
@@ -757,7 +757,7 @@
                   </select>
                   <button class="btn btn-primary-tactical" onclick="osintFetchOpendata()">EJECUTAR</button>
                 </div>
-                <div id="osint-od-spinner" style="display:none;color:#4bc8a8;font-size:.8rem;margin-bottom:.5rem">⟳ Consultando fuentes abiertas...</div>
+                <div id="osint-od-spinner" style="display:none;color:#4f8a68;font-size:.8rem;margin-bottom:.5rem">⟳ Consultando fuentes abiertas...</div>
                 <div id="osint-od-results" style="max-height:500px;overflow-y:auto"></div>
               </div>
             </div>
@@ -768,37 +768,37 @@
             <style>
               .og-toolbar{display:flex;gap:.5rem;align-items:center;flex-wrap:wrap;margin-bottom:.75rem}
               .og-layout{display:flex;gap:10px;height:520px}
-              .og-canvas-wrap{flex:1;min-width:0;position:relative;background:#0B1220;border:1px solid #1e2535;border-radius:6px;overflow:hidden}
+              .og-canvas-wrap{flex:1;min-width:0;position:relative;background:#0f1419;border:1px solid rgba(79,138,104,0.14);border-radius:6px;overflow:hidden}
               #osint-graph-canvas{width:100%;height:100%}
-              .og-detail{width:270px;flex-shrink:0;background:rgba(4,13,25,.8);border:1px solid #1e2535;border-radius:6px;display:flex;flex-direction:column;overflow:hidden}
-              .og-detail-header{padding:10px 12px;border-bottom:1px solid #1e2535;font-size:.75rem;font-weight:600;color:#4bc8a8;letter-spacing:.07em;text-transform:uppercase;flex-shrink:0}
-              .og-detail-body{flex:1;overflow-y:auto;padding:12px;font-size:.77rem;color:#c0ccdc}
-              .og-detail-placeholder{color:#3a4a5a;font-size:.78rem;text-align:center;padding:2rem 1rem;line-height:1.6}
+              .og-detail{width:270px;flex-shrink:0;background:rgba(18,24,32,.9);border:1px solid rgba(79,138,104,0.14);border-radius:6px;display:flex;flex-direction:column;overflow:hidden}
+              .og-detail-header{padding:10px 12px;border-bottom:1px solid rgba(79,138,104,0.14);font-size:.75rem;font-weight:600;color:#4f8a68;letter-spacing:.07em;text-transform:uppercase;flex-shrink:0}
+              .og-detail-body{flex:1;overflow-y:auto;padding:12px;font-size:.77rem;color:#b0bcc7}
+              .og-detail-placeholder{color:#4a5a65;font-size:.78rem;text-align:center;padding:2rem 1rem;line-height:1.6}
               .og-d-type{display:inline-flex;align-items:center;gap:6px;padding:2px 8px;border-radius:3px;font-size:.68rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;margin-bottom:8px}
-              .og-d-row{display:flex;justify-content:space-between;gap:8px;padding:4px 0;border-bottom:1px solid #131e2c}
-              .og-d-key{color:#5a7090;min-width:80px;flex-shrink:0}
-              .og-d-val{color:#c0ccdc;text-align:right;word-break:break-all}
-              .og-d-section{margin-top:10px;margin-bottom:4px;font-size:.68rem;font-weight:700;color:#4bc8a8;letter-spacing:.08em;text-transform:uppercase}
-              .og-d-rel{padding:3px 0;border-bottom:1px solid #0d1a2e;font-size:.73rem}
-              .og-d-rel:hover{background:rgba(75,200,168,.06)}
+              .og-d-row{display:flex;justify-content:space-between;gap:8px;padding:4px 0;border-bottom:1px solid rgba(255,255,255,0.04)}
+              .og-d-key{color:#7d8a95;min-width:80px;flex-shrink:0}
+              .og-d-val{color:#b0bcc7;text-align:right;word-break:break-all}
+              .og-d-section{margin-top:10px;margin-bottom:4px;font-size:.68rem;font-weight:700;color:#4f8a68;letter-spacing:.08em;text-transform:uppercase}
+              .og-d-rel{padding:3px 0;border-bottom:1px solid rgba(255,255,255,0.04);font-size:.73rem}
+              .og-d-rel:hover{background:rgba(47,107,79,.07)}
               .og-findings{margin-top:10px}
-              .og-findings-title{font-size:.78rem;font-weight:700;color:#6b8aaa;letter-spacing:.08em;text-transform:uppercase;margin-bottom:8px;display:flex;align-items:center;gap:6px}
+              .og-findings-title{font-size:.78rem;font-weight:700;color:#7d8a95;letter-spacing:.08em;text-transform:uppercase;margin-bottom:8px;display:flex;align-items:center;gap:6px}
               .og-findings-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:8px}
-              .og-finding-card{background:rgba(4,13,25,.6);border-radius:5px;padding:8px 10px;border-left:3px solid #2a3a50;font-size:.75rem}
-              .og-finding-card.nivel-Crítico{border-left-color:#e74c3c}
-              .og-finding-card.nivel-Alto{border-left-color:#e67e22}
-              .og-finding-card.nivel-Medio{border-left-color:#f1c40f}
-              .og-finding-card.nivel-Bajo{border-left-color:#27ae60}
-              .og-finding-card.nivel-Info{border-left-color:#6b8aaa}
+              .og-finding-card{background:rgba(15,20,25,.65);border-radius:5px;padding:8px 10px;border-top:2px solid rgba(255,255,255,0.07);font-size:.75rem}
+              .og-finding-card.nivel-Crítico{border-top-color:#a64f4f}
+              .og-finding-card.nivel-Alto{border-top-color:#b59a5a}
+              .og-finding-card.nivel-Medio{border-top-color:#c2a35a}
+              .og-finding-card.nivel-Bajo{border-top-color:#4f8a68}
+              .og-finding-card.nivel-Info{border-top-color:#5a7d99}
               .og-finding-head{display:flex;align-items:center;gap:5px;margin-bottom:4px}
               .og-finding-icon{font-size:.9rem;flex-shrink:0}
-              .og-finding-tit{font-weight:700;color:#c0ccdc}
-              .og-finding-desc{color:#6b8aaa;line-height:1.4}
+              .og-finding-tit{font-weight:700;color:#b0bcc7}
+              .og-finding-desc{color:#7d8a95;line-height:1.4}
               .og-legend{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;margin-bottom:4px}
-              .og-legend-item{display:flex;align-items:center;gap:4px;font-size:.68rem;color:#6b8aaa;padding:2px 6px;border-radius:3px;transition:background .15s}
-              .og-legend-item:hover{background:rgba(255,255,255,.05)}
+              .og-legend-item{display:flex;align-items:center;gap:4px;font-size:.68rem;color:#7d8a95;padding:2px 6px;border-radius:3px;transition:background .15s}
+              .og-legend-item:hover{background:rgba(255,255,255,.04)}
               .og-legend-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
-              #osint-graph-info{font-size:.73rem;color:#4b6a8a;margin-bottom:4px}
+              #osint-graph-info{font-size:.73rem;color:#7d8a95;margin-bottom:4px}
               @keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
             </style>
 
@@ -823,7 +823,7 @@
 
                 <div class="og-layout">
                   <div class="og-canvas-wrap">
-                    <div id="osint-graph-spinner" style="display:none;position:absolute;inset:0;z-index:5;display:none;align-items:center;justify-content:center;background:rgba(7,8,12,.7);color:#4bc8a8;font-size:.85rem;gap:8px">
+                    <div id="osint-graph-spinner" style="display:none;position:absolute;inset:0;z-index:5;display:none;align-items:center;justify-content:center;background:rgba(15,20,25,.8);color:#4f8a68;font-size:.85rem;gap:8px">
                       <span style="animation:spin 1s linear infinite;display:inline-block">⟳</span> Construyendo grafo...
                     </div>
                     <div id="osint-graph-canvas"></div>
@@ -1312,6 +1312,7 @@
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="{{ url_for('static', filename='js/osint-graph.bundle.js') }}"></script>
   <script src="{{ url_for('static', filename='console.js') }}"></script>
   <script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
 <script>
