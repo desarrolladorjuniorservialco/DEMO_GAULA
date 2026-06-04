@@ -958,7 +958,7 @@
               </div>
             </div>
 
-            <div class="dashboard-card double-bezel col-span-7 intel-chart-card">
+            <div class="dashboard-card double-bezel col-span-6 intel-chart-card">
               <div class="inner-core">
                 <div class="intel-chart-header">
                   <div>
@@ -970,7 +970,7 @@
                 <div id="intel-chart-fecha" class="intel-plot"></div>
               </div>
             </div>
-            <div class="dashboard-card double-bezel col-span-5 intel-chart-card">
+            <div class="dashboard-card double-bezel col-span-6 intel-chart-card">
               <div class="inner-core">
                 <div class="intel-chart-header">
                   <div>
@@ -1033,6 +1033,82 @@
               </div>
             </div>
           </div>
+
+          <!-- SECCIÓN PROYECCIONES INERCIALES -->
+          <div class="intel-projection-section" id="intel-projection-section">
+
+            <div class="section-header-tactical intel-section-header" style="margin-top:2rem;">
+              <div>
+                <h3>FASE 2: Proyecciones Inerciales</h3>
+                <p>Modelos de regresión lineal sobre el histórico filtrado. Horizonte: 6 meses.</p>
+              </div>
+              <div class="intel-live-chip">
+                <span class="intel-live-dot" style="background:#eab308;box-shadow:0 0 6px #eab30888;"></span>
+                <div>
+                  <strong>Motor predictivo activo</strong>
+                  <span>Proyección actualizada con los filtros del panel</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="dashboard-card double-bezel" style="margin-bottom:1rem;">
+              <div class="inner-core" style="text-align:center;">
+                <span class="helper-text-mono" style="display:block;margin-bottom:12px;">Escenario de proyección:</span>
+                <div id="intel-scenario-btns" style="display:flex;justify-content:center;gap:.75rem;flex-wrap:wrap;">
+                  <button class="btn btn-secondary-tactical intel-scenario-btn" data-scenario="optimista">🟢 OPTIMISTA</button>
+                  <button class="btn btn-primary-tactical intel-scenario-btn active" data-scenario="realista">🟡 REALISTA</button>
+                  <button class="btn btn-secondary-tactical intel-scenario-btn" data-scenario="pesimista">🔴 PESIMISTA</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="dashboard-card double-bezel" id="intel-projection-analysis" style="margin-bottom:1rem;">
+              <div class="inner-core" id="intel-projection-analysis-body">
+                <!-- Inyectado por buildProjectionAnalysis() -->
+              </div>
+            </div>
+
+            <div class="dashboard-grid intel-chart-grid">
+              <div class="dashboard-card double-bezel col-span-6 intel-chart-card">
+                <div class="inner-core">
+                  <div class="intel-chart-header">
+                    <div><h3>Proyección: Volumen de Casos</h3><p>Casos mensuales — histórico + 6 meses.</p></div>
+                    <span class="intel-chart-tag">Proyección</span>
+                  </div>
+                  <div id="proj-chart-volumen" class="intel-plot"></div>
+                </div>
+              </div>
+              <div class="dashboard-card double-bezel col-span-6 intel-chart-card">
+                <div class="inner-core">
+                  <div class="intel-chart-header">
+                    <div><h3>Proyección: Impacto Económico ($ COP)</h3><p>Monto mensual estimado — histórico + 6 meses.</p></div>
+                    <span class="intel-chart-tag">Proyección</span>
+                  </div>
+                  <div id="proj-chart-monto" class="intel-plot"></div>
+                </div>
+              </div>
+              <div class="dashboard-card double-bezel col-span-6 intel-chart-card">
+                <div class="inner-core">
+                  <div class="intel-chart-header">
+                    <div><h3>Proyección: Score de Riesgo Promedio</h3><p>Criticidad esperada — histórico + 6 meses.</p></div>
+                    <span class="intel-chart-tag">Proyección</span>
+                  </div>
+                  <div id="proj-chart-riesgo" class="intel-plot"></div>
+                </div>
+              </div>
+              <div class="dashboard-card double-bezel col-span-6 intel-chart-card">
+                <div class="inner-core">
+                  <div class="intel-chart-header">
+                    <div><h3>Proyección: Top Tipos de Delito</h3><p>Evolución proyectada — top 3 tipos de reporte.</p></div>
+                    <span class="intel-chart-tag">Proyección</span>
+                  </div>
+                  <div id="proj-chart-tipos" class="intel-plot"></div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+          <!-- /SECCIÓN PROYECCIONES -->
         </section>
 
 
