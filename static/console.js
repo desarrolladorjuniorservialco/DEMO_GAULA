@@ -1116,6 +1116,9 @@ document.addEventListener("DOMContentLoaded", () => {
     renderIntelModalidades(modalityBuckets);
     renderIntelRiskHistogram(scoreValues);
     renderIntelRiskMunicipio(riskMunicipioBuckets);
+
+    const activeScenario = document.querySelector(".intel-scenario-btn.active")?.dataset.scenario || "realista";
+    renderIntelProjections(filtered, activeScenario);
   }
 
   function sortIntelRecordsByDate(records, groupBy) {
@@ -1579,6 +1582,20 @@ document.addEventListener("DOMContentLoaded", () => {
         renderIntelDashboardCharts(intelDashboardState.rawCases);
       });
     }
+
+    document.querySelectorAll(".intel-scenario-btn").forEach(btn => {
+      if (btn.dataset.projBound === "1") return;
+      btn.dataset.projBound = "1";
+      btn.addEventListener("click", () => {
+        document.querySelectorAll(".intel-scenario-btn").forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+        const filtered = (() => {
+          const ndf = applyIntelNonDateFilters(intelDashboardState.rawCases);
+          return applyIntelDateFilters(ndf);
+        })();
+        renderIntelProjections(filtered, btn.dataset.scenario);
+      });
+    });
   }
 
   async function fetchIntelDashboard() {
