@@ -9,74 +9,125 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='styles_media.css') }}">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+  <noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap" rel="stylesheet"></noscript>
 </head>
 
 <body class="login-body">
 
-<div class="bg-grid"></div>
-<div class="orb orb-one"></div>
-<div class="orb orb-two"></div>
+<div class="glow-orb orb-one"></div>
+<div class="glow-orb orb-two"></div>
 
-<section class="login-screen">
+<div class="login-terminal">
 
-  <div class="login-visual">
-    <span class="tag">Sistema privado institucional</span>
-    <h1>NEXO-147</h1>
-    <p>
-      Plataforma demo para recepción, clasificación y seguimiento inicial de reportes GAULA.
-    </p>
-
-    <div class="login-orbit">
-      <div class="orbit-ring ring-one"></div>
-      <div class="orbit-ring ring-two"></div>
-      <div class="orbit-core">147</div>
-    </div>
-
-    <div class="login-metrics">
-      <div><strong>Admin</strong><span>Acceso completo</span></div>
-      <div><strong>Operador</strong><span>Solo formulario</span></div>
-    </div>
+  <!-- Classification header -->
+  <div class="login-class-bar">
+    <span class="login-class-label">Sistema Privado Institucional</span>
+    <span class="login-class-code">SEC · NIVEL-2 · GAULA-COL</span>
   </div>
 
-  <div class="login-card">
-    <div class="login-card-header">
-      <h2>Acceso seguro</h2>
-      <p>Ingrese sus credenciales para continuar.</p>
+  <!-- Main access panel -->
+  <div class="login-panel">
+
+    <!-- System identity -->
+    <div class="login-identity">
+      <div class="login-badge" aria-hidden="true">
+        <svg viewBox="0 0 48 56" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+          <path d="M24 2L44 10V28C44 40.5 35 49.5 24 54C13 49.5 4 40.5 4 28V10L24 2Z"
+                stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"
+                fill="rgba(79,138,104,0.08)"/>
+          <text x="50%" y="55%" dominant-baseline="middle" text-anchor="middle"
+                font-family="JetBrains Mono, monospace" font-weight="700" font-size="13"
+                fill="currentColor">147</text>
+        </svg>
+      </div>
+      <div class="login-system-name">
+        <h1>NEXO-147</h1>
+        <p>Sistema Operativo GAULA · Plataforma Demo</p>
+      </div>
     </div>
 
+    <!-- System status indicator -->
+    <div class="login-status-row">
+      <span class="pulse-green"></span>
+      <span class="login-status-text">SISTEMA NOMINAL · EN LÍNEA</span>
+    </div>
+
+    <!-- Flash messages -->
     {% with messages = get_flashed_messages(with_categories=true) %}
       {% if messages %}
-        <div class="alerts">
+        <div class="login-alerts" role="alert" aria-live="assertive">
           {% for category, message in messages %}
-            <div class="alert {{ category }}">{{ message }}</div>
+            <div class="login-alert {{ category }}">{{ message }}</div>
           {% endfor %}
         </div>
       {% endif %}
     {% endwith %}
 
-    <form method="POST" class="form login-form">
-      <label for="usuario">Usuario</label>
-      <input type="text" id="usuario" name="usuario" placeholder="admin u operador" required autocomplete="username">
+    <!-- Auth form -->
+    <div class="login-form-section">
+      <div class="login-form-label">Autenticación Segura</div>
 
-      <label for="password">Contraseña</label>
-      <input type="password" id="password" name="password" placeholder="Contraseña de acceso" required autocomplete="current-password">
+      <form method="POST" class="login-form">
+        <div class="login-field">
+          <label for="usuario">Identificador</label>
+          <input type="text" id="usuario" name="usuario"
+                 placeholder="Ingrese su identificador"
+                 required autocomplete="username">
+        </div>
 
-      <button class="btn btn-primary" type="submit">Ingresar al sistema</button>
-    </form>
+        <div class="login-field">
+          <label for="password">Contraseña</label>
+          <input type="password" id="password" name="password"
+                 placeholder="Contraseña de acceso"
+                 required autocomplete="current-password">
+        </div>
 
-    <div class="demo-users">
-      <p><strong>Cuentas Demo de Prueba:</strong></p>
-      <div class="demo-grid">
-        <p><code>admin</code> / <code>Admin147*</code> (Administrador)</p>
-        <p><code>director</code> / <code>Director147*</code> (Director GAULA)</p>
-        <p><code>analista</code> / <code>Analista147*</code> (Analista Operacional)</p>
-        <p><code>operador</code> / <code>Operador147*</code> (Operador Línea 147)</p>
-      </div>
+        <button class="login-submit-btn" type="submit">
+          <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M3 10h14M11 4l6 6-6 6"/>
+          </svg>
+          Ingresar al sistema
+        </button>
+      </form>
     </div>
+
+    <!-- Demo credentials -->
+    <details class="login-demo">
+      <summary class="login-demo-toggle">Cuentas demo disponibles</summary>
+      <div class="login-demo-grid">
+        <div>
+          <code>admin</code>
+          <span>Admin147*</span>
+          <em>Administrador</em>
+        </div>
+        <div>
+          <code>director</code>
+          <span>Director147*</span>
+          <em>Director GAULA</em>
+        </div>
+        <div>
+          <code>analista</code>
+          <span>Analista147*</span>
+          <em>Analista Operacional</em>
+        </div>
+        <div>
+          <code>operador</code>
+          <span>Operador147*</span>
+          <em>Operador Línea 147</em>
+        </div>
+      </div>
+    </details>
+
   </div>
 
-</section>
+  <!-- Security footer -->
+  <div class="login-footer">
+    <span>NEXO-147 · V2.1.0-DEMO</span>
+    <span>El acceso no autorizado es sancionado por la ley colombiana.</span>
+  </div>
+
+</div>
 
 </body>
 </html>

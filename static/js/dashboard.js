@@ -188,11 +188,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Define colors for each entity type
     const colorMap = {
-      persona: { background: "rgba(0, 229, 255, 0.12)", border: "#00e5ff" },
-      alias: { background: "rgba(255, 214, 0, 0.12)", border: "#ffd600" },
-      telefono: { background: "rgba(255, 90, 31, 0.12)", border: "#ff5a1f" },
-      ubicacion: { background: "rgba(0, 230, 118, 0.12)", border: "#00e676" },
-      cuenta: { background: "rgba(186, 104, 200, 0.12)", border: "#ba68c8" }
+      persona: { background: "rgba(90, 125, 153, 0.14)", border: "#5a8db5" },
+      alias: { background: "rgba(198, 161, 93, 0.14)", border: "#c2a35a" },
+      telefono: { background: "rgba(166, 79, 79, 0.14)", border: "#b05050" },
+      ubicacion: { background: "rgba(79, 138, 104, 0.14)", border: "#4f8a68" },
+      cuenta: { background: "rgba(138, 122, 168, 0.14)", border: "#8a7aa8" }
     };
 
     const visNodes = nodos.map(n => {
@@ -743,8 +743,8 @@ document.addEventListener("DOMContentLoaded", () => {
           labels: ["Crítico", "Alto", "Medio", "Bajo"],
           datasets: [{
             data: [counts["Crítico"], counts["Alto"], counts["Medio"], counts["Bajo"]],
-            backgroundColor: ["#ff5a1f", "#ffd600", "#00e5ff", "#00e676"],
-            borderWidth: 1, borderColor: "#111524"
+            backgroundColor: ["#b05050", "#c2a35a", "#5a8db5", "#4f8a68"],
+            borderWidth: 1, borderColor: "#0f1419"
           }]
         },
         options: {
@@ -766,9 +766,9 @@ document.addEventListener("DOMContentLoaded", () => {
           datasets: [{
             label: "Casos registrados",
             data: [8, 12, 9, 15, 18, 14],
-            borderColor: "#00e5ff",
-            backgroundColor: "rgba(0,229,255,0.07)",
-            pointBackgroundColor: "#00e5ff",
+            borderColor: "#4f8a68",
+            backgroundColor: "rgba(47,107,79,0.10)",
+            pointBackgroundColor: "#4f8a68",
             borderWidth: 2, fill: true, tension: 0.4
           }]
         },
@@ -795,7 +795,7 @@ document.addEventListener("DOMContentLoaded", () => {
           datasets: [{
             label: "Reportes",
             data: [11, 18, 14, 7],
-            backgroundColor: ["#ff5a1f", "#ffd600", "#00e5ff", "#00e676"],
+            backgroundColor: ["#b05050", "#c2a35a", "#5a8db5", "#4f8a68"],
             borderWidth: 0, borderRadius: 4
           }]
         },
@@ -813,18 +813,18 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // B. GIS GEORREFERENCIACIÓN
   const _DEMO_GIS = [
-    { lat: 4.7110, lon: -74.0721, label: "14 reportes activos · R.CASO-2026-0341", prioridad: "Crítica",  fuente: "nexo147.db", fecha: "2026-05-14", size: 15, color: "#ff5a1f" },
-    { lat: 6.2518, lon: -75.5636, label: "Score: 87% · 3 entidades vinculadas",      prioridad: "Alta",    fuente: "intel.db",   fecha: "2026-05-22", size: 12, color: "#ffd600" },
-    { lat: 3.4516, lon: -76.5320, label: "Alerta extorsión activa · 7 casos",        prioridad: "Crítica", fuente: "intel.db",   fecha: "2026-05-29", size: 13, color: "#ff5a1f" },
-    { lat: 10.9685, lon: -74.7813, label: "2 números extorsivos detectados",         prioridad: "Media",   fuente: "osint.db",   fecha: "2026-06-01", size: 9,  color: "#00e5ff" },
-    { lat: 10.3997, lon: -75.5144, label: "Caso JUD-2026-0087 · Asignado",           prioridad: "Alta",    fuente: "intel.db",   fecha: "2026-05-18", size: 10, color: "#ffd600" },
-    { lat: 7.1193,  lon: -73.1227, label: "4 reportes · Prioridad Crítica",          prioridad: "Crítica", fuente: "nexo147.db", fecha: "2026-06-02", size: 12, color: "#ff5a1f" },
-    { lat: 7.8931,  lon: -72.5078, label: "Cuenta NQUI-***847 en análisis",          prioridad: "Alta",    fuente: "osint.db",   fecha: "2026-05-31", size: 10, color: "#ffd600" },
-    { lat: 4.1420,  lon: -73.6266, label: "Hallazgo clasificado RSRV",               prioridad: "Alta",    fuente: "intel.db",   fecha: "2026-06-03", size: 11, color: "#ffd600" },
-    { lat: 4.8133,  lon: -75.6961, label: "1 caso en seguimiento activo",            prioridad: "Media",   fuente: "nexo147.db", fecha: "2026-05-27", size: 8,  color: "#00e5ff" },
-    { lat: 1.2136,  lon: -77.2811, label: "Extorsión registrada · R.CASO-0341",      prioridad: "Crítica", fuente: "intel.db",   fecha: "2026-05-25", size: 11, color: "#ff5a1f" },
-    { lat: 5.0703,  lon: -75.5138, label: "Score 62% · Monitoreo OSINT",             prioridad: "Media",   fuente: "osint.db",   fecha: "2026-06-01", size: 9,  color: "#00e5ff" },
-    { lat: 2.9273,  lon: -75.2820, label: "Monitoreo activo · Indicador OD-047",     prioridad: "Baja",    fuente: "osint.db",   fecha: "2026-05-30", size: 7,  color: "#00e676" }
+    { lat: 4.7110, lon: -74.0721, label: "14 reportes activos · R.CASO-2026-0341", prioridad: "Crítica",  fuente: "nexo147.db", fecha: "2026-05-14", size: 15, color: "#b05050" },
+    { lat: 6.2518, lon: -75.5636, label: "Score: 87% · 3 entidades vinculadas",      prioridad: "Alta",    fuente: "intel.db",   fecha: "2026-05-22", size: 12, color: "#c2a35a" },
+    { lat: 3.4516, lon: -76.5320, label: "Alerta extorsión activa · 7 casos",        prioridad: "Crítica", fuente: "intel.db",   fecha: "2026-05-29", size: 13, color: "#b05050" },
+    { lat: 10.9685, lon: -74.7813, label: "2 números extorsivos detectados",         prioridad: "Media",   fuente: "osint.db",   fecha: "2026-06-01", size: 9,  color: "#5a8db5" },
+    { lat: 10.3997, lon: -75.5144, label: "Caso JUD-2026-0087 · Asignado",           prioridad: "Alta",    fuente: "intel.db",   fecha: "2026-05-18", size: 10, color: "#c2a35a" },
+    { lat: 7.1193,  lon: -73.1227, label: "4 reportes · Prioridad Crítica",          prioridad: "Crítica", fuente: "nexo147.db", fecha: "2026-06-02", size: 12, color: "#b05050" },
+    { lat: 7.8931,  lon: -72.5078, label: "Cuenta NQUI-***847 en análisis",          prioridad: "Alta",    fuente: "osint.db",   fecha: "2026-05-31", size: 10, color: "#c2a35a" },
+    { lat: 4.1420,  lon: -73.6266, label: "Hallazgo clasificado RSRV",               prioridad: "Alta",    fuente: "intel.db",   fecha: "2026-06-03", size: 11, color: "#c2a35a" },
+    { lat: 4.8133,  lon: -75.6961, label: "1 caso en seguimiento activo",            prioridad: "Media",   fuente: "nexo147.db", fecha: "2026-05-27", size: 8,  color: "#5a8db5" },
+    { lat: 1.2136,  lon: -77.2811, label: "Extorsión registrada · R.CASO-0341",      prioridad: "Crítica", fuente: "intel.db",   fecha: "2026-05-25", size: 11, color: "#b05050" },
+    { lat: 5.0703,  lon: -75.5138, label: "Score 62% · Monitoreo OSINT",             prioridad: "Media",   fuente: "osint.db",   fecha: "2026-06-01", size: 9,  color: "#5a8db5" },
+    { lat: 2.9273,  lon: -75.2820, label: "Monitoreo activo · Indicador OD-047",     prioridad: "Baja",    fuente: "osint.db",   fecha: "2026-05-30", size: 7,  color: "#4f8a68" }
   ];
 
   function renderGIS() {
@@ -833,7 +833,7 @@ document.addEventListener("DOMContentLoaded", () => {
           lat: u.latitud, lon: u.longitud,
           label: u.descripcion, prioridad: "N/D",
           fuente: u.fuente || "intel.db", fecha: u.fecha_captura,
-          size: 10, color: "#00e5ff"
+          size: 10, color: "#5a8db5"
         }))
       : _DEMO_GIS;
 
@@ -938,7 +938,7 @@ document.addEventListener("DOMContentLoaded", () => {
           datasets: [{
             label: "Casos por Tipo",
             data: Object.values(counts),
-            backgroundColor: ["#ff5a1f","#ffd600","#00e5ff","#00e676","#ba68c8","#8b99ae"],
+            backgroundColor: ["#b05050","#c2a35a","#5a8db5","#4f8a68","#8a7aa8","#7d8a95"],
             borderWidth: 0, borderRadius: 4
           }]
         },
@@ -972,8 +972,8 @@ document.addEventListener("DOMContentLoaded", () => {
             background:conic-gradient(
               from 0deg,
               transparent 0deg,
-              rgba(255,90,31,0.22) 18deg,
-              rgba(255,90,31,0.10) 36deg,
+              rgba(79,138,104,0.22) 18deg,
+              rgba(79,138,104,0.10) 36deg,
               transparent 55deg
             );
             animation:radarSweepAnim 3s linear infinite;">
@@ -989,9 +989,9 @@ document.addEventListener("DOMContentLoaded", () => {
           datasets: [{
             label: "Riesgos OSINT",
             data: [counts.telefono, counts.ip, counts.dominio, counts.correo],
-            backgroundColor: "rgba(255,90,31,0.15)",
-            borderColor: "#ff5a1f",
-            pointBackgroundColor: "#ff5a1f",
+            backgroundColor: "rgba(79,138,104,0.15)",
+            borderColor: "#4f8a68",
+            pointBackgroundColor: "#4f8a68",
             borderWidth: 2
           }]
         },
