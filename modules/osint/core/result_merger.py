@@ -1,8 +1,10 @@
 """core/result_merger.py — Fusiona resultados del OsintOrchestrator con los legacy."""
 from __future__ import annotations
 
+import ipaddress
 import logging
 from typing import Any
+from urllib.parse import quote as url_quote
 
 from modules.osint.connectors.base import ConnectorResult
 from modules.osint.core.schemas import NormalizedResult
@@ -22,6 +24,7 @@ CONFIDENCE: dict[str, float] = {
     "duckduckgo": 0.55,
     "playwright": 0.70,
 }
+assert all(0.0 <= v <= 1.0 for v in CONFIDENCE.values()), "CONFIDENCE values must be in [0, 1]"
 
 # Conectores cubiertos por _normalize_collected() en engine.py — se tratan como
 # "legacy" y solo se usan como fallback si legacy no produjo datos.
@@ -62,7 +65,7 @@ class ResultMerger:
             try:
                 items = cls._normalize_one(name, result, legacy_collected, target_type)
             except Exception as exc:
-                log.warning("result_merger: error normalizando conector %r — %s", name, exc)
+                log.warning("result_merger: error normalizando conector %r", name, exc_info=True)
                 continue
 
             if items:
@@ -136,6 +139,11 @@ class ResultMerger:
         target = data.get("ipAddress") or data.get("ip", "")
         if not target:
             return []
+        try:
+            ipaddress.ip_address(str(target))  # valida formato IP
+        except ValueError:
+            return []
+        safe_target = url_quote(str(target), safe=".")
         metadata = {
             "is_public":             data.get("is_public"),
             "abuse_confidence_score": data.get("abuse_confidence_score"),
@@ -148,7 +156,7 @@ class ResultMerger:
                 entity_type="ip",
                 value=str(target),
                 confidence=conf,
-                url=f"https://www.abuseipdb.com/check/{target}",
+                url=f"https://www.abuseipdb.com/check/{safe_target}",
                 metadata=metadata,
             )
         ]
@@ -166,13 +174,14 @@ class ResultMerger:
         }
         if not target:
             return []
+        safe_target = url_quote(str(target), safe=".-_")
         return [
             NormalizedResult(
                 source="alienvault",
                 entity_type=entity,
                 value=str(target),
                 confidence=conf,
-                url=f"https://otx.alienvault.com/indicator/{entity}/{target}",
+                url=f"https://otx.alienvault.com/indicator/{entity}/{safe_target}",
                 metadata=metadata,
             )
         ]
@@ -202,8 +211,11 @@ class ResultMerger:
         out = []
         email = data.get("registrant_email") or data.get("emails")
         if email:
-            # Puede ser lista o string
-            emails = [email] if isinstance(email, str) else list(email)
+            emails = list(dict.fromkeys(
+                str(e).lower().strip()
+                for e in ([email] if isinstance(email, str) else list(email))
+                if e
+            ))
             for e in emails:
                 out.append(
                     NormalizedResult(
@@ -236,13 +248,14 @@ class ResultMerger:
         for domain in domains:
             if not domain:
                 continue
+            safe_domain = url_quote(str(domain).strip(), safe=".-_")
             out.append(
                 NormalizedResult(
                     source="crtsh",
                     entity_type="domain",
                     value=str(domain).strip(),
                     confidence=conf,
-                    url=f"https://crt.sh/?q={domain}",
+                    url=f"https://crt.sh/?q={safe_domain}",
                 )
             )
         return out
@@ -256,14 +269,15 @@ class ResultMerger:
         for item in results:
             if not isinstance(item, dict):
                 continue
-            url = item.get("url", "")
+            raw_url = str(item.get("url", ""))
+            safe_url = raw_url if raw_url.startswith(("http://", "https://")) else ""
             out.append(
                 NormalizedResult(
                     source="duckduckgo",
                     entity_type="url",
-                    value=str(url),
+                    value=safe_url,
                     confidence=conf,
-                    url=str(url),
+                    url=safe_url,
                     metadata=item,
                 )
             )
@@ -274,13 +288,14 @@ class ResultMerger:
         out = []
         ldh_name = data.get("ldhName")
         if ldh_name:
+            safe_ldh = url_quote(str(ldh_name).lower(), safe=".-_")
             out.append(
                 NormalizedResult(
                     source="rdap",
                     entity_type="domain",
                     value=str(ldh_name).lower(),
                     confidence=conf,
-                    url=f"https://rdap.org/domain/{ldh_name}",
+                    url=f"https://rdap.org/domain/{safe_ldh}",
                 )
             )
         for entity in data.get("entities", []):
@@ -290,7 +305,7 @@ class ResultMerger:
             if "registrant" in roles:
                 vcard = entity.get("vcardArray", [])
                 org_name = ""
-                if isinstance(vcard, list) and len(vcard) > 1:
+                if isinstance(vcard, list) and len(vcard) > 1 and isinstance(vcard[1], list):
                     for field_entry in vcard[1]:
                         if isinstance(field_entry, list) and len(field_entry) >= 4 and field_entry[0] == "fn":
                             org_name = str(field_entry[3])
@@ -345,13 +360,14 @@ class ResultMerger:
         if not profile:
             return []
         name = profile.get("name", "")
+        safe_name = url_quote(str(name), safe="")
         return [
             NormalizedResult(
                 source="reddit",
                 entity_type="social_profile",
-                value=f"https://reddit.com/u/{name}",
+                value=f"https://reddit.com/u/{safe_name}",
                 confidence=conf,
-                url=f"https://reddit.com/u/{name}",
+                url=f"https://reddit.com/u/{safe_name}",
                 metadata={"name": name, "karma": profile.get("total_karma", 0)},
             )
         ]

@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import logging
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime, timedelta
 from typing import Any
@@ -22,6 +23,8 @@ from modules.osint.core.target_detection import TargetDetection, detect_target_t
 from modules.osint.engines.orchestration import OsintOrchestrator
 from modules.osint.plugins.registry import get_plugins
 from modules.osint.services.search_engine import ejecutar_dork_universal
+
+log = logging.getLogger(__name__)
 
 
 class UniversalOsintEngine:
@@ -541,6 +544,7 @@ class UniversalOsintEngine:
                     created_by=created_by,
                 )
             except Exception:
+                log.exception("search: persist_results falló para target=%r", target)
                 db.session.rollback()
 
         return response
