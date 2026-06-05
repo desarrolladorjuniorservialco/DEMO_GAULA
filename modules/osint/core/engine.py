@@ -16,8 +16,10 @@ from models.osint_graph import create_edge, get_or_create_node
 from modules.osint.analytics.graph_builder import build_graph
 from modules.osint.core.correlation import IdentityCorrelationEngine
 from modules.osint.core.findings import FindingEngine
+from modules.osint.core.result_merger import ResultMerger
 from modules.osint.core.schemas import NormalizedResult, SearchOutcome
 from modules.osint.core.target_detection import TargetDetection, detect_target_type
+from modules.osint.engines.orchestration import OsintOrchestrator
 from modules.osint.plugins.registry import get_plugins
 from modules.osint.services.search_engine import ejecutar_dork_universal
 
@@ -41,12 +43,14 @@ class UniversalOsintEngine:
             "url": ["domain", "plugins"],
             "ip": ["ip", "plugins"],
             "hash": ["plugins"],
+            "unknown": ["github", "reddit", "duckduckgo", "plugins"],
         }
         hint_map = {
             "both": ["github", "reddit"],
             "social": ["github", "reddit", "facebook", "x", "tiktok", "plugins"],
             "deep_all": ["github", "reddit", "facebook", "x", "tiktok", "plugins"],
             "network": ["ip", "domain", "plugins"],
+            "osint_all": ["github", "reddit", "duckduckgo", "domain", "ip", "plugins"],
         }
         if source_hint in hint_map:
             return hint_map[source_hint]
@@ -489,9 +493,12 @@ class UniversalOsintEngine:
             cached["cached"] = True
             return cached
 
-        sources = self.discover_sources(detection.target_type, source_hint)
-        collected = self.run_collectors(target, sources)
-        normalized = self.correlation_engine.correlate(self._normalize_collected(collected, target))
+        sources           = self.discover_sources(detection.target_type, source_hint)
+        collected         = self.run_collectors(target, sources)
+        legacy_normalized = self._normalize_collected(collected, target)
+        connector_results = OsintOrchestrator.default().run(target, detection.target_type)
+        extra_normalized  = ResultMerger.merge(collected, connector_results, detection.target_type)
+        normalized        = self.correlation_engine.correlate(legacy_normalized + extra_normalized)
         risk_bundle = self.calculate_risk(normalized)
         graph_data = self.build_graph(target, collected)
 
@@ -515,6 +522,10 @@ class UniversalOsintEngine:
                 "metadata": detection.metadata,
             },
             "collectors": collected,
+            "connector_results": {
+                name: {"ok": r.ok, "errors": r.errors}
+                for name, r in connector_results.items()
+            },
         }
 
         if persist:
