@@ -61,6 +61,18 @@ def detect_target_type(value: str) -> TargetDetection:
     except ValueError:
         pass
 
+    if "/" in raw and not raw.startswith(("http://", "https://")):
+        candidate_url = "https://" + raw
+        parsed = urlparse(candidate_url)
+        if parsed.netloc and _DOMAIN_RE.fullmatch(parsed.netloc):
+            return TargetDetection(
+                value=raw,
+                target_type="url",
+                normalized=candidate_url,
+                confidence=0.80,
+                metadata={"hostname": parsed.netloc},
+            )
+
     if _validate_email:
         try:
             result = _validate_email(raw, check_deliverability=False)
