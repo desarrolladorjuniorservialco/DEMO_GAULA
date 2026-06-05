@@ -84,6 +84,15 @@
 
 <script>
 (function () {
+  function esc(s) {
+    return String(s ?? '')
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+  }
+
   const targetInput = document.getElementById('osint-target');
   const typeBadge = document.getElementById('type-badge');
   const button = document.getElementById('osint-search-btn');
@@ -148,21 +157,24 @@
 
       findingsWrap.innerHTML = (data.findings || []).map(f => `
         <div>
-          <span>${f.nivel || '—'}</span>
-          <strong>${f.titulo || ''}</strong>
-          <small style="display:block;color:#8ab4cc">${f.descripcion || ''}</small>
+          <span>${esc(f.nivel) || '—'}</span>
+          <strong>${esc(f.titulo)}</strong>
+          <small style="display:block;color:#8ab4cc">${esc(f.descripcion)}</small>
         </div>
       `).join('') || '<div><span>Sin hallazgos.</span></div>';
 
-      resultsBody.innerHTML = (data.results || []).map(item => `
+      resultsBody.innerHTML = (data.results || []).map(item => {
+        const safeUrl = (item.url && /^https?:\/\//i.test(item.url)) ? item.url : '';
+        return `
         <tr>
-          <td>${item.source || ''}</td>
-          <td>${item.entity_type || ''}</td>
-          <td>${item.value || ''}</td>
+          <td>${esc(item.source)}</td>
+          <td>${esc(item.entity_type)}</td>
+          <td>${esc(item.value)}</td>
           <td>${Number(item.confidence || 0).toFixed(2)}</td>
-          <td>${item.url ? `<a href="${item.url}" target="_blank" rel="noopener">${item.url}</a>` : '—'}</td>
+          <td>${safeUrl ? `<a href="${esc(safeUrl)}" target="_blank" rel="noopener noreferrer">${esc(safeUrl)}</a>` : '—'}</td>
         </tr>
-      `).join('') || '<tr><td colspan="5">Sin resultados.</td></tr>';
+      `;
+      }).join('') || '<tr><td colspan="5">Sin resultados.</td></tr>';
     } catch (error) {
       findingsWrap.innerHTML = `<div><span>Error</span><strong>${error}</strong></div>`;
     } finally {
