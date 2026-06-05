@@ -110,3 +110,31 @@ class IndicadorRiesgo(db.Model):
     updated_at         = db.Column(db.DateTime, onupdate=datetime.utcnow)
     created_by         = db.Column(db.String(50))
     updated_by         = db.Column(db.String(50))
+
+
+class WatchlistOsint(db.Model):
+    __tablename__ = "watchlists_osint"
+    __bind_key__ = "osint"
+    __table_args__ = (
+        db.Index("ix_watchlists_target", "target"),
+        db.Index("ix_watchlists_active", "activo"),
+        db.Index("ix_watchlists_target_type", "target_type"),
+        {},
+    )
+
+    id                 = db.Column(db.Integer, primary_key=True)
+    nombre             = db.Column(db.String(120), nullable=False)
+    target             = db.Column(db.String(500), nullable=False)
+    target_type        = db.Column(db.String(50), nullable=False, default="unknown")
+    source_hint        = db.Column(db.String(50), default="all")
+    frecuencia_minutos = db.Column(db.Integer, default=1440)
+    activo             = db.Column(db.Boolean, default=True)
+    last_run_at        = db.Column(db.DateTime)
+    last_risk_level    = db.Column(db.String(20))
+    last_risk_score    = db.Column(db.Integer, default=0)
+    last_result_json   = db.Column(db.Text)
+    notas              = db.Column(db.Text)
+    created_at         = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at         = db.Column(db.DateTime, onupdate=datetime.utcnow)
+    created_by         = db.Column(db.String(50))
+    updated_by         = db.Column(db.String(50))

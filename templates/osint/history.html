@@ -1,0 +1,110 @@
+{% extends 'base.html' %}
+
+{% block contenido %}
+<section class="dashboard">
+  <div class="section-title">
+    <h1>Historial OSINT</h1>
+    <p>Consulta, filtra y vuelve a ejecutar búsquedas del motor universal.</p>
+  </div>
+
+  <form class="dashboard-card" method="get" action="{{ url_for('history_osint.history') }}">
+    <div class="flow-list">
+      <div>
+        <span>Objetivo</span>
+        <input type="text" name="q" value="{{ filters.q }}" placeholder="victorpulido">
+      </div>
+      <div>
+        <span>Fuente</span>
+        <select name="source">
+          {% for item in sources %}
+          <option value="{{ item }}" {% if filters.source == item %}selected{% endif %}>{{ item }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div>
+        <span>Tipo</span>
+        <select name="target_type">
+          {% for item in target_types %}
+          <option value="{{ item }}" {% if filters.target_type == item %}selected{% endif %}>{{ item }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div>
+        <span>Riesgo</span>
+        <select name="risk">
+          {% for item in ['all', 'Bajo', 'Medio', 'Alto', 'Crítico'] %}
+          <option value="{{ item }}" {% if filters.risk == item %}selected{% endif %}>{{ item }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div>
+        <span>Desde</span>
+        <input type="date" name="from" value="{{ filters['from'] }}">
+      </div>
+      <div>
+        <span>Hasta</span>
+        <input type="date" name="to" value="{{ filters['to'] }}">
+      </div>
+    </div>
+    <div style="margin-top: 1rem; display:flex; gap:.75rem; flex-wrap:wrap;">
+      <button class="btn-primary-tactical" type="submit">Filtrar</button>
+      <a class="btn-secondary-tactical" href="{{ url_for('history_osint.history') }}">Limpiar</a>
+      <a class="btn-secondary-tactical" href="{{ url_for('osint_dashboard.dashboard') }}">Ver dashboard</a>
+    </div>
+  </form>
+
+  <div class="kpi-grid" style="margin-top: 1.5rem;">
+    <article class="kpi-card">
+      <span>Consultas encontradas</span>
+      <strong>{{ total }}</strong>
+    </article>
+    <article class="kpi-card">
+      <span>Página</span>
+      <strong>{{ page }} / {{ pages }}</strong>
+    </article>
+    <article class="kpi-card">
+      <span>Límite</span>
+      <strong>{{ limit }}</strong>
+    </article>
+  </div>
+
+  <div class="dashboard-card" style="margin-top: 1.5rem;">
+    <h2>Consultas</h2>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Fecha</th>
+            <th>Objetivo</th>
+            <th>Tipo</th>
+            <th>Fuente</th>
+            <th>Estado</th>
+            <th>Riesgo</th>
+            <th>Resultados</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for entry in entries %}
+          <tr>
+            <td>{{ entry.created_at[:16] if entry.created_at else '—' }}</td>
+            <td>{{ entry.target }}</td>
+            <td>{{ entry.target_type }}</td>
+            <td>{{ entry.fuente }}</td>
+            <td>{{ entry.estado }}</td>
+            <td>{{ entry.risk.level }} ({{ entry.risk.score }})</td>
+            <td>{{ entry.results_count }}</td>
+            <td>
+              <form method="post" action="{{ url_for('history_osint.history_replay', consulta_id=entry.id) }}" style="display:inline;">
+                <button type="submit" class="btn-secondary-tactical">Reejecutar</button>
+              </form>
+              <a class="btn-secondary-tactical" href="{{ url_for('search_osint.graph_alias', q=entry.target, source='all') }}">Grafo</a>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+{% endblock %}

@@ -5,11 +5,17 @@ from pathlib import Path
 from modules.osint.plugins.base import BaseOsintPlugin
 
 _REGISTRY: list[BaseOsintPlugin] = []
+_DISCOVERED = False
 
 
 def discover_plugins() -> None:
+    global _DISCOVERED
+    if _DISCOVERED:
+        return
+
     plugins_dir = Path(__file__).parent
 
+    _REGISTRY.clear()
     for module_info in pkgutil.iter_modules([str(plugins_dir)]):
         if module_info.name in ("base", "registry"):
             continue
@@ -34,6 +40,8 @@ def discover_plugins() -> None:
                     print(f"[osint-plugins] Registrado: {instance.name}")
                 except Exception as exc:
                     print(f"[osint-plugins] ERROR instanciando '{attr_name}': {exc}")
+
+    _DISCOVERED = True
 
 
 def get_plugins() -> list[BaseOsintPlugin]:

@@ -1,28 +1,28 @@
 /* ==========================================================================
    NEXO-147 TACTICAL OPERATIONS SYSTEM — INSTITUTIONAL / MILITARY THEME
    Estética: Centro de Comando Estratégico · Inteligencia Gubernamental
-   Paleta: Oliva Institucional · Khaki Táctico · Metálicos
+   Paleta: Ámbar Militar · Negro OLED · Grafito Institucional
    ========================================================================== */
 
 :root {
-  /* Fondos — Acero Oscuro Institucional */
-  --bg-main:   #0f1419;
-  --bg-deep:   #0f1419;
-  --bg-panel:  #141b24;
-  --bg-card:   rgba(26, 36, 48, 0.60);
-  --bg-hover:  #222f3e;
-  --bg-border: #2a3948;
+  /* Fondos — Negro OLED Institucional */
+  --bg-main:   #050505;
+  --bg-deep:   #050505;
+  --bg-panel:  #0d0d0d;
+  --bg-card:   rgba(21, 21, 21, 0.90);
+  --bg-hover:  #202020;
+  --bg-border: #2a2a2a;
 
-  /* Verde Institucional (acción primaria, estado activo) */
-  --accent-cyan:        #4f8a68;
-  --accent-cyan-soft:   rgba(79, 138, 104, 0.12);
-  --accent-cyan-border: rgba(79, 138, 104, 0.22);
+  /* Ámbar Militar (acción primaria, estado activo) */
+  --accent-cyan:        #B88A2F;
+  --accent-cyan-soft:   rgba(184, 138, 47, 0.08);
+  --accent-cyan-border: rgba(184, 138, 47, 0.18);
 
   /* Variantes funcionales */
-  --olive-primary: #4f8a68;
-  --olive-dark:    #2f6b4f;
-  --khaki:         #527a65;
-  --olive-light:   #7ab98e;
+  --olive-primary: #B88A2F;
+  --olive-dark:    #7A5A18;
+  --khaki:         #9A7238;
+  --olive-light:   #C2963E;
 
   /* Aceros neutros */
   --bronze:   #7a8a95;
@@ -30,32 +30,32 @@
   --titanium: #9aaab7;
   --sand:     #b0bcc7;
 
-  /* Advertencia / Dorado Táctico */
+  /* Advertencia / Dorado Secundario */
   --accent-orange:        #C6A15D;
   --accent-orange-soft:   rgba(198, 161, 93, 0.12);
   --accent-orange-border: rgba(198, 161, 93, 0.22);
 
   /* Estados Operacionales */
-  --state-green:       #7ab98e;
-  --state-green-soft:  rgba(122, 185, 142, 0.12);
-  --state-amber:       #C6A15D;
-  --state-amber-soft:  rgba(198, 161, 93, 0.12);
-  --state-danger:      #a64f4f;
-  --state-danger-soft: rgba(166, 79, 79, 0.12);
+  --state-green:       #5E8F66;
+  --state-green-soft:  rgba(94, 143, 102, 0.12);
+  --state-amber:       #B88A2F;
+  --state-amber-soft:  rgba(184, 138, 47, 0.12);
+  --state-danger:      #9E4E3F;
+  --state-danger-soft: rgba(158, 78, 63, 0.12);
   --state-info:        #5a7d99;
 
   /* Aliases semánticos */
-  --success:      #7ab98e;
-  --success-soft: rgba(122, 185, 142, 0.12);
-  --warning:      #C6A15D;
-  --warning-soft: rgba(198, 161, 93, 0.12);
-  --danger:       #a64f4f;
-  --danger-soft:  rgba(166, 79, 79, 0.12);
+  --success:      #5E8F66;
+  --success-soft: rgba(94, 143, 102, 0.12);
+  --warning:      #B88A2F;
+  --warning-soft: rgba(184, 138, 47, 0.12);
+  --danger:       #9E4E3F;
+  --danger-soft:  rgba(158, 78, 63, 0.12);
 
   /* Texto */
-  --text-primary:   #dde3ea;
-  --text-secondary: #b0bcc7;
-  --text-muted:     #7d8a95;
+  --text-primary:   #ECECEC;
+  --text-secondary: #B0B0B0;
+  --text-muted:     #7D7D7D;
 
   /* Tipografía Institucional */
   --font-display: 'Inter', sans-serif;
@@ -83,14 +83,16 @@ html, body {
   font-size: 14px;
 }
 
-/* Textura topográfica — curvas cartográficas institucionales (opacidad 0.04) */
+/* Fondo institucional estático */
 body::before {
   content: '';
   position: fixed;
   inset: 0;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='360' height='360'%3E%3Cg fill='none' stroke='%234f8a68' stroke-width='0.6'%3E%3Cellipse cx='180' cy='180' rx='168' ry='62'/%3E%3Cellipse cx='180' cy='180' rx='134' ry='49'/%3E%3Cellipse cx='180' cy='180' rx='100' ry='36'/%3E%3Cellipse cx='180' cy='180' rx='66' ry='23'/%3E%3Cellipse cx='180' cy='180' rx='32' ry='10'/%3E%3Cline x1='180' y1='10' x2='180' y2='350' stroke-width='0.35'/%3E%3Cline x1='10' y1='180' x2='350' y2='180' stroke-width='0.35'/%3E%3Cline x1='55' y1='55' x2='305' y2='305' stroke-width='0.25'/%3E%3Cline x1='305' y1='55' x2='55' y2='305' stroke-width='0.25'/%3E%3C/g%3E%3C/svg%3E");
-  background-size: 360px 360px;
-  opacity: 0.08;
+  background-image: url('/static/assets/fondo_principal.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  opacity: 1;
   pointer-events: none;
   z-index: 0;
 }
@@ -115,13 +117,13 @@ body::before {
 .orb-one {
   top: -20%;
   left: -20%;
-  background: #2f6b4f;
+  background: #7A5A18;
 }
 
 .orb-two {
   bottom: -20%;
   right: -20%;
-  background: #141b24;
+  background: #080808;
 }
 
 /* --- LAYOUT DEL CENTRO DE CONTROL --- */
@@ -247,13 +249,13 @@ body::before {
 
 .nav-item.active {
   color: var(--text-primary);
-  background-color: rgba(47, 107, 79, 0.15);
-  border-left: 4px solid #4f8a68;
+  background-color: rgba(184, 138, 47, 0.15);
+  border-left: 4px solid #B88A2F;
 }
 
 .nav-item:hover {
   color: var(--text-secondary);
-  background-color: rgba(47, 107, 79, 0.08);
+  background-color: rgba(184, 138, 47, 0.08);
 }
 
 .nav-item:hover svg {
@@ -423,7 +425,7 @@ body::before {
   right: 2px;
   width: 8px;
   height: 8px;
-  background-color: #a64f4f;
+  background-color: #9E4E3F;
   border-radius: 50%;
   animation: pulseIndicator 1.8s infinite;
 }
@@ -432,7 +434,7 @@ body::before {
   position: absolute;
   top: -4px;
   right: -4px;
-  background-color: #a64f4f;
+  background-color: #9E4E3F;
   color: #fff;
   font-size: 9px;
   font-family: var(--font-mono);
@@ -443,9 +445,9 @@ body::before {
 }
 
 @keyframes pulseIndicator {
-  0%   { box-shadow: 0 0 0 0 rgba(166, 79, 79, 0.55); }
-  70%  { box-shadow: 0 0 0 6px rgba(166, 79, 79, 0); }
-  100% { box-shadow: 0 0 0 0 rgba(166, 79, 79, 0); }
+  0%   { box-shadow: 0 0 0 0 rgba(158, 78, 63, 0.55); }
+  70%  { box-shadow: 0 0 0 6px rgba(158, 78, 63, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(158, 78, 63, 0); }
 }
 
 .pulse-alert-active {
@@ -680,7 +682,7 @@ th {
   letter-spacing: 0.8px;
   padding: 13px 16px;
   background: rgba(0, 0, 0, 0.18);
-  border-bottom: 1px solid rgba(79, 138, 104, 0.14);
+  border-bottom: 1px solid rgba(184, 138, 47, 0.14);
 }
 
 td {
@@ -691,7 +693,7 @@ td {
 }
 
 tr:hover td {
-  background-color: rgba(47, 107, 79, 0.05);
+  background-color: rgba(184, 138, 47, 0.05);
 }
 
 .text-mono   { font-family: var(--font-mono); }
@@ -736,13 +738,13 @@ tr:hover td {
 .badge-status-table.ok {
   background-color: var(--state-green-soft);
   color: var(--state-green);
-  border: 1px solid rgba(179, 224, 138, 0.25);
+  border: 1px solid rgba(94, 143, 102, 0.25);
 }
 
 .badge-status-table.warning {
   background-color: var(--state-amber-soft);
   color: var(--state-amber);
-  border: 1px solid rgba(194, 163, 90, 0.22);
+  border: 1px solid rgba(184, 138, 47, 0.22);
 }
 
 .badge-status-table.neutral {
@@ -771,9 +773,9 @@ tr:hover td {
 }
 
 .btn-primary-tactical {
-  background: #2f6b4f;
+  background: #7A5A18;
   color: #dde3ea;
-  border: 1px solid rgba(79, 138, 104, 0.35);
+  border: 1px solid rgba(184, 138, 47, 0.35);
   font-family: var(--font-display);
   font-size: 13px;
   font-weight: 600;
@@ -787,9 +789,9 @@ tr:hover td {
 }
 
 .btn-primary-tactical:hover {
-  background: #4f8a68;
+  background: #B88A2F;
   transform: translateY(-1px);
-  box-shadow: 0 4px 16px rgba(47, 107, 79, 0.28);
+  box-shadow: 0 4px 16px rgba(184, 138, 47, 0.28);
 }
 
 .btn-primary-tactical svg {
@@ -872,7 +874,7 @@ tr:hover td {
 .form-tactical-layout select:focus,
 .form-tactical-layout textarea:focus {
   border-color: var(--accent-cyan-border);
-  box-shadow: 0 0 0 3px rgba(47, 107, 79, 0.14);
+  box-shadow: 0 0 0 3px rgba(184, 138, 47, 0.14);
 }
 
 .form-row {
@@ -900,13 +902,13 @@ tr:hover td {
 .feedback-indicator.ok {
   background-color: var(--state-green-soft);
   color: var(--state-green);
-  border: 1px solid rgba(79, 138, 104, 0.22);
+  border: 1px solid rgba(184, 138, 47, 0.22);
 }
 
 .feedback-indicator.error {
-  background-color: rgba(166, 79, 79, 0.12);
+  background-color: rgba(158, 78, 63, 0.12);
   color: #c07070;
-  border: 1px solid rgba(166, 79, 79, 0.22);
+  border: 1px solid rgba(158, 78, 63, 0.22);
 }
 
 .hidden {
@@ -1105,7 +1107,7 @@ tr:hover td {
   width: 260px;
   height: 260px;
   border-radius: 50%;
-  border: 1px solid rgba(79, 138, 104, 0.22);
+  border: 1px solid rgba(184, 138, 47, 0.22);
   background-color: rgba(0, 0, 0, 0.35);
   overflow: hidden;
   margin: 0 auto;
@@ -1117,7 +1119,7 @@ tr:hover td {
   left: 50%;
   transform: translate(-50%, -50%);
   border-radius: 50%;
-  border: 1px solid rgba(79, 138, 104, 0.16);
+  border: 1px solid rgba(184, 138, 47, 0.16);
 }
 
 .radar-circle.r1 { width: 80px;  height: 80px; }
@@ -1128,7 +1130,7 @@ tr:hover td {
   position: absolute;
   width: 100%;
   height: 100%;
-  background: conic-gradient(from 0deg, rgba(79, 138, 104, 0.14) 0deg, transparent 90deg);
+  background: conic-gradient(from 0deg, rgba(184, 138, 47, 0.14) 0deg, transparent 90deg);
   border-radius: 50%;
   animation: sweepAnimation 4s linear infinite;
   transform-origin: center;
@@ -1147,7 +1149,7 @@ tr:hover td {
   position: absolute;
   width: 6px;
   height: 6px;
-  background-color: #a64f4f;
+  background-color: #9E4E3F;
   border-radius: 50%;
   animation: blipAnimation 2s infinite alternate;
 }
@@ -1191,8 +1193,8 @@ tr:hover td {
   position: absolute;
   inset: 0;
   background-image:
-    linear-gradient(rgba(79, 138, 104, 0.04) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(79, 138, 104, 0.04) 1px, transparent 1px);
+    linear-gradient(rgba(184, 138, 47, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(184, 138, 47, 0.04) 1px, transparent 1px);
   background-size: 20px 20px;
 }
 
@@ -1225,7 +1227,7 @@ tr:hover td {
   position: absolute;
   width: 40px;
   height: 40px;
-  border: 1px solid rgba(79, 138, 104, 0.18);
+  border: 1px solid rgba(184, 138, 47, 0.18);
   border-radius: 50%;
   transform: scale(0);
   animation: pulseTarget 3s infinite;
@@ -1285,7 +1287,7 @@ tr:hover td {
 
 .bar-fill {
   height: 100%;
-  background: #2f6b4f;
+  background: #7A5A18;
   border-radius: 3px;
 }
 
@@ -1380,15 +1382,15 @@ tr:hover td {
 }
 
 @keyframes pulseG {
-  0%   { box-shadow: 0 0 0 0 rgba(79, 138, 104, 0.55); }
-  70%  { box-shadow: 0 0 0 5px rgba(79, 138, 104, 0); }
-  100% { box-shadow: 0 0 0 0 rgba(79, 138, 104, 0); }
+  0%   { box-shadow: 0 0 0 0 rgba(184, 138, 47, 0.55); }
+  70%  { box-shadow: 0 0 0 5px rgba(184, 138, 47, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(184, 138, 47, 0); }
 }
 
 @keyframes pulseC {
-  0%   { box-shadow: 0 0 0 0 rgba(79, 138, 104, 0.55); }
-  70%  { box-shadow: 0 0 0 5px rgba(79, 138, 104, 0); }
-  100% { box-shadow: 0 0 0 0 rgba(79, 138, 104, 0); }
+  0%   { box-shadow: 0 0 0 0 rgba(184, 138, 47, 0.55); }
+  70%  { box-shadow: 0 0 0 5px rgba(184, 138, 47, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(184, 138, 47, 0); }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -1501,8 +1503,8 @@ tr:hover td {
   gap: 8px;
   margin-bottom: 24px;
   padding: 8px 12px;
-  background: rgba(122, 185, 142, 0.06);
-  border: 1px solid rgba(122, 185, 142, 0.14);
+  background: rgba(94, 143, 102, 0.06);
+  border: 1px solid rgba(94, 143, 102, 0.14);
   border-radius: var(--radius-inner);
 }
 
@@ -1527,15 +1529,15 @@ tr:hover td {
 
 .login-alert.error,
 .login-alert.danger {
-  background-color: rgba(166, 79, 79, 0.12);
+  background-color: rgba(158, 78, 63, 0.12);
   color: #c07070;
-  border: 1px solid rgba(166, 79, 79, 0.22);
+  border: 1px solid rgba(158, 78, 63, 0.22);
 }
 
 .login-alert.success {
   background-color: var(--state-green-soft);
   color: var(--state-green);
-  border: 1px solid rgba(122, 185, 142, 0.22);
+  border: 1px solid rgba(94, 143, 102, 0.22);
 }
 
 /* Form section */
@@ -1581,7 +1583,7 @@ tr:hover td {
 
 .login-form input:focus {
   border-color: var(--accent-cyan-border);
-  box-shadow: 0 0 0 3px rgba(47, 107, 79, 0.14);
+  box-shadow: 0 0 0 3px rgba(184, 138, 47, 0.14);
 }
 
 .login-form input::placeholder {
@@ -1615,9 +1617,9 @@ tr:hover td {
 }
 
 .login-submit-btn:hover {
-  background-color: #5d9c78;
+  background-color: #C2963E;
   transform: translateY(-1px);
-  box-shadow: 0 6px 20px rgba(47, 107, 79, 0.3);
+  box-shadow: 0 6px 20px rgba(184, 138, 47, 0.3);
 }
 
 .login-submit-btn:active { transform: translateY(0); }
@@ -1799,7 +1801,7 @@ tr:hover td {
 .etl-step-fill {
   width: 100%;
   height: 100%;
-  background: #2f6b4f;
+  background: #7A5A18;
   border-radius: 2px;
   transform-origin: left;
   transition: transform 0.8s ease;
@@ -2003,15 +2005,15 @@ tr:hover td {
 
 /* Vis.js interactive graph styles */
 #grafo-canvas {
-  background-color: rgba(15, 20, 25, 0.6) !important;
-  border: 1px solid rgba(79, 138, 104, 0.16) !important;
-  box-shadow: inset 0 0 20px rgba(47, 107, 79, 0.04), 0 8px 32px rgba(0, 0, 0, 0.3) !important;
+  background-color: rgba(5, 5, 5, 0.6) !important;
+  border: 1px solid rgba(184, 138, 47, 0.16) !important;
+  box-shadow: inset 0 0 20px rgba(184, 138, 47, 0.04), 0 8px 32px rgba(0, 0, 0, 0.3) !important;
   border-radius: 8px;
 }
 
 #grafo-detail-sidebar .inner-core {
   background-color: var(--bg-card);
-  border: 1px solid rgba(79, 138, 104, 0.14);
+  border: 1px solid rgba(184, 138, 47, 0.14);
 }
 
 /* Interactive Timeline Styles */
@@ -2060,9 +2062,9 @@ tr:hover td {
   inset: -24px -24px auto -24px;
   height: 320px;
   background:
-    radial-gradient(circle at 18% 22%, rgba(47, 107, 79, 0.10), transparent 34%),
+    radial-gradient(circle at 18% 22%, rgba(184, 138, 47, 0.10), transparent 34%),
     radial-gradient(circle at 78% 18%, rgba(90, 125, 153, 0.07), transparent 28%),
-    linear-gradient(180deg, rgba(15, 20, 25, 0.95), rgba(15, 20, 25, 0));
+    linear-gradient(180deg, rgba(5, 5, 5, 0.95), rgba(5, 5, 5, 0));
   pointer-events: none;
   z-index: 0;
 }
@@ -2109,9 +2111,9 @@ tr:hover td {
   padding: 14px 16px;
   border-radius: var(--radius-inner);
   background:
-    linear-gradient(135deg, rgba(47, 107, 79, 0.07), rgba(255, 255, 255, 0.02)),
+    linear-gradient(135deg, rgba(184, 138, 47, 0.07), rgba(255, 255, 255, 0.02)),
     rgba(255, 255, 255, 0.02);
-  border: 1px solid rgba(79, 138, 104, 0.18);
+  border: 1px solid rgba(184, 138, 47, 0.18);
   min-width: 280px;
 }
 
@@ -2120,14 +2122,14 @@ tr:hover td {
   height: 12px;
   border-radius: 50%;
   background: var(--state-green);
-  box-shadow: 0 0 0 6px rgba(79, 138, 104, 0.14);
+  box-shadow: 0 0 0 6px rgba(184, 138, 47, 0.14);
   animation: pulseG 2s infinite;
   flex-shrink: 0;
 }
 
 .intel-live-dot--warn {
   background: var(--state-amber);
-  box-shadow: 0 0 0 6px rgba(194, 163, 90, 0.14);
+  box-shadow: 0 0 0 6px rgba(184, 138, 47, 0.14);
 }
 
 .intel-live-chip strong {
@@ -2253,7 +2255,7 @@ tr:hover td {
   position: absolute;
   inset: 0;
   background:
-    radial-gradient(circle at 14% 14%, rgba(47, 107, 79, 0.06), transparent 24%),
+    radial-gradient(circle at 14% 14%, rgba(184, 138, 47, 0.06), transparent 24%),
     radial-gradient(circle at 88% 12%, rgba(90, 125, 153, 0.04), transparent 22%);
   pointer-events: none;
 }
@@ -2295,7 +2297,7 @@ tr:hover td {
 .intel-filter-field input:focus,
 .intel-filter-field select:focus {
   border-color: var(--accent-cyan-border);
-  box-shadow: 0 0 0 3px rgba(47, 107, 79, 0.14);
+  box-shadow: 0 0 0 3px rgba(184, 138, 47, 0.14);
 }
 
 .intel-filter-footer {
@@ -2456,7 +2458,7 @@ tr:hover td {
 /* --- HEADER OPERACIONAL PRINCIPAL --- */
 .ops-header-panel {
   margin-bottom: 20px;
-  border-top: 3px solid #4f8a68 !important;
+  border-top: 3px solid #B88A2F !important;
 }
 
 .ops-header-panel .inner-core {
@@ -2530,7 +2532,7 @@ tr:hover td {
 .status-pill.green {
   background: var(--success-soft);
   color: var(--success);
-  border: 1px solid rgba(179, 224, 138, 0.22);
+  border: 1px solid rgba(94, 143, 102, 0.22);
 }
 
 .status-pill.amber {
@@ -2542,7 +2544,7 @@ tr:hover td {
 .status-pill.danger {
   background: var(--danger-soft);
   color: #C06060;
-  border: 1px solid rgba(138, 74, 66, 0.28);
+  border: 1px solid rgba(158, 78, 63, 0.28);
 }
 
 /* Vitals strip — métricas clave inline */
@@ -2633,8 +2635,8 @@ tr:hover td {
   align-items: center;
   justify-content: center;
   border-radius: 6px;
-  background: rgba(79, 138, 104, 0.12);
-  border: 1px solid rgba(79, 138, 104, 0.18);
+  background: rgba(184, 138, 47, 0.12);
+  border: 1px solid rgba(184, 138, 47, 0.18);
   margin-bottom: 8px;
   flex-shrink: 0;
 }
@@ -2686,7 +2688,7 @@ tr:hover td {
   left: 0;
   right: 0;
   height: 2px;
-  background: rgba(79, 138, 104, 0.30);
+  background: rgba(184, 138, 47, 0.30);
 }
 
 .kpi-ops-card.alert-variant .inner-core::after {
@@ -2694,11 +2696,11 @@ tr:hover td {
 }
 
 .kpi-ops-card.danger-variant .inner-core::after {
-  background: rgba(138, 74, 66, 0.30);
+  background: rgba(158, 78, 63, 0.30);
 }
 
 .kpi-ops-card.success-variant .inner-core::after {
-  background: rgba(122, 185, 142, 0.30);
+  background: rgba(94, 143, 102, 0.30);
 }
 
 /* --- BADGES OPERACIONALES TÁCTICOS --- */
@@ -2714,9 +2716,9 @@ tr:hover td {
 }
 
 .badge-op.reporte {
-  background: rgba(79, 138, 104, 0.15);
+  background: rgba(184, 138, 47, 0.15);
   color: var(--accent-cyan);
-  border: 1px solid rgba(79, 138, 104, 0.25);
+  border: 1px solid rgba(184, 138, 47, 0.25);
 }
 
 .badge-op.osint {
@@ -2728,7 +2730,7 @@ tr:hover td {
 .badge-op.critico {
   background: var(--danger-soft);
   color: #C06060;
-  border: 1px solid rgba(138, 74, 66, 0.30);
+  border: 1px solid rgba(158, 78, 63, 0.30);
 }
 
 .badge-op.alerta {

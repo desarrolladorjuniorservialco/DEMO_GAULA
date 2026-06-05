@@ -33,10 +33,16 @@
             <a href="#reporte">Reporte 147</a>
             <a href="#trazabilidad">Trazabilidad</a>
             <a href="{{ url_for('dashboard.dashboard') }}">Dashboard</a>
+            <a href="{{ url_for('osint_dashboard.dashboard') }}">Dashboard OSINT</a>
+            <a href="{{ url_for('history_osint.history') }}">Historial OSINT</a>
+            <a href="{{ url_for('search_osint.search_page') }}">Búsqueda OSINT</a>
             <a href="{{ url_for('auth.logout') }}">Cerrar sesión</a>
             <a href="{{ url_for('dashboard.api_externa') }}">Verificación de brechas de seguridad</a>
           {% else %}
             <a href="#reporte">Formulario 147</a>
+            <a href="{{ url_for('osint_dashboard.dashboard') }}">Dashboard OSINT</a>
+            <a href="{{ url_for('history_osint.history') }}">Historial OSINT</a>
+            <a href="{{ url_for('search_osint.search_page') }}">Búsqueda OSINT</a>
             <a href="{{ url_for('auth.logout') }}">Cerrar sesión</a>
           {% endif %}
         </nav>

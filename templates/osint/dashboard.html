@@ -1,0 +1,119 @@
+{% extends 'base.html' %}
+
+{% block contenido %}
+<section class="dashboard">
+  <div class="section-title">
+    <h1>Dashboard OSINT</h1>
+    <p>Monitoreo operativo de consultas, fuentes, objetivos y riesgo acumulado del motor universal.</p>
+  </div>
+
+  <div class="kpi-grid">
+    <article class="kpi-card">
+      <span>Consultas</span>
+      <strong>{{ stats.consultas_total }}</strong>
+    </article>
+    <article class="kpi-card">
+      <span>Resultados</span>
+      <strong>{{ stats.resultados_total }}</strong>
+    </article>
+    <article class="kpi-card">
+      <span>Fuentes</span>
+      <strong>{{ stats.fuentes_total }}</strong>
+    </article>
+    <article class="kpi-card alert-kpi">
+      <span>Indicadores activos</span>
+      <strong>{{ stats.indicadores_activos }}</strong>
+    </article>
+    <article class="kpi-card">
+      <span>Promedio resultados</span>
+      <strong>{{ stats.promedio_resultados }}</strong>
+    </article>
+    <article class="kpi-card">
+      <span>Riesgo promedio</span>
+      <strong>{{ stats.riesgo_promedio }}</strong>
+    </article>
+  </div>
+
+  <div class="dashboard-grid">
+    <div class="dashboard-card">
+      <h2>Consultas por día</h2>
+      <div class="flow-list">
+        {% for day in series.consultas_por_dia %}
+        <div>
+          <span>{{ day.date }}</span>
+          <strong>{{ day.count }}</strong>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <div class="dashboard-card">
+      <h2>Top fuentes</h2>
+      <div class="flow-list">
+        {% for source in series.top_fuentes %}
+        <div>
+          <span>{{ source.name }}</span>
+          <strong>{{ source.count }}</strong>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+
+  <div class="dashboard-grid">
+    <div class="dashboard-card">
+      <h2>Top objetivos</h2>
+      <div class="flow-list">
+        {% for item in series.top_objetivos %}
+        <div>
+          <span>{{ item.name }}</span>
+          <strong>{{ item.count }}</strong>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <div class="dashboard-card">
+      <h2>Distribución de riesgo</h2>
+      <div class="flow-list">
+        {% for item in series.riesgos %}
+        <div>
+          <span>{{ item.name }}</span>
+          <strong>{{ item.count }}</strong>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+
+  <div class="dashboard-card">
+    <h2>Consultas recientes</h2>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Fecha</th>
+            <th>Objetivo</th>
+            <th>Tipo</th>
+            <th>Fuente</th>
+            <th>Riesgo</th>
+            <th>Resultados</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for item in recent %}
+          <tr>
+            <td>{{ item.created_at[:16] if item.created_at else '—' }}</td>
+            <td>{{ item.target }}</td>
+            <td>{{ item.target_type }}</td>
+            <td>{{ item.source }}</td>
+            <td>{{ item.risk.level }} ({{ item.risk.score }})</td>
+            <td>{{ item.results_count }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+{% endblock %}
