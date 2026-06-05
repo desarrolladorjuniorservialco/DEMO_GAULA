@@ -2,8 +2,8 @@
 import pytest
 from sqlalchemy.exc import IntegrityError
 from models.intel import (
-    Persona, Alias, Telefono, Correo, Direccion,
-    Ubicacion, Vehiculo, CuentaBancaria, RedSocial, Organizacion,
+    Persona, Alias, Telefono, Correo,
+    Ubicacion, Vehiculo, CuentaBancaria, Organizacion,
 )
 
 

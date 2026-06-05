@@ -121,11 +121,19 @@
       "Bash(python -c \"import pandas as pd; df = pd.read_csv\\('data/Data_Set/nexo147_dataset_relacional_csv/nexo147_alertas_osint_demo.csv', nrows=0\\); print\\(list\\(df.columns\\)\\)\")",
       "Bash(git push *)",
       "Bash(git rm *)",
-      "Bash(dir /b \"c:\\\\Users\\\\Victor Pulido\\\\Documents\\\\GIT_Repositories\\\\DEMO_GAULA\")"
+      "Bash(dir /b \"c:\\\\Users\\\\Victor Pulido\\\\Documents\\\\GIT_Repositories\\\\DEMO_GAULA\")",
+      "Bash(.venv/Scripts/python.exe -m vulture . --min-confidence 60 --exclude \".venv,venv,__pycache__,node_modules\")",
+      "Bash(.venv/Scripts/pip.exe install *)",
+      "Bash(.venv/Scripts/python.exe -m vulture . --min-confidence 60 --exclude \".venv,venv,__pycache__,node_modules,migrations\")",
+      "Bash(.venv/Scripts/python.exe -m pytest tests/ -q --tb=no)",
+      "Bash(.venv/Scripts/python.exe -m pytest tests/ -q --tb=short)",
+      "Bash(Get-ChildItem -Path . -Recurse -Directory -ErrorAction SilentlyContinue)",
+      "Bash(Select-Object -ExpandProperty FullName)"
     ],
     "additionalDirectories": [
       "C:\\Users\\Victor Pulido\\Documents\\GIT\\DEMO_GAULA\\docs\\superpowers\\specs",
-      "c:\\Users\\Victor Pulido\\Documents\\GIT\\DEMO_GAULA\\docs\\superpowers\\specs"
+      "c:\\Users\\Victor Pulido\\Documents\\GIT\\DEMO_GAULA\\docs\\superpowers\\specs",
+      "c:\\Users\\Victor Pulido\\.claude\\projects\\c--Users-Victor-Pulido-Documents-GIT-Repositories-DEMO-GAULA\\memory"
     ]
   }
 }

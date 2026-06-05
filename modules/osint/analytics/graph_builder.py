@@ -292,7 +292,7 @@ def build_graph(
                 add_node(oid, ent["name"], TYPE_ORGANIZATION, rdap_c * 0.85, rdap_src)
                 add_edge(domain, oid, role, rdap_c * 0.85, rdap_src, 0.70)
 
-    findings = _generate_findings(nodes, edges, username)
+    findings = _generate_findings(nodes, edges)
 
     return {
         "nodes": list(nodes.values()),
@@ -315,7 +315,7 @@ def _count_by_type(nodes: dict) -> dict[str, int]:
     return counts
 
 
-def _generate_findings(nodes: dict, edges: list, target: str) -> list[dict]:
+def _generate_findings(nodes: dict, edges: list) -> list[dict]:
     findings: list[dict] = []
 
     by_type: dict[str, list] = {}
