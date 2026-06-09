@@ -1,116 +1,100 @@
-import json
-from datetime import datetime, timedelta
+"""opendata/routes.py — Tab Datos Abiertos: búsqueda universal SIMIT + Truecaller."""
+from __future__ import annotations
+
+import re
+from typing import Any
 
 from flask import render_template, request
 
-from models import db
-from models.osint import CacheConsulta, ConsultaOsint, FuenteOsint, ResultadoOsint
 from modules.osint.auth import login_required
-from modules.osint.open_data.service import OpenDataEngine
-from modules.osint.opendata import opendata_osint_bp
+from modules.osint.connectors.base import ConnectorResult
+from modules.osint.connectors.simit import SimitConnector
+from modules.osint.connectors.truecaller import TruecallerConnector
+from modules.osint.engines.orchestration import OsintOrchestrator
+from modules.osint.opendata import opendata_bp
 
-_ENGINE = OpenDataEngine()
+_PLATE_RE = re.compile(r"^[A-Za-z]{3}[0-9A-Za-z]{3}$")
+_PHONE_RE = re.compile(r"^(\+57|57)?3\d{9}$")
+
+_ORCHESTRATOR = OsintOrchestrator(
+    connectors=[SimitConnector(), TruecallerConnector()],
+    max_workers=2,
+    timeout=20.0,
+)
 
 
-def _ensure_source() -> FuenteOsint:
-    source = db.session.query(FuenteOsint).filter_by(nombre="open_data_engine").first()
-    if source:
-        return source
+def _detect_type(q: str) -> str:
+    q = q.strip()
+    if _PHONE_RE.match(q) or q.startswith("+"):
+        return "phone"
+    if _PLATE_RE.match(q):
+        return "plate"
+    if q.isdigit() and 6 <= len(q) <= 10:
+        return "document"
+    return "unknown"
 
-    source = FuenteOsint(
-        nombre="open_data_engine",
-        tipo="engine",
-        url_base="https://www.datos.gov.co/",
-        requiere_key=False,
-        activa=True,
-        rate_limit_por_min=120,
-        descripcion="Panel de datos abiertos y fuentes oficiales",
-        created_by="system",
-        updated_by="system",
+
+def _run_connectors(q: str, target_type: str) -> dict[str, ConnectorResult]:
+    results = _ORCHESTRATOR.run(
+        target=q,
+        target_type=target_type,
+        extra_kwargs={
+            "simit": {"target_type": target_type},
+        },
     )
-    db.session.add(source)
-    db.session.commit()
-    return source
-
-
-def _persist_lookup(payload: dict[str, object]) -> None:
-    try:
-        source = _ensure_source()
-        consulta = ConsultaOsint(
-            fuente_id=source.id,
-            tipo_consulta=f"open_data:{payload.get('source_hint', 'official')}",
-            valor_consultado=str(payload.get("query", "")),
-            entity_type=str(payload.get("target_type", "unknown")),
-            estado="completada",
-            created_by="system",
+    if "truecaller" not in results:
+        results["truecaller"] = ConnectorResult(
+            connector="truecaller", ok=False, data={}, errors=[],
+            metadata={"status": "unconfigured"},
         )
-        db.session.add(consulta)
-        db.session.flush()
-
-        cache = CacheConsulta(
-            consulta_id=consulta.id,
-            hash_clave=(
-                f"open-data:{payload.get('source_hint', 'official')}:"
-                f"{payload.get('query_normalized', payload.get('query', ''))}:{consulta.id}"
-            ),
-            respuesta_raw=json.dumps(payload, ensure_ascii=False, default=str),
-            codigo_http=200,
-            expira_en=datetime.utcnow() + timedelta(hours=1),
-            hits=0,
-        )
-        db.session.add(cache)
-
-        for item in list(payload.get("results", []))[:25]:
-            if not isinstance(item, dict):
-                continue
-            resultado = ResultadoOsint(
-                consulta_id=consulta.id,
-                tipo_hallazgo=str(item.get("entity_type", "record")),
-                titulo=str(item.get("value", ""))[:200],
-                descripcion=json.dumps(item.get("metadata", {}), ensure_ascii=False, default=str),
-                datos_json=json.dumps(item, ensure_ascii=False, default=str),
-                relevancia=float(item.get("confidence", 0.5) or 0.5),
-                verificado=False,
-                created_by="system",
-            )
-            db.session.add(resultado)
-
-        db.session.commit()
-    except Exception:
-        db.session.rollback()
+    return results
 
 
-@opendata_osint_bp.route("/lookup")
+@opendata_bp.route("/lookup")
 @login_required
-def lookup():
-    query = request.args.get("q", "").strip()
-    source = (request.args.get("source", "official", type=str) or "official").strip() or "official"
+def lookup() -> Any:
+    q = request.args.get("q", "").strip()
 
-    if not query:
-        payload = {
-            "query": "",
-            "query_normalized": "",
-            "source_hint": source,
-            "source_label": source.replace("_", " ").title(),
-            "target_type": "unknown",
-            "source_catalog": _ENGINE.catalog("empty", source),
-            "source_results": [],
-            "results": [],
-            "errors": ["No se proporciono una consulta."],
-            "network": {"ip_data": None, "rdap_data": None, "crt_data": []},
-            "ip_data": None,
-            "rdap_data": None,
-            "crt_data": [],
-            "summary": {
-                "sources_count": 0,
-                "records_count": 0,
-                "errors_count": 1,
-                "network_records_count": 0,
-            },
-            "guidance": [],
-        }
-    else:
-        payload = _ENGINE.search(query, source_hint=source)
-        _persist_lookup(payload)
+    if not q:
+        return render_template(
+            "osint/opendata_fragment.html",
+            q=q,
+            target_type="unknown",
+            simit=None,
+            truecaller=None,
+            errors=["No se proporcionó un término de búsqueda."],
+            sources_queried=0,
+            findings_count=0,
+        )
 
-    return render_template("osint/opendata_fragment.html", **payload)
+    target_type = _detect_type(q)
+    results = _run_connectors(q, target_type)
+
+    simit = results.get("simit")
+    truecaller = results.get("truecaller")
+
+    all_errors: list[str] = []
+    if simit:
+        all_errors.extend(simit.errors)
+    if truecaller:
+        all_errors.extend(truecaller.errors)
+
+    sources_queried = sum(
+        1 for r in [simit, truecaller]
+        if r and r.metadata.get("status") != "unconfigured"
+    )
+    findings_count = sum([
+        len(simit.data.get("rows", [])) if simit and simit.ok else 0,
+        1 if truecaller and truecaller.ok else 0,
+    ])
+
+    return render_template(
+        "osint/opendata_fragment.html",
+        q=q,
+        target_type=target_type,
+        simit=simit,
+        truecaller=truecaller,
+        errors=all_errors,
+        sources_queried=sources_queried,
+        findings_count=findings_count,
+    )

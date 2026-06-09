@@ -42,9 +42,9 @@ def _register_blueprints(app):
     from modules.osint.history  import history_osint_bp
     from modules.osint.dashboard import dashboard_osint_bp
     from modules.osint.social    import social_osint_bp
-    from modules.osint.opendata  import opendata_osint_bp
     from modules.osint.analytics  import analytics_osint_bp
     from modules.osint.watchlists import watchlists_osint_bp
+    from modules.osint.opendata  import opendata_bp
     from modules.chatbot import chatbot_bp
 
     app.register_blueprint(auth_bp)
@@ -56,9 +56,9 @@ def _register_blueprints(app):
     app.register_blueprint(history_osint_bp,   url_prefix="/osint")
     app.register_blueprint(dashboard_osint_bp, url_prefix="/osint")
     app.register_blueprint(social_osint_bp,    url_prefix="/osint/social")
-    app.register_blueprint(opendata_osint_bp,  url_prefix="/osint/opendata")
     app.register_blueprint(analytics_osint_bp, url_prefix="/osint/analytics")
     app.register_blueprint(watchlists_osint_bp, url_prefix="/osint/watchlists")
+    app.register_blueprint(opendata_bp,         url_prefix="/osint/opendata")
     app.register_blueprint(chatbot_bp)
 
 
