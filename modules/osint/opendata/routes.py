@@ -55,6 +55,18 @@ def _run_connectors(q: str, target_type: str) -> dict[str, ConnectorResult]:
 def lookup() -> Any:
     q = request.args.get("q", "").strip()
 
+    if len(q) > 100:
+        return render_template(
+            "osint/opendata_fragment.html",
+            q=q,
+            target_type="unknown",
+            simit=None,
+            truecaller=None,
+            errors=["Consulta demasiado larga (máximo 100 caracteres)."],
+            sources_queried=0,
+            findings_count=0,
+        )
+
     if not q:
         return render_template(
             "osint/opendata_fragment.html",
