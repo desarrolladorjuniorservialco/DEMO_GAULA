@@ -1578,7 +1578,7 @@ tr:hover td {
   font-family: var(--font-display);
   font-size: 13px;
   outline: none;
-  transition: all 0.2s ease;
+  transition: border-color 160ms ease-out, box-shadow 160ms ease-out;
 }
 
 .login-form input:focus {
@@ -1605,7 +1605,7 @@ tr:hover td {
   align-items: center;
   justify-content: center;
   gap: 8px;
-  transition: all 0.2s ease;
+  transition: background-color 160ms ease-out, transform 160ms ease-out, box-shadow 160ms ease-out;
   margin-top: 20px;
   letter-spacing: 0.3px;
 }
@@ -1622,7 +1622,7 @@ tr:hover td {
   box-shadow: 0 6px 20px rgba(184, 138, 47, 0.3);
 }
 
-.login-submit-btn:active { transform: translateY(0); }
+.login-submit-btn:active { transform: scale(0.97); box-shadow: none; }
 
 /* Demo credentials */
 .login-demo {
@@ -1699,6 +1699,99 @@ tr:hover td {
 
 /* Legacy selectors — kept for orbit animation used elsewhere */
 .orbit-ring, .orbit-core { display: none; }
+
+/* ==========================================================================
+   LOGIN PAGE — Background override & entrance animations
+   ========================================================================== */
+
+/* Suppress the global body::before background image on the login page */
+body.login-body::before {
+  display: none;
+}
+
+/* Dark atmosphere: layered radial grey gradients */
+body.login-body {
+  background:
+    radial-gradient(ellipse 70% 55% at 12% 12%, rgba(58, 58, 74, 0.55) 0%, transparent 55%),
+    radial-gradient(ellipse 55% 45% at 88% 88%, rgba(40, 40, 54, 0.48) 0%, transparent 52%),
+    radial-gradient(ellipse 45% 35% at 60% 30%, rgba(28, 28, 40, 0.35) 0%, transparent 60%),
+    #05050a;
+}
+
+/* Override orb colors for login context — cool grey instead of amber */
+body.login-body .orb-one {
+  background: #3a3a50;
+  opacity: 0.06;
+  animation: login-orb-breathe 9s ease-in-out infinite;
+}
+
+body.login-body .orb-two {
+  background: #28283a;
+  opacity: 0.05;
+  animation: login-orb-breathe 11s ease-in-out infinite;
+  animation-delay: 3s;
+}
+
+@keyframes login-orb-breathe {
+  0%, 100% { opacity: 0.05; transform: scale(1); }
+  50%       { opacity: 0.09; transform: scale(1.04); }
+}
+
+/* Entrance keyframe — starts slightly below, fades in */
+@keyframes login-rise {
+  from {
+    opacity: 0;
+    transform: translateY(18px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Staggered panel entrance */
+.login-class-bar {
+  animation: login-rise 300ms cubic-bezier(0.23, 1, 0.32, 1) both;
+}
+
+.login-panel {
+  animation: login-rise 360ms cubic-bezier(0.23, 1, 0.32, 1) 50ms both;
+}
+
+.login-footer {
+  animation: login-rise 280ms cubic-bezier(0.23, 1, 0.32, 1) 120ms both;
+}
+
+/* Stagger elements inside the panel */
+.login-identity {
+  animation: login-rise 260ms cubic-bezier(0.23, 1, 0.32, 1) 160ms both;
+}
+
+.login-status-row {
+  animation: login-rise 240ms cubic-bezier(0.23, 1, 0.32, 1) 200ms both;
+}
+
+.login-form-section {
+  animation: login-rise 240ms cubic-bezier(0.23, 1, 0.32, 1) 240ms both;
+}
+
+/* Accessibility: remove movement, keep opacity fade */
+@media (prefers-reduced-motion: reduce) {
+  body.login-body .orb-one,
+  body.login-body .orb-two {
+    animation: none;
+  }
+  .login-class-bar,
+  .login-panel,
+  .login-footer,
+  .login-identity,
+  .login-status-row,
+  .login-form-section {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+}
 
 /* ==========================================================================
    ADDITIONAL STYLES FOR NEW INTEL, OSINT, ETL & DATAMART PANELS
