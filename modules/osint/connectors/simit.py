@@ -28,7 +28,8 @@ class SimitConnector(BaseConnector):
     def timeout_seconds(self) -> float:
         return 15.0
 
-    def fetch(self, target: str, target_type: str = "unknown", **kwargs: Any) -> ConnectorResult:
+    def fetch(self, target: str, **kwargs: Any) -> ConnectorResult:
+        target_type: str = kwargs.get("target_type", "unknown")
         t0 = time.monotonic()
         errors: list[str] = []
         rows: list[dict] = []
@@ -52,9 +53,13 @@ class SimitConnector(BaseConnector):
         )
 
     def _build_where(self, target: str, target_type: str) -> str:
-        if target_type == "plate" or _PLATE_RE.match(target):
-            return f"upper(placa)=upper('{target}')"
-        if target_type == "document" or target.isdigit():
-            return f"numero_identificacion='{target}'"
         safe = target.replace("'", "''")
+        if target_type == "plate":
+            return f"upper(placa)=upper('{safe}')"
+        if target_type == "document":
+            return f"numero_identificacion='{safe}'"
+        if _PLATE_RE.match(target):
+            return f"upper(placa)=upper('{safe}')"
+        if target.isdigit():
+            return f"numero_identificacion='{safe}'"
         return f"upper(nombre) like upper('%{safe}%')"
