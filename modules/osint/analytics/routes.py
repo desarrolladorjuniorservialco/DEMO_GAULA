@@ -247,13 +247,13 @@ def _collect_all_data_lite(query: str, source: str) -> dict:
         except Exception:
             pass
 
-    if source in ("ip", "network", "all"):
+    if source in ("ip", "network", "government", "all"):
         try:
             result["ip_data"], _ = _fetch_ip_geo(query)
         except Exception:
             pass
 
-    if source in ("domain", "network", "all"):
+    if source in ("domain", "network", "government", "all"):
         try:
             rdap_raw, _         = _fetch_domain_rdap(query)
             result["rdap_data"] = _parse_rdap(rdap_raw)

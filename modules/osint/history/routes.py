@@ -83,6 +83,23 @@ def _serialize_consulta(consulta: ConsultaOsint) -> dict:
     }
 
 
+def _history_facets(consultas: list[ConsultaOsint]) -> dict:
+    return {
+        "target_types": sorted(
+            {
+                consulta.entity_type or "unknown"
+                for consulta in consultas
+            }
+        ),
+        "sources": sorted(
+            {
+                consulta.fuente.nombre if consulta.fuente else consulta.tipo_consulta or "unknown"
+                for consulta in consultas
+            }
+        ),
+    }
+
+
 def _query_history():
     q = request.args.get("q", "").strip()
     source = request.args.get("source", "all").strip() or "all"
@@ -93,9 +110,8 @@ def _query_history():
     page = max(int(request.args.get("page", 1) or 1), 1)
     page_size = min(max(int(request.args.get("limit", 20) or 20), 5), 100)
 
-    consultas = (
-        ConsultaOsint.query.order_by(ConsultaOsint.created_at.desc()).all()
-    )
+    consultas = ConsultaOsint.query.order_by(ConsultaOsint.created_at.desc()).all()
+    facets = _history_facets(consultas)
 
     rows = []
     for consulta in consultas:
@@ -137,6 +153,7 @@ def _query_history():
             "from": request.args.get("from", ""),
             "to": request.args.get("to", ""),
         },
+        "facets": facets,
     }
 
 
@@ -216,18 +233,6 @@ def _consulta_graphml(consulta: ConsultaOsint) -> Response:
 @login_required
 def history():
     payload = _query_history()
-    target_types = sorted(
-        {
-            consulta.entity_type or "unknown"
-            for consulta in ConsultaOsint.query.all()
-        }
-    )
-    source_names = sorted(
-        {
-            consulta.fuente.nombre if consulta.fuente else consulta.tipo_consulta or "unknown"
-            for consulta in ConsultaOsint.query.all()
-        }
-    )
     return render_template(
         "osint/history.html",
         entries=payload["rows"],
@@ -236,8 +241,8 @@ def history():
         pages=payload["pages"],
         limit=payload["limit"],
         filters=payload["filters"],
-        target_types=["all", *target_types] if target_types else ["all"],
-        sources=["all", *source_names] if source_names else ["all"],
+        target_types=["all", *payload["facets"]["target_types"]] if payload["facets"]["target_types"] else ["all"],
+        sources=["all", *payload["facets"]["sources"]] if payload["facets"]["sources"] else ["all"],
     )
 
 

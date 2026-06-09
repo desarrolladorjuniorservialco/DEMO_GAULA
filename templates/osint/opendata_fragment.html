@@ -13,24 +13,153 @@
 .osint-frag .error-block{background:#1a0a0a;border:1px solid #5c1a1a;border-radius:4px;padding:.5rem .75rem;margin-bottom:1rem}
 .osint-frag .error-line{color:#f87171;margin:2px 0;font-size:.78rem}
 .osint-frag .badge{background:#0d1a2e;border:1px solid #2a4060;color:#8ab4cc;padding:1px 7px;border-radius:3px;font-size:.7rem;margin-right:.3rem}
+.osint-frag .badge-ok{color:#4ade80;border-color:#14532d}
+.osint-frag .badge-warn{color:#facc15;border-color:#713f12}
+.osint-frag .badge-muted{color:#94a3b8;border-color:#334155}
 .osint-frag .subsection-title{color:#6b8aaa;font-size:.78rem;font-weight:600;margin:.75rem 0 .4rem;text-transform:uppercase;letter-spacing:.05em}
 .osint-frag .empty-state{text-align:center;padding:2rem;color:#4a5a6a;font-size:.85rem}
 .osint-frag .results-meta{margin-bottom:.5rem;font-size:.77rem;color:#6b8aaa}
+.osint-frag .source-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:.75rem}
+.osint-frag .source-card{background:#0b1322;border:1px solid #1f2b41;border-radius:8px;padding:.75rem}
+.osint-frag .source-card.selected{border-color:#31607e;box-shadow:0 0 0 1px rgba(67,170,219,.12) inset}
+.osint-frag .source-head{display:flex;align-items:center;justify-content:space-between;gap:.5rem;margin-bottom:.4rem}
+.osint-frag .source-name{font-weight:700;color:#e2e8f0}
+.osint-frag .source-desc{font-size:.76rem;color:#94a3b8;line-height:1.35;margin-bottom:.5rem}
+.osint-frag .source-meta{font-size:.72rem;color:#8ab4cc;line-height:1.45}
+.osint-frag .source-links a{color:#4bc8a8;text-decoration:none}
+.osint-frag .source-links a:hover{text-decoration:underline}
+.osint-frag .summary-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:.5rem;margin:.75rem 0 1rem}
+.osint-frag .summary-card{background:#0b1322;border:1px solid #1f2b41;border-radius:6px;padding:.6rem .7rem}
+.osint-frag .summary-value{font-size:1.1rem;color:#f8fafc;font-weight:700}
+.osint-frag .summary-label{font-size:.7rem;color:#8ab4cc;text-transform:uppercase;letter-spacing:.05em}
+.osint-frag .guidance{background:#0a1020;border-left:3px solid #3b82f6;padding:.6rem .75rem;margin-bottom:1rem;color:#b9d7ff}
+.osint-frag .source-result-card{background:#0b1322;border:1px solid #1f2b41;border-radius:8px;padding:.75rem;margin-bottom:.75rem}
+.osint-frag .source-result-head{display:flex;justify-content:space-between;gap:.5rem;align-items:flex-start;margin-bottom:.35rem}
+.osint-frag .source-result-title{font-weight:700;color:#e2e8f0}
+.osint-frag .source-result-note{font-size:.75rem;color:#94a3b8;line-height:1.4}
 </style>
 
 <div class="osint-frag">
   <div class="results-meta">
-    Consulta: <strong>{{ query }}</strong> —
+    Consulta: <strong>{{ query or '—' }}</strong> —
+    Tipo detectado: <span class="badge">{{ target_type|default('unknown') }}</span>
     Fuente:
-    {% if source == 'ip' %}<span class="badge">Geoloc. IP</span>
-    {% elif source == 'domain' %}<span class="badge">RDAP</span><span class="badge">crt.sh</span>
-    {% else %}<span class="badge">IP</span><span class="badge">RDAP</span><span class="badge">crt.sh</span>{% endif %}
+    <span class="badge">{{ source_label|default(source_hint|default('official')) }}</span>
+    {% if summary %}
+      <span class="badge">{{ summary.sources_count }} fuentes</span>
+      <span class="badge">{{ summary.records_count }} registros</span>
+    {% endif %}
   </div>
+
+  {% if guidance %}
+  <div class="guidance">
+    {% for note in guidance %}
+      <div>• {{ note }}</div>
+    {% endfor %}
+  </div>
+  {% endif %}
 
   {% if errors %}
   <div class="error-block">
     {% for err in errors %}<p class="error-line">⚠ {{ err }}</p>{% endfor %}
   </div>
+  {% endif %}
+
+  {% if source_catalog %}
+  <section class="result-section">
+    <h3 class="section-title"><span class="section-tag">CATALOGO</span> Fuentes oficiales disponibles</h3>
+    <div class="source-grid">
+      {% for src in source_catalog %}
+      <div class="source-card{% if src.selected %} selected{% endif %}">
+        <div class="source-head">
+          <div class="source-name">{{ src.label }}</div>
+          {% if src.selected %}
+            <span class="badge badge-ok">seleccionada</span>
+          {% else %}
+            <span class="badge badge-muted">disponible</span>
+          {% endif %}
+        </div>
+        <div class="source-desc">{{ src.description or 'Sin descripcion adicional.' }}</div>
+        <div class="source-meta">
+          <div><strong>Categoria:</strong> {{ src.category }}</div>
+          <div><strong>Modo:</strong> {{ src.mode }}</div>
+          <div><strong>Compatibles:</strong> {{ src.supported_target_types|join(', ') }}</div>
+          <div><strong>País:</strong> {{ src.country or '—' }}</div>
+        </div>
+        <div class="source-links" style="margin-top:.45rem">
+          {% if src.official_url %}<a href="{{ src.official_url }}" target="_blank" rel="noopener">Portal oficial</a>{% endif %}
+          {% if src.api_url %}{% if src.official_url %} · {% endif %}<a href="{{ src.api_url }}" target="_blank" rel="noopener">API / dataset</a>{% endif %}
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </section>
+  {% endif %}
+
+  {% if source_results %}
+  <section class="result-section">
+    <h3 class="section-title"><span class="section-tag">ESTADO</span> Resultado por fuente</h3>
+    {% for item in source_results %}
+    <div class="source-result-card">
+      <div class="source-result-head">
+        <div>
+          <div class="source-result-title">{{ item.source }}</div>
+          <div class="source-result-note">
+            Registros: {{ item.records|length }} ·
+            Estado: {% if item.ok %}<span class="badge badge-ok">ok</span>{% else %}<span class="badge badge-warn">error</span>{% endif %}
+          </div>
+        </div>
+        {% if item.metadata and item.metadata.official_url %}
+          <a href="{{ item.metadata.official_url }}" target="_blank" rel="noopener" class="badge">portal</a>
+        {% endif %}
+      </div>
+      {% if item.metadata and item.metadata.note %}
+        <div class="source-result-note">{{ item.metadata.note }}</div>
+      {% elif item.metadata and item.metadata.nota %}
+        <div class="source-result-note">{{ item.metadata.nota }}</div>
+      {% endif %}
+      {% if item.errors %}
+        <div class="source-result-note" style="color:#f87171">Errores: {{ item.errors|join(' · ') }}</div>
+      {% endif %}
+    </div>
+    {% endfor %}
+  </section>
+  {% endif %}
+
+  {% if results %}
+  <section class="result-section">
+    <h3 class="section-title"><span class="section-tag">OPEN DATA</span> Registros normalizados</h3>
+    <div class="table-wrap">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Fuente</th>
+            <th>Tipo</th>
+            <th>Valor</th>
+            <th>Confianza</th>
+            <th>URL</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for item in results %}
+          <tr>
+            <td>{{ item.source }}</td>
+            <td>{{ item.entity_type }}</td>
+            <td class="mono-cell">{{ item.value }}</td>
+            <td>{{ '%.2f'|format(item.confidence|float) }}</td>
+            <td class="col-desc">
+              {% if item.url %}
+                <a href="{{ item.url }}" target="_blank" rel="noopener" class="ext-link">{{ item.url }}</a>
+              {% else %}
+                —
+              {% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </section>
   {% endif %}
 
   {% if ip_data %}
@@ -98,7 +227,7 @@
   </section>
   {% endif %}
 
-  {% if not ip_data and not rdap_data and not crt_data and not errors %}
+  {% if not source_catalog and not source_results and not results and not ip_data and not rdap_data and not crt_data and not errors %}
   <div class="empty-state"><p>Sin resultados para <strong>{{ query }}</strong>.</p></div>
   {% endif %}
 </div>

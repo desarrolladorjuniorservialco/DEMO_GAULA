@@ -1,191 +1,116 @@
-import ipaddress
-import re
-import requests
+import json
+from datetime import datetime, timedelta
+
 from flask import render_template, request
 
+from models import db
+from models.osint import CacheConsulta, ConsultaOsint, FuenteOsint, ResultadoOsint
 from modules.osint.auth import login_required
-from modules.osint.core.engine import UniversalOsintEngine
+from modules.osint.open_data.service import OpenDataEngine
 from modules.osint.opendata import opendata_osint_bp
 
-HEADERS = {"User-Agent": "OSINT-Tool/1.0 (educational research)"}
-TIMEOUT = 8
-
-_DOMAIN_RE = re.compile(
-    r"^(?:[a-zA-Z0-9](?:[a-zA-Z0-9\-]{0,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{2,}$"
-)
+_ENGINE = OpenDataEngine()
 
 
-def _is_valid_ip(s):
+def _ensure_source() -> FuenteOsint:
+    source = db.session.query(FuenteOsint).filter_by(nombre="open_data_engine").first()
+    if source:
+        return source
+
+    source = FuenteOsint(
+        nombre="open_data_engine",
+        tipo="engine",
+        url_base="https://www.datos.gov.co/",
+        requiere_key=False,
+        activa=True,
+        rate_limit_por_min=120,
+        descripcion="Panel de datos abiertos y fuentes oficiales",
+        created_by="system",
+        updated_by="system",
+    )
+    db.session.add(source)
+    db.session.commit()
+    return source
+
+
+def _persist_lookup(payload: dict[str, object]) -> None:
     try:
-        ipaddress.ip_address(s)
-        return True
-    except ValueError:
-        return False
-
-
-def _is_valid_domain(s):
-    return bool(_DOMAIN_RE.match(s)) and len(s) <= 253
-
-
-def _fetch_ip_geo(ip):
-    errors = []
-    result = None
-    try:
-        r = requests.get(
-            f"http://ip-api.com/json/{ip}",
-            params={
-                "fields": "status,message,country,countryCode,region,regionName,city,zip,lat,lon,timezone,isp,org,as,query"
-            },
-            timeout=TIMEOUT,
+        source = _ensure_source()
+        consulta = ConsultaOsint(
+            fuente_id=source.id,
+            tipo_consulta=f"open_data:{payload.get('source_hint', 'official')}",
+            valor_consultado=str(payload.get("query", "")),
+            entity_type=str(payload.get("target_type", "unknown")),
+            estado="completada",
+            created_by="system",
         )
-        if r.status_code == 200:
-            data = r.json()
-            if data.get("status") == "success":
-                result = data
-            else:
-                errors.append(f"ip-api.com: {data.get('message', 'consulta fallida')}.")
-        else:
-            errors.append(f"ip-api.com: respuesta inesperada ({r.status_code}).")
-    except requests.exceptions.ConnectionError:
-        errors.append("ip-api.com: error de conexión.")
-    except requests.exceptions.Timeout:
-        errors.append("ip-api.com: tiempo de espera agotado.")
-    except requests.exceptions.RequestException as e:
-        errors.append(f"ip-api.com: error ({e}).")
-    return result, errors
+        db.session.add(consulta)
+        db.session.flush()
 
-
-def _fetch_domain_rdap(domain):
-    errors = []
-    result = None
-    try:
-        r = requests.get(
-            f"https://rdap.org/domain/{domain}",
-            headers=HEADERS,
-            timeout=TIMEOUT,
+        cache = CacheConsulta(
+            consulta_id=consulta.id,
+            hash_clave=(
+                f"open-data:{payload.get('source_hint', 'official')}:"
+                f"{payload.get('query_normalized', payload.get('query', ''))}:{consulta.id}"
+            ),
+            respuesta_raw=json.dumps(payload, ensure_ascii=False, default=str),
+            codigo_http=200,
+            expira_en=datetime.utcnow() + timedelta(hours=1),
+            hits=0,
         )
-        if r.status_code == 200:
-            result = r.json()
-        elif r.status_code == 404:
-            errors.append(f"RDAP: dominio '{domain}' no encontrado.")
-        else:
-            errors.append(f"RDAP: respuesta inesperada ({r.status_code}).")
-    except requests.exceptions.ConnectionError:
-        errors.append("RDAP: error de conexión.")
-    except requests.exceptions.Timeout:
-        errors.append("RDAP: tiempo de espera agotado.")
-    except requests.exceptions.RequestException as e:
-        errors.append(f"RDAP: error ({e}).")
-    return result, errors
+        db.session.add(cache)
 
+        for item in list(payload.get("results", []))[:25]:
+            if not isinstance(item, dict):
+                continue
+            resultado = ResultadoOsint(
+                consulta_id=consulta.id,
+                tipo_hallazgo=str(item.get("entity_type", "record")),
+                titulo=str(item.get("value", ""))[:200],
+                descripcion=json.dumps(item.get("metadata", {}), ensure_ascii=False, default=str),
+                datos_json=json.dumps(item, ensure_ascii=False, default=str),
+                relevancia=float(item.get("confidence", 0.5) or 0.5),
+                verificado=False,
+                created_by="system",
+            )
+            db.session.add(resultado)
 
-def _fetch_crt_sh(domain):
-    errors = []
-    certs = []
-    try:
-        r = requests.get(
-            "https://crt.sh/",
-            params={"q": domain, "output": "json"},
-            headers=HEADERS,
-            timeout=TIMEOUT,
-        )
-        if r.status_code == 200:
-            raw = r.json()
-            seen = set()
-            for entry in raw[:50]:
-                name = entry.get("name_value", "")
-                for sub in name.split("\n"):
-                    sub = sub.strip()
-                    if sub and sub not in seen:
-                        seen.add(sub)
-                        certs.append(
-                            {
-                                "name": sub,
-                                "issuer": entry.get("issuer_name", ""),
-                                "not_before": entry.get("not_before", ""),
-                                "not_after": entry.get("not_after", ""),
-                            }
-                        )
-        else:
-            errors.append(f"crt.sh: respuesta inesperada ({r.status_code}).")
-    except requests.exceptions.ConnectionError:
-        errors.append("crt.sh: error de conexión.")
-    except requests.exceptions.Timeout:
-        errors.append("crt.sh: tiempo de espera agotado.")
-    except requests.exceptions.RequestException as e:
-        errors.append(f"crt.sh: error ({e}).")
-    return certs, errors
-
-
-def _parse_rdap(data):
-    if not data:
-        return {}
-    parsed = {
-        "handle": data.get("handle"),
-        "ldhName": data.get("ldhName"),
-        "status": data.get("status", []),
-        "events": [],
-        "nameservers": [],
-        "entities": [],
-    }
-    for ev in data.get("events", []):
-        parsed["events"].append({"action": ev.get("eventAction"), "date": ev.get("eventDate", "")[:10]})
-    for ns in data.get("nameservers", []):
-        parsed["nameservers"].append(ns.get("ldhName", ""))
-    for ent in data.get("entities", []):
-        roles = ent.get("roles", [])
-        vcard = ent.get("vcardArray", [None, []])[1]
-        name = next((v[3] for v in vcard if v[0] == "fn"), None) if vcard else None
-        parsed["entities"].append({"roles": roles, "name": name})
-    return parsed
-
-
-_ENGINE = UniversalOsintEngine()
-
-
-def _collect_errors(collectors: dict) -> list[str]:
-    errors: list[str] = []
-    for payload in collectors.values():
-        errors.extend(payload.get("errors", []))
-    return errors
+        db.session.commit()
+    except Exception:
+        db.session.rollback()
 
 
 @opendata_osint_bp.route("/lookup")
 @login_required
 def lookup():
     query = request.args.get("q", "").strip()
-    source = request.args.get("source", "both")
+    source = (request.args.get("source", "official", type=str) or "official").strip() or "official"
 
     if not query:
-        return render_template(
-            "osint/opendata_fragment.html",
-            query=query,
-            source=source,
-            errors=["No se proporcionó una consulta."],
-        )
+        payload = {
+            "query": "",
+            "query_normalized": "",
+            "source_hint": source,
+            "source_label": source.replace("_", " ").title(),
+            "target_type": "unknown",
+            "source_catalog": _ENGINE.catalog("empty", source),
+            "source_results": [],
+            "results": [],
+            "errors": ["No se proporciono una consulta."],
+            "network": {"ip_data": None, "rdap_data": None, "crt_data": []},
+            "ip_data": None,
+            "rdap_data": None,
+            "crt_data": [],
+            "summary": {
+                "sources_count": 0,
+                "records_count": 0,
+                "errors_count": 1,
+                "network_records_count": 0,
+            },
+            "guidance": [],
+        }
+    else:
+        payload = _ENGINE.search(query, source_hint=source)
+        _persist_lookup(payload)
 
-    response = _ENGINE.search(
-        target=query,
-        source_hint=source,
-        persist=True,
-        created_by="system",
-    )
-    collectors = response.get("collectors", {})
-    ip_data = collectors.get("ip", {}).get("data")
-    domain_collector = collectors.get("domain", {})
-    rdap_data = domain_collector.get("rdap_data")
-    crt_data = (domain_collector.get("crt_data") or {}).get("certs")
-    errors = _collect_errors(collectors)
-
-    return render_template(
-        "osint/opendata_fragment.html",
-        query=query,
-        source=source,
-        ip_data=ip_data,
-        rdap_data=rdap_data,
-        crt_data=crt_data,
-        errors=errors,
-        findings=response.get("findings", []),
-        risk=response.get("risk", {}),
-        target_type=response.get("target_type", "unknown"),
-    )
+    return render_template("osint/opendata_fragment.html", **payload)

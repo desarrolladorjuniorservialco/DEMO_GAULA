@@ -856,6 +856,12 @@ tr:hover td {
   letter-spacing: 0.3px;
 }
 
+/* Options inside any select — override OS default white background */
+select option {
+  background-color: #141820;
+  color: #e8e0c8;
+}
+
 .form-tactical-layout input,
 .form-tactical-layout select,
 .form-tactical-layout textarea {
@@ -1972,6 +1978,215 @@ body.login-body .orb-two {
   font-family: var(--font-mono);
   font-size: 9.5px;
   color: var(--text-muted);
+}
+
+/* OSINT History Window */
+.osint-history-shell .inner-core {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.osint-history-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.osint-history-header h3 {
+  margin: 0;
+  color: #f0f4fa;
+  font-size: 18px;
+  letter-spacing: -0.02em;
+}
+
+.osint-history-header p {
+  margin: 6px 0 0;
+  max-width: 68ch;
+  color: var(--text-muted);
+  line-height: 1.55;
+}
+
+.osint-history-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.osint-history-filters {
+  display: grid;
+  grid-template-columns: 2.1fr 1.3fr 1.2fr 1.2fr 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.osint-history-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.osint-history-field span {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #7d8a95;
+  font-family: var(--font-mono);
+}
+
+.osint-history-field input,
+.osint-history-field select {
+  width: 100%;
+}
+
+.osint-history-summary {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.osint-history-metric {
+  background-color: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  border-radius: var(--radius-inner);
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.osint-history-metric span {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+}
+
+.osint-history-metric strong {
+  font-size: 18px;
+  font-family: var(--font-mono);
+  color: var(--accent-cyan);
+  font-variant-numeric: tabular-nums;
+}
+
+.osint-history-table-wrap {
+  max-height: 520px;
+  overflow: auto;
+}
+
+.osint-history-table {
+  min-width: 980px;
+}
+
+.osint-history-table td,
+.osint-history-table th {
+  vertical-align: top;
+}
+
+.osint-history-target {
+  max-width: 260px;
+  white-space: normal;
+  word-break: break-word;
+}
+
+.osint-risk-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 2px 9px;
+  border-radius: 999px;
+  font-size: 10px;
+  line-height: 1.4;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  border: 1px solid transparent;
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.osint-risk-badge.nivel-critico {
+  color: #f2b2b2;
+  border-color: rgba(166, 79, 79, 0.35);
+  background-color: rgba(166, 79, 79, 0.14);
+}
+
+.osint-risk-badge.nivel-alto {
+  color: #ebd39b;
+  border-color: rgba(181, 154, 90, 0.35);
+  background-color: rgba(181, 154, 90, 0.14);
+}
+
+.osint-risk-badge.nivel-medio {
+  color: #e6d79f;
+  border-color: rgba(194, 163, 90, 0.35);
+  background-color: rgba(194, 163, 90, 0.14);
+}
+
+.osint-risk-badge.nivel-bajo {
+  color: #b2d9c0;
+  border-color: rgba(79, 138, 104, 0.35);
+  background-color: rgba(79, 138, 104, 0.14);
+}
+
+.osint-history-row-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.osint-history-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 14px;
+  flex-wrap: wrap;
+}
+
+.osint-history-status {
+  color: var(--text-muted);
+  font-size: 11px;
+  letter-spacing: 0.04em;
+}
+
+.osint-history-pager {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+@media (max-width: 1280px) {
+  .osint-history-filters {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .osint-history-summary {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 780px) {
+  .osint-history-header {
+    flex-direction: column;
+  }
+
+  .osint-history-actions {
+    justify-content: flex-start;
+  }
+
+  .osint-history-filters {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .osint-history-summary {
+    grid-template-columns: 1fr;
+  }
 }
 
 /* Data Mart KPI Cards */

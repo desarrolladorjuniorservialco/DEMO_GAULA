@@ -23,6 +23,8 @@ from modules.osint.core.target_detection import TargetDetection, detect_target_t
 from modules.osint.engines.orchestration import OsintOrchestrator
 from modules.osint.plugins.registry import get_plugins
 from modules.osint.services.search_engine import ejecutar_dork_universal
+from modules.osint.services.x_osint import extract_x_profiles
+from modules.osint.services.tiktok_osint import extract_tiktok_profiles
 
 log = logging.getLogger(__name__)
 
@@ -55,11 +57,59 @@ class UniversalOsintEngine:
             "network": ["ip", "domain", "plugins"],
             "osint_all": ["github", "reddit", "duckduckgo", "domain", "ip", "plugins"],
         }
+        if source_hint == "government":
+            return self._government_sources(target_type)
         if source_hint in hint_map:
             return hint_map[source_hint]
         if source_hint and source_hint not in {"all", "auto"}:
             return [source_hint]
         return catalog.get(target_type, ["github", "reddit", "facebook", "x", "tiktok", "plugins"])
+
+    def _government_sources(self, target_type: str) -> list[str]:
+        """
+        Public-sector oriented search profile.
+
+        The current engine does not have dedicated open-data collectors yet, so
+        the hint leans on the broadest existing sources that are still useful for
+        public records, institutional traces, and infrastructure discovery.
+        """
+        if target_type in {"domain", "url"}:
+            return ["domain", "duckduckgo", "plugins"]
+        if target_type == "ip":
+            return ["ip", "duckduckgo", "plugins"]
+        if target_type == "phone":
+            return ["duckduckgo", "plugins"]
+        if target_type in {"hash"}:
+            return ["plugins"]
+        return ["duckduckgo", "plugins"]
+
+    def _discover_connector_names(self, source_hint: str) -> list[str] | None:
+        """
+        Restrict the orchestrator connectors to the same search family as the UI tab.
+
+        Returning None keeps the default "all connectors" behavior.
+        """
+        social_connectors = {"github", "reddit"}
+        government_connectors = {
+            "duckduckgo",
+            "crtsh",
+            "rdap",
+            "whois",
+            "abuseipdb",
+            "alienvault",
+            "hibp",
+        }
+        network_connectors = government_connectors | {"shodan", "censys", "virustotal", "intelligencex"}
+
+        if source_hint == "social":
+            return sorted(social_connectors)
+        if source_hint == "government":
+            return sorted(government_connectors)
+        if source_hint == "network":
+            return sorted(network_connectors)
+        if source_hint == "both":
+            return sorted({"github", "reddit"})
+        return None
 
     def _collect_github(self, target: str) -> tuple[dict[str, Any] | None, list[dict], list[str]]:
         from modules.osint.social.routes import _fetch_github
@@ -499,7 +549,12 @@ class UniversalOsintEngine:
         sources           = self.discover_sources(detection.target_type, source_hint)
         collected         = self.run_collectors(target, sources)
         legacy_normalized = self._normalize_collected(collected, target)
-        connector_results = OsintOrchestrator.default().run(target, detection.target_type)
+        connector_names = self._discover_connector_names(source_hint)
+        connector_results = OsintOrchestrator.default().run(
+            target,
+            detection.target_type,
+            connector_names=connector_names,
+        )
         extra_normalized  = ResultMerger.merge(collected, connector_results, detection.target_type)
         normalized        = self.correlation_engine.correlate(legacy_normalized + extra_normalized)
         risk_bundle = self.calculate_risk(normalized)

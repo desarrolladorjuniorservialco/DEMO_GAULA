@@ -139,7 +139,14 @@
       "Bash(python -c \"import ast, sys; ast.parse\\(open\\('static/chatbot.js'\\).read\\(\\)\\)\")",
       "Bash(node -e \"require\\('fs'\\).readFileSync\\('static/chatbot.js','utf8'\\); console.log\\('chatbot.js OK'\\)\")",
       "Bash(node -e \"require\\('fs'\\).readFileSync\\('static/helpbot.js','utf8'\\); console.log\\('helpbot.js OK'\\)\")",
-      "Bash(node --input-type=module)"
+      "Bash(node --input-type=module)",
+      "PowerShell(playwright install chromium)",
+      "PowerShell(playwright install chromium 2>&1)",
+      "PowerShell(python -m playwright install chromium)",
+      "PowerShell(& \".\\\\.venv\\\\Scripts\\\\python.exe\" -m playwright install chromium)",
+      "PowerShell($result = & \".\\\\.venv\\\\Scripts\\\\python.exe\" -m playwright install chromium; Write-Host \"Exit: $LASTEXITCODE\"; Write-Host $result)",
+      "PowerShell(& \".\\\\.venv\\\\Scripts\\\\python.exe\" -c \"from playwright.sync_api import sync_playwright; p = sync_playwright\\(\\).start\\(\\); b = p.chromium.launch\\(\\); print\\('Chromium OK'\\); b.close\\(\\); p.stop\\(\\)\")",
+      "Bash(findstr /n \"extract_x\\\\|extract_tiktok\\\\|import\")"
     ],
     "additionalDirectories": [
       "C:\\Users\\Victor Pulido\\Documents\\GIT\\DEMO_GAULA\\docs\\superpowers\\specs",

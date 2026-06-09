@@ -39,7 +39,7 @@ def _fetch_github(username: str) -> tuple:
         r.raise_for_status()
         profile = r.json()
     except requests.exceptions.HTTPError as e:
-        code = e.response.status_code if e.response else "?"
+        code = e.response.status_code if e.response is not None else "?"
         if code == 404:
             errors.append(f"GitHub: usuario '{username}' no encontrado.")
         else:
@@ -82,7 +82,7 @@ def _fetch_reddit(username: str) -> tuple:
         data = r.json()
         profile = data.get("data", {})
     except requests.exceptions.HTTPError as e:
-        code = e.response.status_code if e.response else "?"
+        code = e.response.status_code if e.response is not None else "?"
         if code == 403:
             errors.append("Reddit: acceso denegado (403).")
         elif code == 429:
@@ -110,7 +110,7 @@ def _fetch_reddit(username: str) -> tuple:
             children = r2.json().get("data", {}).get("children", [])
             posts = [c["data"] for c in children]
         except requests.exceptions.HTTPError as e:
-            code = e.response.status_code if e.response else "?"
+            code = e.response.status_code if e.response is not None else "?"
             errors.append(f"Reddit posts: error HTTP {code}.")
         except requests.exceptions.RequestException as e:
             errors.append(f"Reddit posts: {e}.")
