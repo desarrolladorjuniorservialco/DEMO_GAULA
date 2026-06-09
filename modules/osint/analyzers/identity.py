@@ -6,6 +6,12 @@ from typing import Any
 
 from modules.osint.connectors.base import ConnectorResult
 
+try:
+    from rapidfuzz import fuzz as _fuzz
+    _RAPIDFUZZ_AVAILABLE = True
+except ImportError:
+    _RAPIDFUZZ_AVAILABLE = False
+
 _EMAIL_RE = re.compile(r"[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}")
 _PHONE_RE = re.compile(r"\+?[\d\s\-\(\)]{7,20}")
 _URL_RE = re.compile(r"https?://[^\s\"'>]+")
@@ -74,3 +80,37 @@ class IdentityAnalyzer:
             "connector_count": len(results),
             "successful_connectors": [n for n, r in results.items() if r.ok],
         }
+
+
+def fuzzy_match_usernames(
+    names: list[str],
+    threshold: float = 0.85,
+) -> list[tuple[str, str, float]]:
+    """
+    Encuentra pares de usernames similares usando rapidfuzz.
+
+    Args:
+        names: Lista de nombres/usernames a comparar.
+        threshold: Umbral de similitud (0.0–1.0). Por defecto 0.85.
+
+    Returns:
+        Lista de tuplas (name_a, name_b, score) donde score >= threshold.
+        Score es un valor entre 0.0 y 1.0 (la función divide por 100 el resultado de rapidfuzz).
+    """
+    if not _RAPIDFUZZ_AVAILABLE or len(names) < 2:
+        return []
+
+    matches: list[tuple[str, str, float]] = []
+    seen: set[frozenset[str]] = set()
+
+    for i, a in enumerate(names):
+        for b in names[i + 1:]:
+            pair = frozenset({a, b})
+            if pair in seen:
+                continue
+            seen.add(pair)
+            score = _fuzz.ratio(a.lower(), b.lower()) / 100.0
+            if score >= threshold:
+                matches.append((a, b, round(score, 4)))
+
+    return sorted(matches, key=lambda t: t[2], reverse=True)

@@ -120,3 +120,69 @@ def ejecutar_dork_universal(
             }
 
     return all_results
+
+
+DORK_TEMPLATES: dict[str, list[str]] = {
+    "username": [
+        'site:github.com "{target}"',
+        'site:reddit.com/u/ "{target}"',
+        'site:linkedin.com/in/ "{target}"',
+        'site:twitter.com "{target}"',
+        '"@{target}"',
+        'inurl:"{target}"',
+    ],
+    "email": [
+        '"{target}"',
+        'site:pastebin.com "{target}"',
+        'site:github.com "{target}"',
+    ],
+    "domain": [
+        'site:{target}',
+        'inurl:{target}',
+        '"powered by" site:{target}',
+    ],
+    "full_name": [
+        '"{target}" site:linkedin.com',
+        '"{target}" correo OR email OR contacto',
+        '"{target}" site:facebook.com',
+    ],
+    "ip": [
+        '"{target}" inurl:ip',
+        'site:abuseipdb.com "{target}"',
+    ],
+    "alias": [
+        'site:github.com "{target}"',
+        'site:reddit.com "{target}"',
+        '"@{target}"',
+    ],
+    "url": [
+        'site:{target}',
+        'inurl:{target}',
+    ],
+    "hash": [
+        '"{target}"',
+        'site:virustotal.com "{target}"',
+    ],
+    "phone": [
+        '"{target}"',
+        '"{target}" whatsapp OR telegram',
+    ],
+}
+
+
+def generate_dorks(target: str, target_type: str) -> list[str]:
+    """Genera dorks contextuales para el objetivo según su tipo detectado.
+
+    Para el tipo 'email', extrae el dominio y añade un dork adicional con '@{domain}'.
+    """
+    templates = DORK_TEMPLATES.get(target_type, DORK_TEMPLATES["username"])
+    dorks: list[str] = []
+    for template in templates:
+        dork = template.replace("{target}", target)
+        # Para email, añadir dork de dominio
+        if target_type == "email" and "@" in target:
+            domain = target.split("@", 1)[1]
+            dork = dork.replace("{domain}", domain)
+        dorks.append(dork)
+    # Limpia dorks que aún tengan {domain} sin reemplazar (si no era email)
+    return [d for d in dorks if "{domain}" not in d]
