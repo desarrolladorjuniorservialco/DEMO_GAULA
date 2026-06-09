@@ -1,258 +1,807 @@
-# Módulo OSINT — NEXO-147
+# Módulo OSINT Universal - NEXO-147
 
-El módulo OSINT (Open Source Intelligence) permite a analistas consultar fuentes públicas de información para correlacionar datos con los casos registrados en el sistema.
+Este documento define la arquitectura objetivo del módulo OSINT de NEXO-147. La meta es transformar la implementación actual en un motor universal de inteligencia de fuentes abiertas capaz de descubrir, correlacionar, almacenar, visualizar y monitorear información pública de forma automática.
+
+La interfaz manual basada en selección explícita de plataforma deja de ser el flujo principal. En su lugar, el sistema recibe un objetivo y determina qué fuentes, conectores y estrategias aplicar según el tipo de entidad detectada.
 
 ---
 
-## Arquitectura del módulo
+## Principios de diseño
+
+La solución debe construirse bajo estos principios:
+
+- Clean Architecture
+- SOLID
+- Domain Driven Design (DDD)
+- CQRS cuando aplique
+- Repository Pattern
+- Service Layer Pattern
+- Plugin Architecture
+- Event Driven Architecture
+- Async Programming
+- Caching multinivel
+- Graph Intelligence
+
+El objetivo no es solo recolectar datos, sino producir inteligencia correlacionada con trazabilidad, persistencia y capacidad de expansión sin tocar el núcleo.
+
+---
+
+## Flujo funcional objetivo
 
 ```
+Usuario autenticado
+  -> Ingresa un objetivo
+  -> El sistema detecta el tipo de objetivo
+  -> Descubre fuentes aplicables
+  -> Ejecuta conectores y scrapers en paralelo
+  -> Normaliza resultados
+  -> Correlaciona identidades
+  -> Calcula riesgo
+  -> Persiste evidencias y grafo
+  -> Renderiza dashboard, historial o vista de grafo
+```
+
+La experiencia mínima deseada es una búsqueda unificada:
+
+```text
+Buscar objetivo: [ victorpulido ] [ Buscar ]
+```
+
+Desde ese único punto de entrada el motor debe decidir qué fuentes consultar.
+
+---
+
+## Estructura objetivo
+
+```text
 modules/osint/
-├── auth.py                  # Decorador @osint_login_required
-├── social/                  # Scraping de redes sociales
-│   ├── __init__.py          # Blueprint: social_osint_bp (prefijo /osint/social)
-│   ├── routes.py            # Endpoints de consulta social
-│   └── scrapers/
-│       ├── __init__.py
-│       └── facebook_playwright.py  # Scraper de Facebook con Playwright
-├── opendata/                # Datos públicos (IP, dominios, certificados)
-│   ├── __init__.py          # Blueprint: opendata_osint_bp (prefijo /osint/opendata)
-│   └── routes.py
-├── analytics/               # Construcción de grafos
-│   ├── __init__.py          # Blueprint: analytics_osint_bp (prefijo /osint/analytics)
-│   ├── routes.py
-│   └── graph_builder.py
-├── plugins/                 # Sistema de plugins extensible
-│   ├── __init__.py
-│   ├── base.py              # BaseOsintPlugin (clase abstracta)
-│   ├── registry.py          # Auto-descubrimiento de plugins
-│   └── ejemplo_ip.py        # Plugin de ejemplo: IpGeoPlugin
-└── services/                # Implementaciones de servicios
-    ├── __init__.py
-    ├── search_engine.py     # Motor de búsqueda universal (dorks)
-    ├── x_osint.py           # Servicio X/Twitter
-    ├── tiktok_osint.py      # Servicio TikTok
-    └── facebook_osint.py    # Servicio Facebook
+├── core/
+│   ├── engine.py               # UniversalOsintEngine
+│   ├── target_detection.py     # Detección del tipo de objetivo
+│   ├── correlation.py          # IdentityCorrelationEngine
+│   ├── findings.py             # FindingEngine
+│   ├── risk.py                 # Cálculo de riesgo
+│   └── schemas.py              # Contratos de datos normalizados
+├── engines/
+│   ├── dork_engine.py          # Generación inteligente de dorks
+│   └── orchestration.py        # Coordinación de tareas y colas
+├── scrapers/
+│   ├── browser/
+│   │   ├── playwright.py       # Scraping con navegador
+│   │   └── anti_blocking.py    # Rotación, backoff, rate limiting
+│   └── parsers/
+│       ├── bs4_parser.py
+│       ├── lxml_parser.py
+│       └── selectolax_parser.py
+├── connectors/
+│   ├── base.py                 # BaseConnector
+│   ├── github.py
+│   ├── gitlab.py
+│   ├── bitbucket.py
+│   ├── reddit.py
+│   ├── facebook.py
+│   ├── instagram.py
+│   ├── threads.py
+│   ├── tiktok.py
+│   ├── youtube.py
+│   ├── linkedin.py
+│   ├── pinterest.py
+│   ├── telegram.py
+│   ├── discord.py
+│   ├── google.py
+│   ├── bing.py
+│   ├── duckduckgo.py
+│   ├── brave.py
+│   ├── rdap.py
+│   ├── crtsh.py
+│   ├── whois.py
+│   ├── shodan.py
+│   ├── censys.py
+│   ├── virustotal.py
+│   ├── abuseipdb.py
+│   ├── alienvault.py
+│   ├── hibp.py
+│   └── intelligencex.py
+├── analyzers/
+│   ├── identity.py             # Similitud y deduplicación semántica
+│   ├── risk.py
+│   └── enrichment.py
+├── graph/
+│   ├── builder.py              # Construcción del grafo
+│   ├── persistence.py          # Persistencia dual SQLite / Neo4j
+│   └── exporters.py            # GraphML, JSON, CSV, PDF, Excel
+├── cache/
+│   ├── memory.py                # L1
+│   ├── redis_cache.py          # L2
+│   └── db_cache.py             # L3
+├── history/
+│   ├── models.py                # ConsultaOsint
+│   ├── routes.py                # /osint/history
+│   └── repository.py
+├── monitoring/
+│   ├── watchlists.py            # /osint/watchlists
+│   └── jobs.py                  # APScheduler / Celery / RQ
+├── exports/
+│   ├── pdf.py
+│   ├── excel.py
+│   ├── csv.py
+│   ├── json.py
+│   └── graphml.py
+├── plugins/
+│   ├── base.py
+│   ├── registry.py
+│   └── examples/
+└── routes/
+    ├── search.py               # Entrada universal
+    ├── dashboard.py            # /osint/dashboard
+    ├── history.py              # /osint/history
+    ├── watchlists.py           # /osint/watchlists
+    └── graph.py                # /osint/graph
 ```
 
 ---
 
-## Blueprints OSINT
+## Compatibilidad con la implementación actual
 
-| Blueprint | Prefijo | Blueprints registrados en |
-|---|---|---|
-| `social_osint_bp` | `/osint/social` | `modules/__init__.py` |
-| `opendata_osint_bp` | `/osint/opendata` | `modules/__init__.py` |
-| `analytics_osint_bp` | `/osint/analytics` | `modules/__init__.py` |
+La versión existente del módulo ya expone piezas útiles como:
+
+- `/osint/social/lookup`
+- `/osint/opendata/lookup`
+- `/osint/analytics/graph`
+- sistema de plugins
+- búsqueda por dorking en redes sociales
+
+En la arquitectura objetivo, esos elementos pasan a ser adaptadores o fachadas sobre el motor universal. La compatibilidad con rutas actuales puede mantenerse, pero el flujo principal debe concentrarse en un único motor orquestador.
 
 ---
 
-## Fuentes de datos
+## Detección del tipo de objetivo
 
-### Redes sociales (`/osint/social`)
+El motor debe detectar automáticamente el tipo de entidad antes de ejecutar conectores.
 
-| Fuente | Endpoint | Método | Descripción |
-|---|---|---|---|
-| GitHub | `/osint/social/github/<username>` | GET | Perfil, repos, organizaciones |
-| Reddit | `/osint/social/reddit/<username>` | GET | Perfil, posts, karma |
-| X/Twitter | `/osint/social/x/<username>` | GET | Descubrimiento de cuenta |
-| TikTok | `/osint/social/tiktok/<username>` | GET | Perfil público |
-| Facebook | `/osint/social/facebook` | POST | Scraping con Playwright |
+### Tipos de objetivo
 
-### Open Data (`/osint/opendata`)
+- Usuario
+- Alias
+- Correo electrónico
+- Teléfono
+- Dominio
+- URL
+- IP
+- Hash
+- Empresa
+- Organización
+- Nombre completo
 
-| Fuente | Endpoint | API externa | Descripción |
-|---|---|---|---|
-| IP Geolocation | `/osint/opendata/ip/<ip>` | ip-api.com | País, ciudad, ASN, coordenadas |
-| RDAP Dominio | `/osint/opendata/domain/<domain>` | rdap.org | Registrador, fechas, nameservers |
-| Cert Transparency | `/osint/opendata/certs/<domain>` | crt.sh | Certificados SSL históricos |
+### Librerías sugeridas
 
-### Analytics (`/osint/analytics`)
+- `re`
+- `validators`
+- `tldextract`
+- `email_validator`
+- `phonenumbers`
+- `ipaddress`
 
-| Endpoint | Descripción |
+### Estrategia
+
+1. Normalizar el texto de entrada.
+2. Detectar patrones obvios primero.
+3. Resolver ambigüedades por prioridad.
+4. Inferir tipo de objetivo cuando el patrón no sea concluyente.
+5. Registrar la decisión para auditoría y reproducibilidad.
+
+---
+
+## Motor universal
+
+### `UniversalOsintEngine`
+
+Responsabilidades principales:
+
+- `detect_target_type()`
+- `discover_sources()`
+- `run_collectors()`
+- `correlate_results()`
+- `calculate_risk()`
+- `persist_results()`
+- `build_graph()`
+
+### Comportamiento esperado
+
+- Orquestación asíncrona.
+- Descubrimiento de fuentes según tipo de objetivo.
+- Ejecución paralela con control de concurrencia.
+- Fallback progresivo si una fuente falla.
+- Persistencia de hallazgos, consultas y relaciones.
+- Emisión de eventos para procesos diferidos.
+
+---
+
+## Conectores
+
+### Interfaz base
+
+```python
+class BaseConnector:
+    async def search(self, target):
+        pass
+
+    async def normalize(self, data):
+        pass
+
+    async def validate(self, data):
+        pass
+```
+
+### Contrato normalizado
+
+Toda respuesta debe convertirse a una forma común:
+
+```json
+{
+  "source": "",
+  "entity_type": "",
+  "value": "",
+  "confidence": 0.0,
+  "url": "",
+  "metadata": {}
+}
+```
+
+### Descubrimiento automático
+
+La arquitectura debe descubrir conectores mediante:
+
+- `entry_points`
+- `importlib`
+- `inspect`
+
+Esto permite agregar nuevas fuentes sin modificar el núcleo.
+
+### Fuentes objetivo
+
+El motor debe ser capaz de consultar, según aplique:
+
+- GitHub
+- GitLab
+- Bitbucket
+- Reddit
+- Facebook
+- Instagram
+- Threads
+- TikTok
+- YouTube
+- LinkedIn
+- Pinterest
+- Telegram público
+- Discord público
+- Google
+- Bing
+- DuckDuckGo
+- Brave
+- RDAP
+- crt.sh
+- WHOIS
+- Shodan
+- Censys
+- VirusTotal
+- AbuseIPDB
+- AlienVault OTX
+- Have I Been Pwned
+- Intelligence X
+
+---
+
+## Scraping avanzado
+
+El scraping debe ser híbrido:
+
+- APIs oficiales cuando existan.
+- Scraping solo cuando no haya una API adecuada.
+- Parsers ligeros para contenido web estructurado.
+
+### Herramientas sugeridas
+
+- Playwright para:
+  - Facebook
+  - Instagram
+  - TikTok
+  - LinkedIn
+  - Threads
+- BeautifulSoup, lxml y selectolax para:
+  - Foros
+  - Blogs
+  - Sitios web
+
+### Estrategia anti bloqueo
+
+El módulo debe incluir:
+
+- Rotación de User-Agent
+- Rotación de headers
+- Backoff exponencial
+- Retry automático
+- Pool de sesiones
+- Control de concurrencia
+- Rate limiting
+
+### Librerías sugeridas
+
+- `fake-useragent`
+- `tenacity`
+- `aiohttp_retry`
+
+---
+
+## DorkEngine
+
+El motor de dorking debe generar búsquedas automáticas por plataforma y tipo de objetivo.
+
+### Ejemplos de dorks
+
+- `site:github.com "objetivo"`
+- `site:reddit.com "objetivo"`
+- `site:x.com "objetivo"`
+- `site:facebook.com "objetivo"`
+- `site:linkedin.com "objetivo"`
+- `"objetivo@gmail.com"`
+- `inurl:"objetivo"`
+- `intitle:"objetivo"`
+
+### Primera capa
+
+Utilizar `duckduckgo-search` como primera capa antes de escalar a otras fuentes.
+
+### Requisitos
+
+- Ejecución paralela.
+- Detección de rate limit.
+- Trazabilidad del query generado.
+- Retorno estructurado por plataforma.
+
+---
+
+## Correlación de identidad
+
+### `IdentityCorrelationEngine`
+
+Debe consolidar evidencias de fuentes distintas mediante:
+
+- Fuzzy Matching
+- Alias Matching
+- Username Similarity
+- Email Similarity
+- Phone Similarity
+- Organization Similarity
+
+### Librerías sugeridas
+
+- `rapidfuzz`
+- `thefuzz`
+- `jellyfish`
+
+### Objetivo
+
+Reducir duplicados, unir identidades parciales y construir un perfil coherente de la entidad objetivo.
+
+---
+
+## Grafo de inteligencia
+
+### Modelo
+
+Se debe evaluar una migración desde SQLite hacia Neo4j o mantener compatibilidad dual.
+
+### Entidades
+
+- Person
+- Alias
+- Email
+- Phone
+- Organization
+- Location
+- Domain
+- IP
+- Repository
+- SocialProfile
+- URL
+- Image
+- Document
+
+### Relaciones
+
+- USES
+- WORKS_FOR
+- OWNS
+- REGISTERED
+- MENTIONS
+- POSTED
+- FOLLOWS
+- CONNECTED_TO
+
+### Librerías sugeridas
+
+- `py2neo`
+- `neo4j-driver`
+
+### Reglas del grafo
+
+- Persistencia idempotente.
+- Dedupe por identidad canónica.
+- Evidencia asociada a nodos y aristas.
+- Carga incremental.
+- Exportación a formatos abiertos.
+
+---
+
+## FindingEngine
+
+El sistema de hallazgos debe detectar automáticamente:
+
+- Exposición de correo electrónico
+- Presencia en múltiples redes
+- Repositorios públicos
+- Infraestructura propia
+- Posibles filtraciones
+- Alias compartidos
+- Patrones de identidad
+
+Los hallazgos deben ser explicables y rastreables a los nodos y aristas que los originan.
+
+---
+
+## Riesgo
+
+### Escala
+
+| Rango | Nivel |
 |---|---|
-| `POST /osint/analytics/grafo` | Construye grafo desde resultados OSINT |
+| 0-5 | Bajo |
+| 6-10 | Medio |
+| 11-15 | Alto |
+| 16-20 | Crítico |
+
+### Factores de cálculo
+
+- Emails expuestos
+- Teléfonos encontrados
+- Brechas detectadas
+- Infraestructura pública
+- Redes sociales encontradas
+- Repositorios sensibles
+
+El riesgo debe actualizarse con base en las evidencias acumuladas y no solo por la cantidad de resultados.
+
+---
+
+## Historial de consultas
+
+### `ConsultaOsint`
+
+Campos esperados:
+
+- `id`
+- `user_id`
+- `target`
+- `target_type`
+- `timestamp`
+- `duration`
+- `sources`
+- `risk`
+- `results_count`
+
+### Ruta
+
+`/osint/history`
+
+### Capacidades
+
+- Buscar consultas
+- Filtrar por fecha
+- Filtrar por fuente
+- Filtrar por riesgo
+- Exportar
+- Repetir búsqueda
+- Ver grafo
+
+---
+
+## Dashboard OSINT
+
+### Ruta
+
+`/osint/dashboard`
+
+### Visualizaciones
+
+- Consultas por día
+- Fuentes utilizadas
+- Objetivos frecuentes
+- Riesgo acumulado
+- Top entidades
+- Mapa geográfico
+
+### Librerías sugeridas
+
+- Apache ECharts
+- Chart.js
+- Leaflet
+
+---
+
+## Watchlists
+
+### Ruta
+
+`/osint/watchlists`
+
+### Funciones
+
+- Agregar objetivo
+- Configurar frecuencia
+- Recibir alertas
+
+### Motor de ejecución
+
+- APScheduler
+- Celery
+- Redis Queue
+
+Las watchlists deben operar como tareas diferidas, no como procesos bloqueantes dentro de la vista web.
+
+---
+
+## Caché multinivel
+
+### Niveles
+
+- L1 - Memoria
+- L2 - Redis
+- L3 - Base de datos
+
+### Herramientas
+
+- `redis`
+- `cachetools`
+
+### TTL configurable
+
+- 15 minutos
+- 1 hora
+- 24 horas
+- 7 días
+
+El caché debe considerar:
+
+- objetivo normalizado
+- tipo de consulta
+- fuente
+- usuario
+- timestamp de expiración
+
+---
+
+## Exportación
+
+### Formatos
+
+- PDF
+- Excel
+- CSV
+- JSON
+- GraphML
+
+### Librerías
+
+- `pandas`
+- `openpyxl`
+- `reportlab`
+- `networkx`
+
+Las exportaciones deben incluir evidencias, marcas de tiempo y metadatos de la consulta original.
+
+---
+
+## Seguridad
+
+El módulo debe incluir controles de seguridad de nivel plataforma:
+
+- Auditoría completa
+- Registro de consultas
+- RBAC
+- Control de permisos
+- Rate limiting
+- Protección CSRF
+- Protección XSS
+- Protección SSRF
+- Protección contra path traversal
+
+### Librerías sugeridas
+
+- `Flask-Limiter`
+- `Flask-Talisman`
+- `Bleach`
+
+---
+
+## Rendimiento
+
+### Optimización
+
+- Búsquedas asíncronas
+- Task batching
+- Connection pooling
+- Response compression
+- Lazy loading
+- Incremental graph loading
+- Redis cache
+- Background processing
+
+### Objetivos de servicio
+
+- Tiempo de respuesta inicial menor a 3 segundos
+- Consulta completa menor a 15 segundos
+- Hasta 50 fuentes simultáneas
+- Hasta 10.000 nodos en grafo
 
 ---
 
 ## Sistema de plugins
 
-El módulo OSINT implementa un sistema de plugins auto-descubribles para facilitar la extensión sin modificar el núcleo.
+El sistema de plugins debe permitir la incorporación de nuevas fuentes sin modificar el núcleo.
 
-### Clase base
+### Requisitos
+
+- Autodescubrimiento de plugins.
+- Categorías flexibles.
+- Posibilidad de requerir API keys.
+- Ejecución aislada por plugin.
+- Resultados normalizados.
+
+### Interfaz esperada
 
 ```python
-# modules/osint/plugins/base.py
-from abc import ABC, abstractmethod
-
 class BaseOsintPlugin(ABC):
-    name: str           # Nombre único del plugin
-    description: str    # Descripción
-    source_type: str    # api | scraper | search
-
-    @abstractmethod
-    def query(self, value: str, **kwargs) -> dict:
-        """Ejecuta la consulta OSINT."""
+    @property
+    def name(self) -> str:
         ...
 
-    @abstractmethod
-    def get_result_schema(self) -> dict:
-        """Retorna el esquema JSON de los resultados."""
+    @property
+    def category(self) -> str:
+        ...
+
+    @property
+    def needs_api_key(self) -> bool:
+        ...
+
+    def ejecutar(self, objetivo: str) -> dict:
         ...
 ```
 
-### Registro automático
+---
 
-```python
-# modules/osint/plugins/registry.py
-class OsintPluginRegistry:
-    _plugins: dict[str, BaseOsintPlugin] = {}
+## API y rutas objetivo
 
-    @classmethod
-    def register(cls, plugin_class):
-        instance = plugin_class()
-        cls._plugins[instance.name] = instance
+### Búsqueda universal
 
-    @classmethod
-    def get(cls, name) -> BaseOsintPlugin:
-        return cls._plugins.get(name)
+`GET /osint/search?q=<objetivo>`
 
-    @classmethod
-    def all(cls) -> list:
-        return list(cls._plugins.values())
-```
+### Compatibilidad con vistas específicas
 
-El registro se ejecuta en `create_app()` al arrancar la aplicación.
+- `GET /osint/social/lookup`
+- `GET /osint/opendata/lookup`
+- `GET /osint/graph`
+- `GET /osint/history`
+- `GET /osint/dashboard`
+- `GET /osint/watchlists`
 
-### Crear un plugin nuevo
+Las rutas actuales deben seguir funcionando como capa de compatibilidad, pero delegando en el motor universal.
 
-```python
-# modules/osint/plugins/mi_plugin.py
-from .base import BaseOsintPlugin
-from .registry import OsintPluginRegistry
+---
 
-class MiNuevoPlugin(BaseOsintPlugin):
-    name = "mi_plugin"
-    description = "Consulta mi fuente de datos"
-    source_type = "api"
+## Formato de resultados
 
-    def query(self, value: str, **kwargs) -> dict:
-        # Implementar lógica de consulta
-        response = requests.get(f"https://mi-api.com/buscar/{value}")
-        return response.json()
+La respuesta consolidada debe devolver al menos:
 
-    def get_result_schema(self) -> dict:
-        return {
-            "type": "object",
-            "properties": {
-                "resultado": {"type": "string"}
-            }
-        }
-
-# Auto-registro
-OsintPluginRegistry.register(MiNuevoPlugin)
-```
-
-### Plugin de ejemplo: `IpGeoPlugin`
-
-```python
-# modules/osint/plugins/ejemplo_ip.py
-class IpGeoPlugin(BaseOsintPlugin):
-    name = "ip_geo"
-    description = "Geolocalización de IP via ip-api.com"
-    source_type = "api"
-
-    def query(self, value: str, **kwargs) -> dict:
-        r = requests.get(f"http://ip-api.com/json/{value}")
-        return r.json()
+```json
+{
+  "target": "",
+  "target_type": "",
+  "sources_used": [],
+  "results": [],
+  "findings": [],
+  "risk": {
+    "score": 0,
+    "level": ""
+  },
+  "graph": {
+    "nodes": [],
+    "edges": []
+  },
+  "stats": {
+    "duration_ms": 0,
+    "results_count": 0,
+    "sources_count": 0
+  }
+}
 ```
 
 ---
 
-## Servicios
+## Arquitectura de eventos
 
-### Motor de búsqueda universal (`search_engine.py`)
+Para evitar bloquear la interfaz durante búsquedas extensas, el módulo debe emitir eventos para:
 
-Ejecuta búsquedas con operadores avanzados (dorks) usando DuckDuckGo Search.
+- inicio de consulta
+- fuente iniciada
+- fuente finalizada
+- hallazgo generado
+- grafo persistido
+- exportación generada
+- alerta disparada
 
-```python
-from modules.osint.services.search_engine import SearchEngine
+Estos eventos pueden alimentar:
 
-engine = SearchEngine()
-results = engine.search('site:github.com "username"', max_results=10)
-```
-
-### Scraper de Facebook (`facebook_playwright.py`)
-
-Usa Playwright para navegar perfiles de Facebook. Requiere `playwright install chromium`.
-
-```python
-# Ejemplo de uso interno
-from modules.osint.social.scrapers.facebook_playwright import scrape_facebook_profile
-
-data = await scrape_facebook_profile("https://facebook.com/ejemplo")
-```
-
-> **Nota:** El scraping de Facebook puede requerir autenticación y está sujeto a los términos de servicio de la plataforma.
+- colas de trabajo
+- métricas
+- auditoría
+- watchlists
 
 ---
 
-## Base de datos OSINT
+## Estado de migración recomendado
 
-Ver [DATABASE.md](DATABASE.md) para el esquema completo. El flujo de datos es:
+### Fase 1
 
-```
-FuenteOsint → ConsultaOsint → CacheConsulta (TTL)
-                           └─→ ResultadoOsint (N)
+- Crear `UniversalOsintEngine`.
+- Definir `BaseConnector`.
+- Normalizar formato de resultados.
+- Mantener compatibilidad con las rutas existentes.
 
-ResultadoOsint → IndicadorRiesgo (si se detecta riesgo)
-ResultadoOsint → Node / OsintEdge (para grafos)
-```
+### Fase 2
 
-### Caché de consultas
+- Introducir correlación de identidad.
+- Añadir historial de consultas.
+- Implementar caché multinivel.
+- Exportación básica.
 
-Las consultas se cachean en `cache_consultas` con un hash SHA-256 de los parámetros. Esto evita solicitudes repetidas a APIs externas y respeta los rate limits.
+### Fase 3
 
-```python
-hash_clave = hashlib.sha256(
-    f"{tipo_consulta}:{valor_consultado}:{fuente_id}".encode()
-).hexdigest()
-```
+- Integrar watchlists.
+- Añadir dashboard.
+- Habilitar búsqueda universal completa.
+- Migrar o dualizar el grafo hacia Neo4j.
 
----
+### Fase 4
 
-## Integración con el dashboard
-
-Los indicadores de riesgo OSINT aparecen en el dashboard del director via:
-
-```
-GET /api/osint/indicadores  →  IndicadorRiesgo activos
-GET /api/brechas            →  HaveIBeenPwned consultas
-```
+- Consolidar plugins.
+- Expandir conectores.
+- Optimizar rendimiento y observabilidad.
 
 ---
 
-## Dependencias requeridas
+## Resultado esperado
 
-```
-requests>=2.32.3
-beautifulsoup4>=4.13.4
-playwright>=1.60.0          # Solo para scraping Facebook
-duckduckgo-search>=6.2.0
-networkx>=3.3
-```
+Al finalizar la migración, NEXO-147 debe contar con:
 
-Para activar Playwright por primera vez:
-```bash
-playwright install chromium
-```
+- Motor universal de búsqueda OSINT
+- Descubrimiento automático de fuentes
+- Scraping distribuido
+- Correlación de identidades
+- Grafo de inteligencia
+- Historial de consultas
+- Dashboard analítico
+- Watchlists y alertas automáticas
+- Exportación de evidencias
+- Arquitectura extensible basada en plugins
+
+La solución debe ser modular, desacoplada y preparada para incorporar nuevas fuentes OSINT sin modificar el núcleo del sistema.
 
 ---
 
-## Consideraciones legales y éticas
+## Recomendación operativa
 
-- Las consultas OSINT se limitan a fuentes **públicamente accesibles**
-- Los datos recopilados se usan exclusivamente en el contexto de investigaciones GAULA autorizadas
-- El caché limita el impacto en servicios de terceros (rate limiting)
-- No se almacenan credenciales de terceros en el sistema
-- Las consultas a Facebook con Playwright deben realizarse con cuentas autorizadas
+Para un entorno profesional de investigación, prioriza APIs oficiales y datos públicos estructurados cuando existan y usa scraping solo cuando no haya una API adecuada. Esto mejora velocidad, estabilidad, trazabilidad y mantenimiento.
+
+Para consultas pesadas, conviene introducir una cola de tareas con Celery + Redis para evitar que la interfaz quede bloqueada durante búsquedas extensas.
+

@@ -1,0 +1,106 @@
+{% extends 'base.html' %}
+
+{% block contenido %}
+<section class="dashboard">
+  <div class="section-title">
+    <h1>Watchlists OSINT</h1>
+    <p>Objetivos persistentes para monitoreo periódico y reevaluación de riesgo.</p>
+  </div>
+
+  {% if success %}
+  <div class="dashboard-card" style="margin-bottom: 1rem;">{{ success }}</div>
+  {% endif %}
+
+  {% if error %}
+  <div class="dashboard-card" style="margin-bottom: 1rem;">{{ error }}</div>
+  {% endif %}
+
+  <form class="dashboard-card" method="post" action="{{ url_for('watchlists_osint.watchlists') }}">
+    <div class="flow-list">
+      <div>
+        <span>Nombre</span>
+        <input type="text" name="nombre" placeholder="Alias monitoreado">
+      </div>
+      <div>
+        <span>Objetivo</span>
+        <input type="text" name="target" placeholder="victorpulido">
+      </div>
+      <div>
+        <span>Tipo</span>
+        <select name="target_type">
+          {% for item in ['unknown', 'username', 'email', 'phone', 'domain', 'ip', 'full_name', 'alias'] %}
+          <option value="{{ item }}">{{ item }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div>
+        <span>Fuente</span>
+        <select name="source_hint">
+          {% for item in ['all', 'social', 'network', 'both', 'deep_all', 'github', 'reddit', 'facebook', 'x', 'tiktok'] %}
+          <option value="{{ item }}">{{ item }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div>
+        <span>Frecuencia (min)</span>
+        <input type="number" name="frecuencia_minutos" value="1440" min="15" step="15">
+      </div>
+      <div>
+        <span>Notas</span>
+        <input type="text" name="notas" placeholder="Seguimiento preventivo">
+      </div>
+    </div>
+    <div style="margin-top: 1rem;">
+      <button class="btn-primary-tactical" type="submit">Crear watchlist</button>
+    </div>
+  </form>
+
+  <div class="dashboard-card" style="margin-top: 1.5rem;">
+    <h2>Watchlists activas</h2>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Nombre</th>
+            <th>Objetivo</th>
+            <th>Tipo</th>
+            <th>Fuente</th>
+            <th>Frecuencia</th>
+            <th>Última ejecución</th>
+            <th>Riesgo</th>
+            <th>Estado</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for item in items %}
+          <tr>
+            <td>{{ item.nombre }}</td>
+            <td>{{ item.target }}</td>
+            <td>{{ item.target_type }}</td>
+            <td>{{ item.source_hint }}</td>
+            <td>{{ item.frecuencia_minutos }} min</td>
+            <td>{{ item.last_run_at[:16] if item.last_run_at else '—' }}</td>
+            <td>{{ item.last_risk_level }} ({{ item.last_risk_score }})</td>
+            <td>{% if item.activo %}Activa{% else %}Pausada{% endif %}</td>
+            <td>
+              <div style="display:flex; gap:.5rem; flex-wrap:wrap;">
+                <form method="post" action="{{ url_for('watchlists_osint.watchlists_run', item_id=item.id) }}">
+                  <button type="submit" class="btn-secondary-tactical">Ejecutar</button>
+                </form>
+                <form method="post" action="{{ url_for('watchlists_osint.watchlists_toggle', item_id=item.id) }}">
+                  <button type="submit" class="btn-secondary-tactical">{% if item.activo %}Pausar{% else %}Activar{% endif %}</button>
+                </form>
+                <form method="post" action="{{ url_for('watchlists_osint.watchlists_delete', item_id=item.id) }}">
+                  <button type="submit" class="btn-secondary-tactical">Eliminar</button>
+                </form>
+              </div>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+{% endblock %}

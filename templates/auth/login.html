@@ -9,74 +9,168 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='styles_media.css') }}">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+  <noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap" rel="stylesheet"></noscript>
 </head>
 
 <body class="login-body">
 
-<div class="bg-grid"></div>
-<div class="orb orb-one"></div>
-<div class="orb orb-two"></div>
+<div class="glow-orb orb-one"></div>
+<div class="glow-orb orb-two"></div>
 
-<section class="login-screen">
+<div class="login-terminal">
 
-  <div class="login-visual">
-    <span class="tag">Sistema privado institucional</span>
-    <h1>NEXO-147</h1>
-    <p>
-      Plataforma demo para recepción, clasificación y seguimiento inicial de reportes GAULA.
-    </p>
-
-    <div class="login-orbit">
-      <div class="orbit-ring ring-one"></div>
-      <div class="orbit-ring ring-two"></div>
-      <div class="orbit-core">147</div>
-    </div>
-
-    <div class="login-metrics">
-      <div><strong>Admin</strong><span>Acceso completo</span></div>
-      <div><strong>Operador</strong><span>Solo formulario</span></div>
-    </div>
+  <!-- Classification header -->
+  <div class="login-class-bar">
+    <span class="login-class-label">Sistema Privado Institucional</span>
+    <span class="login-class-code">SEC · NIVEL-2 · GAULA-COL</span>
   </div>
 
-  <div class="login-card">
-    <div class="login-card-header">
-      <h2>Acceso seguro</h2>
-      <p>Ingrese sus credenciales para continuar.</p>
+  <!-- Main access panel -->
+  <div class="login-panel">
+
+    <!-- System identity -->
+    <div class="login-identity">
+      <div class="login-badge" aria-hidden="true">
+        <svg viewBox="0 0 48 56" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+          <path d="M24 2L44 10V28C44 40.5 35 49.5 24 54C13 49.5 4 40.5 4 28V10L24 2Z"
+                stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"
+                fill="rgba(79,138,104,0.08)"/>
+          <text x="50%" y="55%" dominant-baseline="middle" text-anchor="middle"
+                font-family="JetBrains Mono, monospace" font-weight="700" font-size="13"
+                fill="currentColor">147</text>
+        </svg>
+      </div>
+      <div class="login-system-name">
+        <h1>NEXO-147</h1>
+        <p>Sistema Operativo GAULA · Plataforma Demo</p>
+      </div>
     </div>
 
+    <!-- System status indicator -->
+    <div class="login-status-row">
+      <span class="pulse-green"></span>
+      <span class="login-status-text">SISTEMA NOMINAL · EN LÍNEA</span>
+    </div>
+
+    <!-- Flash messages -->
     {% with messages = get_flashed_messages(with_categories=true) %}
       {% if messages %}
-        <div class="alerts">
+        <div class="login-alerts" role="alert" aria-live="assertive">
           {% for category, message in messages %}
-            <div class="alert {{ category }}">{{ message }}</div>
+            <div class="login-alert {{ category }}">{{ message }}</div>
           {% endfor %}
         </div>
       {% endif %}
     {% endwith %}
 
-    <form method="POST" class="form login-form">
-      <label for="usuario">Usuario</label>
-      <input type="text" id="usuario" name="usuario" placeholder="admin u operador" required autocomplete="username">
+    <!-- Auth form -->
+    <div class="login-form-section">
+      <div class="login-form-label">Autenticación Segura</div>
 
-      <label for="password">Contraseña</label>
-      <input type="password" id="password" name="password" placeholder="Contraseña de acceso" required autocomplete="current-password">
+      <form method="POST" class="login-form">
+        <div class="login-field">
+          <label for="usuario">Identificador</label>
+          <input type="text" id="usuario" name="usuario"
+                 placeholder="Ingrese su identificador"
+                 required autocomplete="username">
+        </div>
 
-      <button class="btn btn-primary" type="submit">Ingresar al sistema</button>
-    </form>
+        <div class="login-field">
+          <label for="password">Contraseña</label>
+          <input type="password" id="password" name="password"
+                 placeholder="Contraseña de acceso"
+                 required autocomplete="current-password">
+        </div>
 
-    <div class="demo-users">
-      <p><strong>Cuentas Demo de Prueba:</strong></p>
-      <div class="demo-grid">
-        <p><code>admin</code> / <code>Admin147*</code> (Administrador)</p>
-        <p><code>director</code> / <code>Director147*</code> (Director GAULA)</p>
-        <p><code>analista</code> / <code>Analista147*</code> (Analista Operacional)</p>
-        <p><code>operador</code> / <code>Operador147*</code> (Operador Línea 147)</p>
-      </div>
+        <button class="login-submit-btn" type="submit">
+          <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M3 10h14M11 4l6 6-6 6"/>
+          </svg>
+          Ingresar al sistema
+        </button>
+      </form>
     </div>
+
+    <!-- Demo credentials -->
+    <details class="login-demo">
+      <summary class="login-demo-toggle">Cuentas demo disponibles</summary>
+      <div class="login-demo-grid">
+        <div>
+          <code>admin</code>
+          <span>Admin147*</span>
+          <em>Administrador</em>
+        </div>
+        <div>
+          <code>director</code>
+          <span>Director147*</span>
+          <em>Director GAULA</em>
+        </div>
+        <div>
+          <code>analista</code>
+          <span>Analista147*</span>
+          <em>Analista Operacional</em>
+        </div>
+        <div>
+          <code>operador</code>
+          <span>Operador147*</span>
+          <em>Operador Línea 147</em>
+        </div>
+      </div>
+    </details>
+
   </div>
 
-</section>
+  <!-- Security footer -->
+  <div class="login-footer">
+    <span>NEXO-147 · V2.1.0-DEMO</span>
+    <span>El acceso no autorizado es sancionado por la ley colombiana.</span>
+  </div>
+
+</div>
+
+    <!-- Asistente Operativo NEXO-147 -->
+    <div class="chatbot-widget" id="chatbot-widget">
+      <div class="chatbot-panel" id="chatbot-panel" role="dialog" aria-label="Asistente operativo NEXO-147" aria-hidden="true">
+        <div class="chatbot-header">
+          <div class="chatbot-identity">
+            <span class="chatbot-status-dot" aria-hidden="true"></span>
+            <div class="chatbot-identity-text">
+              <span class="chatbot-name">NEXO-147</span>
+              <span class="chatbot-role">Asistente Operativo</span>
+            </div>
+          </div>
+          <button class="chatbot-close" id="chatbot-close" aria-label="Cerrar asistente">
+            <svg width="15" height="15" viewBox="0 0 15 15" fill="none" aria-hidden="true">
+              <path d="M11.5 3.5L3.5 11.5M3.5 3.5l8 8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            </svg>
+          </button>
+        </div>
+        <div class="chatbot-messages" id="chatbot-mensajes">
+          <div class="cb-msg cb-msg--bot">Bienvenido al asistente operativo. Puedo orientarte sobre el uso del sistema NEXO-147, registro de reportes y módulos de inteligencia.</div>
+        </div>
+        <div class="chatbot-suggestions">
+          <button class="chat-suggestion" data-question="¿Cómo registro un reporte?">Registrar reporte</button>
+          <button class="chat-suggestion" data-question="¿Cómo consulto el estado de un caso?">Estado de caso</button>
+          <button class="chat-suggestion" data-question="¿Qué módulos OSINT hay disponibles?">Módulos OSINT</button>
+        </div>
+        <div class="chatbot-input-row">
+          <input type="text" id="chatbot-pregunta" placeholder="Escribe una consulta..." autocomplete="off" aria-label="Consulta al asistente">
+          <button class="chatbot-send-btn" id="chatbot-enviar" aria-label="Enviar consulta">
+            <svg width="15" height="15" viewBox="0 0 15 15" fill="none" aria-hidden="true">
+              <path d="M13 7.5L2 1.5l2.5 6-2.5 6 11-6z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+      <button class="chatbot-trigger" id="chatbot-trigger" aria-label="Abrir asistente operativo" aria-expanded="false">
+        <svg width="22" height="22" viewBox="0 0 22 22" fill="none" aria-hidden="true">
+          <path d="M3 4a2 2 0 012-2h12a2 2 0 012 2v9a2 2 0 01-2 2H8l-5 4V4z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" fill="none"/>
+        </svg>
+      </button>
+    </div>
+    <script src="{{ url_for('static', filename='chatbot.js') }}"></script>
+    <script src="{{ url_for('static', filename='helpbot.js') }}"></script>
 
 </body>
 </html>

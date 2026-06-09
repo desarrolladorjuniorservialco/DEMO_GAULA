@@ -1138,10 +1138,10 @@ document.addEventListener("DOMContentLoaded", () => {
       marker: {
         color: values,
         colorscale: [
-          [0, "rgba(0, 229, 255, 0.35)"],
-          [1, "#00e5ff"],
+          [0, "rgba(90,141,181,0.35)"],
+          [1, "#5a8db5"],
         ],
-        line: { color: "rgba(0,229,255,0.35)", width: 1 },
+        line: { color: "rgba(90,141,181,0.35)", width: 1 },
       },
       text: values.map(value => value.toString()),
       textposition: "outside",
@@ -1164,9 +1164,9 @@ document.addEventListener("DOMContentLoaded", () => {
       marker: {
         color: values,
         colorscale: [
-          [0, "rgba(111,202,82,0.35)"],
-          [0.5, "rgba(0,229,255,0.72)"],
-          [1, "rgba(255,90,31,0.95)"],
+          [0, "rgba(79,138,104,0.35)"],
+          [0.5, "rgba(90,141,181,0.72)"],
+          [1, "rgba(176,80,80,0.95)"],
         ],
       },
       hovertemplate: "%{y}<br>Casos: %{x}<extra></extra>",
@@ -1187,8 +1187,8 @@ document.addEventListener("DOMContentLoaded", () => {
       y: values,
       marker: {
         color: values,
-        colorscale: "Blues",
-        line: { color: "rgba(0,229,255,0.32)", width: 1 },
+        colorscale: [[0,"rgba(90,141,181,0.2)"],[1,"#5a8db5"]],
+        line: { color: "rgba(90,141,181,0.32)", width: 1 },
       },
       hovertemplate: "%{x}<br>Reportes: %{y}<extra></extra>",
     }], {
@@ -1212,8 +1212,8 @@ document.addEventListener("DOMContentLoaded", () => {
         x: currentX,
         y: currentSeries.map(point => point.value),
         name: "Periodo actual",
-        line: { color: "#00e5ff", width: 3 },
-        marker: { color: "#00e5ff", size: 6 },
+        line: { color: "#4f8a68", width: 3 },
+        marker: { color: "#4f8a68", size: 6 },
         hovertemplate: "%{x}<br>Actual: %{y}<extra></extra>",
       },
       {
@@ -1222,8 +1222,8 @@ document.addEventListener("DOMContentLoaded", () => {
         x: previousX,
         y: previousSeries.map(point => point.value),
         name: "Periodo anterior",
-        line: { color: "#ff5a1f", width: 3, dash: "dot" },
-        marker: { color: "#ff5a1f", size: 6 },
+        line: { color: "#b05050", width: 3, dash: "dot" },
+        marker: { color: "#b05050", size: 6 },
         hovertemplate: "%{x}<br>Anterior: %{y}<extra></extra>",
       },
     ], {
@@ -1247,7 +1247,7 @@ document.addEventListener("DOMContentLoaded", () => {
       textinfo: "label+percent",
       textposition: "outside",
       marker: {
-        colors: labels.map((_, index) => `hsl(${190 + index * 16}, 88%, ${52 - Math.min(index * 2, 18)}%)`),
+        colors: labels.map((_, index) => ["#5a8db5","#4f8a68","#c2a35a","#b05050","#8a7aa8","#7d8a95"][index % 6]),
         line: { color: "rgba(7,8,12,0.8)", width: 2 },
       },
       hovertemplate: "%{label}<br>Cantidad: %{value}<extra></extra>",
@@ -1269,7 +1269,7 @@ document.addEventListener("DOMContentLoaded", () => {
       textinfo: "label+percent",
       textposition: "outside",
       marker: {
-        colors: labels.map((_, index) => `hsl(${25 + index * 26}, 92%, ${54 - Math.min(index * 2, 16)}%)`),
+        colors: labels.map((_, index) => ["#c2a35a","#b05050","#5a8db5","#4f8a68","#8a7aa8","#7d8a95"][index % 6]),
         line: { color: "rgba(7,8,12,0.8)", width: 2 },
       },
       hovertemplate: "%{label}<br>Cantidad: %{value}<extra></extra>",
@@ -1285,7 +1285,7 @@ document.addEventListener("DOMContentLoaded", () => {
       x: values,
       nbinsx: 12,
       marker: {
-        color: "rgba(0,229,255,0.85)",
+        color: "rgba(90,141,181,0.85)",
         line: { color: "rgba(255,255,255,0.2)", width: 1 },
       },
       hovertemplate: "Score: %{x}<extra></extra>",
@@ -1306,9 +1306,9 @@ document.addEventListener("DOMContentLoaded", () => {
       marker: {
         color: values,
         colorscale: [
-          [0, "rgba(0,230,118,0.35)"],
-          [0.5, "rgba(255,214,0,0.75)"],
-          [1, "rgba(255,90,31,0.95)"],
+          [0, "rgba(79,138,104,0.35)"],
+          [0.5, "rgba(194,163,90,0.75)"],
+          [1, "rgba(176,80,80,0.95)"],
         ],
       },
       hovertemplate: "%{x}<br>Score promedio: %{y:.1f}<extra></extra>",
@@ -1360,9 +1360,9 @@ document.addEventListener("DOMContentLoaded", () => {
       if (len === 1) return [start];
       return Array.from({ length: len }, (_, i) => start + (end - start) * (i / (len - 1)));
     };
-    if (escenario === "optimista")  return { mods: linspace(0.85, 0.50, steps), color: "#22c55e" };
-    if (escenario === "pesimista")  return { mods: linspace(1.20, 2.10, steps), color: "#ef4444" };
-    return { mods: linspace(0.97, 1.03, steps), color: "#eab308" };  // realista
+    if (escenario === "optimista")  return { mods: linspace(0.85, 0.50, steps), color: "#4f8a68" };
+    if (escenario === "pesimista")  return { mods: linspace(1.20, 2.10, steps), color: "#b05050" };
+    return { mods: linspace(0.97, 1.03, steps), color: "#c2a35a" };  // realista
   }
 
   function buildProjectionSeries(historicMonths, historicValues, escenario) {
@@ -1525,7 +1525,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const { futureMonths: montoFM, futureValues: montoFV } = buildProjectionSeries(montoMonths, montoValues, escenario);
 
     renderIntelPlot("proj-chart-monto", [
-      { type: "bar",     name: "Histórico ($)",    x: montoMonths, y: montoValues, marker: { color: "#38bdf8" } },
+      { type: "bar",     name: "Histórico ($)",    x: montoMonths, y: montoValues, marker: { color: "#5a8db5" } },
       { type: "scatter", mode: "lines+markers", name: "Proyección ($)", x: montoFM, y: montoFV, line: { color: projColor, dash: "dot" }, marker: { symbol: "diamond" } },
     ], histLayout("Mes/Año", "Monto ($)"));
 
@@ -1547,7 +1547,7 @@ document.addEventListener("DOMContentLoaded", () => {
       if (t) tipoCount.set(t, (tipoCount.get(t) || 0) + 1);
     });
     const top3 = Array.from(tipoCount.entries()).sort((a, b) => b[1] - a[1]).slice(0, 3).map(e => e[0]);
-    const tipoColors = ["#38bdf8", "#a78bfa", "#fb923c"];
+    const tipoColors = ["#5a8db5", "#8a7aa8", "#c2a35a"];
 
     const tipoTraces = top3.flatMap((tipo, idx) => {
       const tipoRecords = filteredRecords.filter(r => normalizeIntelValue(r.tipo_reporte) === tipo);
@@ -1664,7 +1664,7 @@ document.addEventListener("DOMContentLoaded", () => {
       kpisEl.innerHTML = `
         <article class="dashboard-card double-bezel col-span-12">
           <div class="inner-core">
-            <strong style="display:block;margin-bottom:8px;color:#ff5a1f;">No fue posible construir el dashboard</strong>
+            <strong style="display:block;margin-bottom:8px;color:#b05050;">No fue posible construir el dashboard</strong>
             <p class="helper-text-mono" style="margin:0;">${err.message}</p>
           </div>
         </article>

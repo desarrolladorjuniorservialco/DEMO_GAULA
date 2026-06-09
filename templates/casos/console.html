@@ -9,20 +9,16 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='styles_media.css') }}">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+  <noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet"></noscript>
   <style>
-    body {
-      background-color: #0f1419;
-      color: #f2f4f5;
-      font-family: 'Inter', 'IBM Plex Sans', sans-serif;
-    }
     @keyframes radarSweepAnim {
       from { transform: rotate(0deg); }
       to   { transform: rotate(360deg); }
     }
   </style>
-  <script src="https://unpkg.com/lucide@latest"></script>
-  <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+  <script src="https://unpkg.com/lucide@latest" defer></script>
+  <script src="https://cdn.plot.ly/plotly-2.26.0.min.js" defer></script>
 </head>
 <body class="console-body">
   <div class="bg-scanline"></div>
@@ -144,11 +140,11 @@
 
         <div class="topbar-right">
           <!-- Alertas rápidas -->
-          <div class="topbar-alert-indicator" id="alert-indicator" title="Alertas operacionales críticas">
-            <span class="pulse-red"></span>
-            <span class="alert-count" id="alert-count-val">0</span>
-            <svg class="icon-topbar" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 0 1-3.46 0"/></svg>
-          </div>
+          <button class="topbar-alert-indicator" id="alert-indicator" type="button" aria-label="Alertas operacionales críticas">
+            <span class="pulse-red" aria-hidden="true"></span>
+            <span class="alert-count" id="alert-count-val" aria-live="polite">0</span>
+            <svg class="icon-topbar" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true" focusable="false"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+          </button>
           
           <div class="topbar-system-time" id="system-time">
             00:00:00 UTC
@@ -161,17 +157,106 @@
 
         <!-- PANEL DE INICIO GENERAL -->
         <section class="panel-section active" id="panel-inicio">
-          <div class="welcome-banner double-bezel">
+
+          <!-- HEADER OPERACIONAL PRINCIPAL -->
+          <div class="ops-header-panel double-bezel">
             <div class="inner-core">
-              <span class="badge-eyebrow">Demo Operativa Privada</span>
-              <h1>Bienvenido al Centro de Control, {{ session.get("name") }}</h1>
-              <p>Has iniciado sesión con el rol de <strong>{{ session.get("role").upper() }}</strong>. Tu espacio de trabajo y funciones clave se han habilitado en base a tus credenciales.</p>
-              
-              <div class="panel-shortcuts-grid" id="shortcuts-container">
-                <!-- Se inyecta dinámicamente por JS según el rol -->
+              <div class="ops-header-top">
+                <div class="ops-title-block">
+                  <span class="ops-eyebrow">NEXO-147 · DEMO OPERATIVA PRIVADA · ROL: {{ session.get("role", "usuario").upper() }}</span>
+                  <h1 class="ops-title">CENTRO OPERACIONAL GAULA</h1>
+                </div>
+                <div class="ops-status-block">
+                  <div class="ops-status-row">
+                    <span class="status-label">Estado General</span>
+                    <span class="status-pill green">● OPERATIVO</span>
+                  </div>
+                  <div class="ops-status-row">
+                    <span class="status-label">Nivel de Riesgo</span>
+                    <span class="status-pill amber">◆ MODERADO</span>
+                  </div>
+                </div>
+              </div>
+              <div class="ops-vitals-strip">
+                <div class="vital-item">
+                  <span class="vital-label">CASOS ACTIVOS</span>
+                  <strong class="vital-value" id="vital-casos">—</strong>
+                </div>
+                <div class="vital-divider"></div>
+                <div class="vital-item">
+                  <span class="vital-label">ENTIDADES RELACIONADAS</span>
+                  <strong class="vital-value" id="vital-entidades">—</strong>
+                </div>
+                <div class="vital-divider"></div>
+                <div class="vital-item">
+                  <span class="vital-label">ALERTAS PENDIENTES</span>
+                  <strong class="vital-value danger" id="vital-alertas">—</strong>
+                </div>
+                <div class="vital-divider"></div>
+                <div class="vital-item">
+                  <span class="vital-label">ÚLTIMA ACTUALIZACIÓN</span>
+                  <strong class="vital-value mono" id="vital-timestamp">—</strong>
+                </div>
               </div>
             </div>
           </div>
+
+          <!-- KPI OPERACIONALES -->
+          <div class="kpi-ops-grid">
+            <div class="kpi-ops-card double-bezel">
+              <div class="inner-core">
+                <div class="kpi-ops-icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                </div>
+                <span class="kpi-ops-label">Casos Activos</span>
+                <strong class="kpi-ops-value" id="kpi-casos-activos">—</strong>
+                <span class="kpi-ops-delta neutral" id="kpi-casos-delta">Cargando...</span>
+              </div>
+            </div>
+            <div class="kpi-ops-card double-bezel">
+              <div class="inner-core">
+                <div class="kpi-ops-icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                </div>
+                <span class="kpi-ops-label">Reportes Hoy</span>
+                <strong class="kpi-ops-value" id="kpi-reportes-hoy">—</strong>
+                <span class="kpi-ops-delta neutral" id="kpi-reportes-delta">Línea 147</span>
+              </div>
+            </div>
+            <div class="kpi-ops-card alert-variant double-bezel">
+              <div class="inner-core">
+                <div class="kpi-ops-icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                </div>
+                <span class="kpi-ops-label">Alertas</span>
+                <strong class="kpi-ops-value" id="kpi-alertas">—</strong>
+                <span class="kpi-ops-delta neutral" id="kpi-alertas-delta">Pendientes</span>
+              </div>
+            </div>
+            <div class="kpi-ops-card double-bezel">
+              <div class="inner-core">
+                <div class="kpi-ops-icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                </div>
+                <span class="kpi-ops-label">Entidades</span>
+                <strong class="kpi-ops-value" id="kpi-entidades">—</strong>
+                <span class="kpi-ops-delta neutral" id="kpi-entidades-delta">En base</span>
+              </div>
+            </div>
+            <div class="kpi-ops-card double-bezel">
+              <div class="inner-core">
+                <div class="kpi-ops-icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+                </div>
+                <span class="kpi-ops-label">Análisis OSINT</span>
+                <strong class="kpi-ops-value" id="kpi-osint">—</strong>
+                <span class="kpi-ops-delta neutral" id="kpi-osint-delta">Nodos activos</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- SHORTCUTS (inyectados por JS según rol) -->
+          <div class="panel-shortcuts-grid" id="shortcuts-container" style="margin-bottom:20px;"></div>
 
           <div class="dashboard-grid">
             <!-- KPIs Generales de Actividad -->
@@ -1420,7 +1505,96 @@ document.addEventListener('DOMContentLoaded', function() {
     .addEventListener('keydown', e => { if (e.key === 'Enter') osintFetchOpendata(); });
   document.getElementById('osint-graph-q')
     .addEventListener('keydown', e => { if (e.key === 'Enter') osintLoadGraph(); });
+
+  // Inicializar vitals del panel operacional
+  _initOpsVitals();
 });
+
+function _initOpsVitals() {
+  // Timestamp de última actualización
+  const ts = document.getElementById('vital-timestamp');
+  if (ts) {
+    const now = new Date();
+    ts.textContent = now.toISOString().replace('T', ' ').slice(0, 19) + ' UTC';
+  }
+
+  // Poblar KPIs desde endpoints disponibles
+  fetch('/api/dashboard/stats')
+    .then(r => r.json())
+    .then(data => {
+      _setOpsKpi('vital-casos',      data.casos_activos);
+      _setOpsKpi('vital-entidades',  data.total_entidades ?? '—');
+      _setOpsKpi('vital-alertas',    data.alertas_pendientes ?? data.casos_criticos ?? '—');
+      _setOpsKpi('kpi-casos-activos', data.casos_activos);
+      _setOpsKpi('kpi-reportes-hoy',  data.reportes_hoy ?? data.reportes_147 ?? '—');
+      _setOpsKpi('kpi-alertas',       data.alertas_pendientes ?? data.casos_criticos ?? '—');
+      _setOpsKpi('kpi-entidades',     data.total_entidades ?? data.gaulas_conectados ?? '—');
+      _setOpsKpi('kpi-osint',         data.alertas_osint ?? '—');
+    })
+    .catch(() => {
+      // Sin datos live — mostrar guiones
+      ['vital-casos','vital-entidades','vital-alertas',
+       'kpi-casos-activos','kpi-reportes-hoy','kpi-alertas','kpi-entidades','kpi-osint']
+        .forEach(id => _setOpsKpi(id, '—'));
+    });
+}
+
+function _setOpsKpi(id, val) {
+  const el = document.getElementById(id);
+  if (el) el.textContent = val;
+}
 </script>
+<script>
+  document.querySelectorAll(
+    '.nav-item svg, .sidebar-footer svg, .brand-icon, .btn-sidebar-toggle svg, .topbar-left svg'
+  ).forEach(function(el) {
+    el.setAttribute('aria-hidden', 'true');
+    el.setAttribute('focusable', 'false');
+  });
+</script>
+
+    <!-- Asistente Operativo NEXO-147 -->
+    <div class="chatbot-widget" id="chatbot-widget">
+      <div class="chatbot-panel" id="chatbot-panel" role="dialog" aria-label="Asistente operativo NEXO-147" aria-hidden="true">
+        <div class="chatbot-header">
+          <div class="chatbot-identity">
+            <span class="chatbot-status-dot" aria-hidden="true"></span>
+            <div class="chatbot-identity-text">
+              <span class="chatbot-name">NEXO-147</span>
+              <span class="chatbot-role">Asistente Operativo</span>
+            </div>
+          </div>
+          <button class="chatbot-close" id="chatbot-close" aria-label="Cerrar asistente">
+            <svg width="15" height="15" viewBox="0 0 15 15" fill="none" aria-hidden="true">
+              <path d="M11.5 3.5L3.5 11.5M3.5 3.5l8 8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            </svg>
+          </button>
+        </div>
+        <div class="chatbot-messages" id="chatbot-mensajes">
+          <div class="cb-msg cb-msg--bot">Bienvenido al asistente operativo. Puedo orientarte sobre el uso del sistema NEXO-147, registro de reportes y módulos de inteligencia.</div>
+        </div>
+        <div class="chatbot-suggestions">
+          <button class="chat-suggestion" data-question="¿Cómo registro un reporte?">Registrar reporte</button>
+          <button class="chat-suggestion" data-question="¿Cómo consulto el estado de un caso?">Estado de caso</button>
+          <button class="chat-suggestion" data-question="¿Qué módulos OSINT hay disponibles?">Módulos OSINT</button>
+        </div>
+        <div class="chatbot-input-row">
+          <input type="text" id="chatbot-pregunta" placeholder="Escribe una consulta..." autocomplete="off" aria-label="Consulta al asistente">
+          <button class="chatbot-send-btn" id="chatbot-enviar" aria-label="Enviar consulta">
+            <svg width="15" height="15" viewBox="0 0 15 15" fill="none" aria-hidden="true">
+              <path d="M13 7.5L2 1.5l2.5 6-2.5 6 11-6z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+      <button class="chatbot-trigger" id="chatbot-trigger" aria-label="Abrir asistente operativo" aria-expanded="false">
+        <svg width="22" height="22" viewBox="0 0 22 22" fill="none" aria-hidden="true">
+          <path d="M3 4a2 2 0 012-2h12a2 2 0 012 2v9a2 2 0 01-2 2H8l-5 4V4z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" fill="none"/>
+        </svg>
+      </button>
+    </div>
+    <script src="{{ url_for('static', filename='chatbot.js') }}"></script>
+    <script src="{{ url_for('static', filename='helpbot.js') }}"></script>
+
 </body>
 </html>

@@ -1,8 +1,24 @@
-import re
-import json
-import urllib.parse
+"""
+facebook_playwright.py — shim de compatibilidad.
 
-TIMEOUT_MS    = 18000       # ms — mayor margen para páginas pesadas de FB
+Contenido canonico movido a modules/osint/scrapers/browser/playwright.py.
+Re-exporta scrape_facebook_profile para no romper importaciones existentes.
+"""
+from modules.osint.scrapers.browser.playwright import (  # noqa: F401
+    scrape_facebook_profile,
+    _load_mock_data,
+    _dork_facebook_url,
+    _extract_og,
+    _extract_intel,
+    _is_login_wall,
+    TIMEOUT_MS,
+    NOT_PUBLIC,
+    NOT_AVAILABLE,
+)
+
+# --- dead code removed; canonical implementation in scrapers/browser/playwright.py ---
+if False:
+    _PLACEHOLDER = None  # keeps linters from flagging empty block
 NOT_PUBLIC    = "No público"
 NOT_AVAILABLE = "No disponible"
 

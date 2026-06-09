@@ -77,17 +77,6 @@ class Node(db.Model):
         "social_profile":  "#a855f7",
     }
 
-    def to_cytoscape(self):
-        return {
-            "data": {
-                "id":    self.value,
-                "label": self.label or self.value,
-                "type":  self.type,
-                "group": self.group,
-                "color": self._GROUP_COLORS.get(self.group, "#6b6860"),
-            }
-        }
-
 
 class OsintEdge(db.Model):
     __tablename__ = "edge"

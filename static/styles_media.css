@@ -116,6 +116,23 @@
     grid-template-columns: 1fr;
   }
 
+  .kpi-ops-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .search-box-tactical {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .table-actions-bar {
+    flex-wrap: wrap;
+  }
+
+  .filters-box-tactical {
+    flex-wrap: wrap;
+  }
+
   .topbar-system-time {
     display: none; /* Ocultar hora en teléfonos pequeños para ganar espacio */
   }
