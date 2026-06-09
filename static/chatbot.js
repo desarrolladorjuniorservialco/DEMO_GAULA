@@ -67,39 +67,57 @@
     }
 
     function inicializar_widget() {
-        var trigger = document.getElementById('chatbot-trigger');
-        var panel = document.getElementById('chatbot-panel');
-        var cerrar = document.getElementById('chatbot-close');
-        var input = document.getElementById('chatbot-pregunta');
-        var btn_enviar = document.getElementById('chatbot-enviar');
-        var contenedor = document.getElementById('chatbot-mensajes');
+        var trigger   = document.getElementById('chatbot-trigger');
+        var panel     = document.getElementById('chatbot-panel');
+        var btnCerrar = document.getElementById('chatbot-close');
+        var input     = document.getElementById('chatbot-pregunta');
+        var btnEnviar = document.getElementById('chatbot-enviar');
+        var mensajes  = document.getElementById('chatbot-mensajes');
         var sugerencias = document.querySelectorAll('.chat-suggestion');
 
-        if (!trigger || !panel || !contenedor) return;
+        if (!trigger || !panel || !mensajes) return;
 
-        trigger.addEventListener('click', function () {
-            var abierto = panel.classList.toggle('chatbot-panel--open');
-            panel.setAttribute('aria-hidden', String(!abierto));
-            trigger.setAttribute('aria-expanded', String(abierto));
-            if (abierto && input) {
-                setTimeout(function () { input.focus(); }, 50);
-            }
-        });
+        var abierto = false;
 
-        if (cerrar) {
-            cerrar.addEventListener('click', function () {
-                panel.classList.remove('chatbot-panel--open');
-                panel.setAttribute('aria-hidden', 'true');
-                trigger.setAttribute('aria-expanded', 'false');
+        function getStack() { return document.querySelector('.trigger-stack'); }
+
+        function abrir() {
+            panel.classList.remove('chatbot-panel--closing');
+            panel.classList.add('chatbot-panel--open');
+            panel.setAttribute('aria-hidden', 'false');
+            trigger.setAttribute('aria-expanded', 'true');
+            var stack = getStack();
+            if (stack) stack.classList.add('trigger-stack--displaced');
+            if (input) setTimeout(function () { input.focus(); }, 50);
+            abierto = true;
+        }
+
+        function cerrar() {
+            panel.classList.remove('chatbot-panel--open');
+            panel.classList.add('chatbot-panel--closing');
+            panel.setAttribute('aria-hidden', 'true');
+            trigger.setAttribute('aria-expanded', 'false');
+            abierto = false;
+            panel.addEventListener('animationend', function once() {
+                panel.removeEventListener('animationend', once);
+                panel.classList.remove('chatbot-panel--closing');
+                var stack = getStack();
+                if (stack) stack.classList.remove('trigger-stack--displaced');
             });
         }
+
+        trigger.addEventListener('click', function () {
+            if (abierto) { cerrar(); } else { abrir(); }
+        });
+
+        if (btnCerrar) btnCerrar.addEventListener('click', cerrar);
 
         function agregar_mensaje(texto, tipo) {
             var msg = document.createElement('div');
             msg.className = tipo === 'user' ? 'cb-msg cb-msg--user' : 'cb-msg cb-msg--bot';
             msg.textContent = texto;
-            contenedor.appendChild(msg);
-            contenedor.scrollTop = contenedor.scrollHeight;
+            mensajes.appendChild(msg);
+            mensajes.scrollTop = mensajes.scrollHeight;
         }
 
         function mostrar_typing() {
@@ -107,8 +125,8 @@
             indicator.className = 'cb-msg cb-msg--bot cb-msg--typing';
             indicator.id = 'cb-typing';
             indicator.innerHTML = '<span></span><span></span><span></span>';
-            contenedor.appendChild(indicator);
-            contenedor.scrollTop = contenedor.scrollHeight;
+            mensajes.appendChild(indicator);
+            mensajes.scrollTop = mensajes.scrollHeight;
             return indicator;
         }
 
@@ -116,37 +134,28 @@
             if (!input) return;
             var pregunta = input.value.trim();
             if (!pregunta) return;
-
             agregar_mensaje(pregunta, 'user');
             input.value = '';
-
             var indicator = mostrar_typing();
             var delay = 550 + Math.floor(Math.random() * 350);
-
             setTimeout(function () {
                 if (indicator.parentNode) indicator.parentNode.removeChild(indicator);
                 agregar_mensaje(buscar_respuesta(pregunta), 'bot');
             }, delay);
         }
 
-        if (btn_enviar) btn_enviar.addEventListener('click', enviar);
+        if (btnEnviar) btnEnviar.addEventListener('click', enviar);
 
         if (input) {
             input.addEventListener('keydown', function (e) {
-                if (e.key === 'Enter') {
-                    e.preventDefault();
-                    enviar();
-                }
+                if (e.key === 'Enter') { e.preventDefault(); enviar(); }
             });
         }
 
         sugerencias.forEach(function (btn) {
             btn.addEventListener('click', function () {
                 var pregunta = btn.getAttribute('data-question');
-                if (pregunta && input) {
-                    input.value = pregunta;
-                    enviar();
-                }
+                if (pregunta && input) { input.value = pregunta; enviar(); }
             });
         });
     }

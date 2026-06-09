@@ -133,7 +133,13 @@
       "Bash(python -c \"lines = open\\('c:/Users/Victor Pulido/Documents/GIT_Repositories/DEMO_GAULA/templates/casos/console.html'\\).readlines\\(\\); print\\(f'Total lines: {len\\(lines\\)}'\\); print\\('Last 15:'\\); [print\\(f'{len\\(lines\\)-14+i}: {lines[len\\(lines\\)-15+i].rstrip\\(\\)}'\\) for i in range\\(15\\)]\")",
       "Bash(python -c \"lines = open\\('c:/Users/Victor Pulido/Documents/GIT_Repositories/DEMO_GAULA/templates/casos/console.html', encoding='utf-8'\\).readlines\\(\\); print\\(f'Total lines: {len\\(lines\\)}'\\); [print\\(f'{len\\(lines\\)-14+i}: {lines[len\\(lines\\)-15+i].rstrip\\(\\)}'\\) for i in range\\(15\\)]\")",
       "Bash(mkdir -p \"C:\\\\Users\\\\Victor Pulido\\\\Documents\\\\GIT_Repositories\\\\DEMO_GAULA\\\\modules\\\\chatbot\")",
-      "Bash(powershell -Command \"\\(Get-Content 'c:\\\\Users\\\\Victor Pulido\\\\Documents\\\\GIT_Repositories\\\\DEMO_GAULA\\\\static\\\\styles_pc.css'\\).Count\")"
+      "Bash(powershell -Command \"\\(Get-Content 'c:\\\\Users\\\\Victor Pulido\\\\Documents\\\\GIT_Repositories\\\\DEMO_GAULA\\\\static\\\\styles_pc.css'\\).Count\")",
+      "Bash(powershell -Command \"\\(Get-Content 'c:\\\\Users\\\\Victor Pulido\\\\Documents\\\\GIT_Repositories\\\\DEMO_GAULA\\\\templates\\\\auth\\\\login.html'\\).Count\")",
+      "Bash(powershell -Command \"\\(Get-Content 'c:\\\\Users\\\\Victor Pulido\\\\Documents\\\\GIT_Repositories\\\\DEMO_GAULA\\\\templates\\\\casos\\\\console.html'\\).Count; \\(Get-Content 'c:\\\\Users\\\\Victor Pulido\\\\Documents\\\\GIT_Repositories\\\\DEMO_GAULA\\\\templates\\\\dashboard\\\\dashboard.html'\\).Count\")",
+      "Bash(python -c \"import ast, sys; ast.parse\\(open\\('static/chatbot.js'\\).read\\(\\)\\)\")",
+      "Bash(node -e \"require\\('fs'\\).readFileSync\\('static/chatbot.js','utf8'\\); console.log\\('chatbot.js OK'\\)\")",
+      "Bash(node -e \"require\\('fs'\\).readFileSync\\('static/helpbot.js','utf8'\\); console.log\\('helpbot.js OK'\\)\")",
+      "Bash(node --input-type=module)"
     ],
     "additionalDirectories": [
       "C:\\Users\\Victor Pulido\\Documents\\GIT\\DEMO_GAULA\\docs\\superpowers\\specs",
