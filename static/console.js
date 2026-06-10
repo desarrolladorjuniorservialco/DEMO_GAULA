@@ -39,8 +39,9 @@ document.addEventListener("DOMContentLoaded", () => {
   // --- NAVEGACIÓN SPA ---
   navItems.forEach(item => {
     item.addEventListener("click", (e) => {
-      e.preventDefault();
       const targetPanelId = item.getAttribute("data-panel");
+      if (!targetPanelId) return; // enlaces externos (ej. Reconocimiento Placas)
+      e.preventDefault();
       
       // Activar clase en menú
       navItems.forEach(i => i.classList.remove("active"));

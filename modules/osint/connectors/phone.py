@@ -1,13 +1,16 @@
-"""connectors/phone.py — Lookup de número telefónico con prefijos colombianos y DDG."""
+"""connectors/phone.py — Lookup de número telefónico: phonenumbers + NumVerify + DDG."""
 from __future__ import annotations
 
+import os
 import re
-import time
 from typing import Any
+
+import requests
 
 from .base import BaseConnector, ConnectorResult
 
-# Prefijos móviles Colombia (3 dígitos)
+_NUMVERIFY_URL = "https://api.apilayer.com/number_verification/validate"
+
 _CO_CARRIERS: dict[str, str] = {
     "300": "Claro",      "301": "Claro",      "302": "Claro",
     "303": "Claro",      "304": "ETB Móvil",  "305": "ETB Móvil",
@@ -32,7 +35,7 @@ def _normalize_phone(raw: str) -> str:
     return digits
 
 
-def _carrier_info(digits: str) -> dict[str, str]:
+def _local_carrier(digits: str) -> dict[str, str]:
     prefix3 = digits[:3]
     carrier = _CO_CARRIERS.get(prefix3)
     if carrier:
@@ -42,8 +45,53 @@ def _carrier_info(digits: str) -> dict[str, str]:
     return {"carrier": "Desconocido", "country": "Unknown", "line_type": "unknown", "prefix": prefix3}
 
 
+def _phonenumbers_parse(raw: str) -> dict[str, Any]:
+    try:
+        import phonenumbers
+        from phonenumbers import carrier as ph_carrier, geocoder, timezone as ph_timezone
+
+        phone = phonenumbers.parse(raw, "CO")
+        if phonenumbers.is_valid_number(phone):
+            return {
+                "valid": True,
+                "international": phonenumbers.format_number(phone, phonenumbers.PhoneNumberFormat.INTERNATIONAL),
+                "e164": phonenumbers.format_number(phone, phonenumbers.PhoneNumberFormat.E164),
+                "carrier": ph_carrier.name_for_number(phone, "es") or "",
+                "region": geocoder.description_for_number(phone, "es") or "",
+                "timezone": list(ph_timezone.time_zones_for_number(phone)),
+            }
+        return {"valid": False}
+    except Exception:
+        return {"valid": False}
+
+
+def _numverify_enrich(phone_e164: str) -> dict[str, Any]:
+    key = os.getenv("NUMVERIFY_API_KEY", "").strip()
+    if not key:
+        return {}
+    try:
+        resp = requests.get(
+            _NUMVERIFY_URL,
+            headers={"apikey": key},
+            params={"number": phone_e164},
+            timeout=10.0,
+        )
+        resp.raise_for_status()
+        data = resp.json()
+        if data.get("valid"):
+            return {
+                "carrier":              data.get("carrier", ""),
+                "line_type":            data.get("line_type", ""),
+                "country":              data.get("country_name", ""),
+                "location":             data.get("location", ""),
+                "international_format": data.get("international_format", ""),
+            }
+    except Exception:
+        pass
+    return {}
+
+
 class PhoneConnector(BaseConnector):
-    """Búsqueda de número telefónico: prefijo operador + menciones DDG."""
 
     @property
     def name(self) -> str:
@@ -59,46 +107,25 @@ class PhoneConnector(BaseConnector):
 
     def fetch(self, target: str, **kwargs: Any) -> ConnectorResult:
         normalized = _normalize_phone(target)
-        carrier = _carrier_info(normalized)
-        dork_results: list[dict] = []
-        errors: list[str] = []
+        local = _local_carrier(normalized)
+        parsed = _phonenumbers_parse(target)
+        e164 = parsed.get("e164", f"+57{normalized}")
+        numverify = _numverify_enrich(e164)
 
-        queries = [
-            f'"{target}"',
-            f'"{normalized}" Colombia',
-        ]
+        carrier_name = (
+            numverify.get("carrier")
+            or parsed.get("carrier")
+            or local.get("carrier", "—")
+        )
+        line_type = numverify.get("line_type") or local.get("line_type", "—")
+        country = numverify.get("country") or local.get("country", "—")
+        location = numverify.get("location") or parsed.get("region", "—")
 
-        try:
-            from duckduckgo_search import DDGS
-            from duckduckgo_search.exceptions import DuckDuckGoSearchException
-            try:
-                from duckduckgo_search.exceptions import RatelimitException
-            except ImportError:
-                RatelimitException = DuckDuckGoSearchException
-
-            seen_urls: set[str] = set()
-            with DDGS() as ddgs:
-                for query in queries:
-                    try:
-                        raw = ddgs.text(query, max_results=15) or []
-                        for r in raw:
-                            url = r.get("href", "")
-                            if url and url not in seen_urls:
-                                seen_urls.add(url)
-                                dork_results.append({
-                                    "title":   r.get("title", "")[:120],
-                                    "url":     url,
-                                    "snippet": r.get("body", "")[:250],
-                                    "query":   query,
-                                })
-                        time.sleep(1.5)
-                    except RatelimitException:
-                        errors.append("phone DDG: rate limit 429 — espera 60s.")
-                        break
-                    except DuckDuckGoSearchException as exc:
-                        errors.append(f"phone DDG: {exc}")
-        except ImportError:
-            errors.append("duckduckgo-search no disponible.")
+        from modules.osint.connectors.web_dork import run_dork
+        dork_results, errors = run_dork(
+            [f'"{target}"', f'"{normalized}" Colombia'],
+            max_results=10,
+        )
 
         return ConnectorResult(
             connector=self.name,
@@ -106,10 +133,17 @@ class PhoneConnector(BaseConnector):
             data={
                 "phone_raw":        target,
                 "phone_normalized": normalized,
-                "carrier":          carrier,
+                "international":    parsed.get("international", ""),
+                "valid":            parsed.get("valid", False),
+                "carrier":          carrier_name,
+                "line_type":        line_type,
+                "country":          country,
+                "location":         location,
+                "timezone":         parsed.get("timezone", []),
+                "numverify":        numverify,
                 "dork_results":     dork_results,
                 "mentions_count":   len(dork_results),
             },
             errors=errors,
-            metadata={"carrier": carrier},
+            metadata={"enriched": bool(numverify)},
         )

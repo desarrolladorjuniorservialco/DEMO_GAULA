@@ -21,7 +21,6 @@
 .od-frag .empty-note{color:#4a5a6a;font-size:.78rem;padding:.4rem 0}
 .od-frag .error-block{background:#1a0a0a;border:1px solid #5c1a1a;border-radius:4px;padding:.5rem .75rem;margin-bottom:1rem}
 .od-frag .error-line{color:#f87171;margin:2px 0;font-size:.78rem}
-.od-frag .warn-banner{background:#1a1200;border:1px solid #5c3a00;border-radius:4px;padding:.45rem .75rem;margin-bottom:.75rem;color:#f59e0b;font-size:.77rem}
 .od-frag .results-meta{margin-bottom:.5rem;font-size:.77rem;color:#6b8aaa}
 </style>
 
@@ -43,23 +42,18 @@
     <span class="summary-stat">Fuentes consultadas: <strong>{{ sources_queried }}</strong></span>
     <span class="summary-stat">Hallazgos: <strong>{{ findings_count }}</strong></span>
     {% if simit %}
-      {% if simit.metadata.status == 'unconfigured' %}
-        <span class="source-badge warn">SIMIT sin config</span>
-      {% elif simit.ok %}
-        <span class="source-badge ok">SIMIT ✓ ({{ simit.data.rows|length }})</span>
-      {% else %}
-        <span class="source-badge empty">SIMIT sin resultados</span>
-      {% endif %}
+      {% if simit.ok %}<span class="source-badge ok">SIMIT ✓ ({{ simit.data.rows|length }})</span>
+      {% else %}<span class="source-badge empty">SIMIT sin resultados</span>{% endif %}
     {% endif %}
-    {% if truecaller %}
-      {% if truecaller.metadata.status == 'unconfigured' %}
-        <span class="source-badge warn">Truecaller sin config</span>
-      {% elif truecaller.ok %}
-        <span class="source-badge ok">Truecaller ✓</span>
-      {% else %}
-        <span class="source-badge empty">Truecaller sin resultados</span>
-      {% endif %}
+    {% if rues %}
+      {% if rues.ok %}<span class="source-badge ok">RUES ✓ ({{ rues.data.expedientes|length }})</span>
+      {% else %}<span class="source-badge empty">RUES sin resultados</span>{% endif %}
     {% endif %}
+    {% if phone %}
+      {% if phone.ok %}<span class="source-badge ok">TEL ✓{% if phone.metadata.enriched %} +NumVerify{% endif %}</span>
+      {% else %}<span class="source-badge empty">TEL sin resultados</span>{% endif %}
+    {% endif %}
+    {% if dork_results %}<span class="source-badge ok">WEB ✓ ({{ dork_results|length }})</span>{% endif %}
   </div>
 
   {% if simit %}
@@ -67,9 +61,7 @@
     <div class="section-hdr" onclick="odToggle('od-simit')">
       <span class="section-tag">SIMIT</span>
       <span>Infracciones de Tránsito</span>
-      {% if simit.ok %}
-        <span class="section-count">{{ simit.data.rows|length }} registro(s)</span>
-      {% endif %}
+      {% if simit.ok %}<span class="section-count">{{ simit.data.rows|length }} registro(s)</span>{% endif %}
       <span class="section-toggle" id="od-simit-icon">▼</span>
     </div>
     <div id="od-simit">
@@ -80,27 +72,28 @@
           <table class="data-table">
             <thead>
               <tr>
-                <th>Nombre</th><th>Identificación</th><th>Placa</th>
-                <th>Valor</th><th>Estado</th><th>Fecha</th><th>Municipio</th>
+                {% if target_type == 'document' %}<th>Identificación</th>{% endif %}
+                <th>Placa</th><th>Fecha</th><th>Valor</th>
+                <th>Estado</th><th>Lugar</th><th>Vigencia</th>
               </tr>
             </thead>
             <tbody>
               {% for row in simit.data.rows %}
               <tr>
-                <td>{{ row.nombre or '—' }}</td>
-                <td>{{ row.numero_identificacion or '—' }}</td>
-                <td>{{ row.placa or '—' }}</td>
-                <td>{{ row.valor_a_pagar or '—' }}</td>
-                <td>{{ row.estado or '—' }}</td>
-                <td>{{ (row.fecha_infraccion or '')[:10] or '—' }}</td>
-                <td>{{ row.municipio or '—' }}</td>
+                {% if target_type == 'document' %}<td>{{ row.identificacion or '—' }}</td>{% endif %}
+                <td>{{ row.placa }}</td>
+                <td>{{ row.fecha }}</td>
+                <td>{{ row.valor }}</td>
+                <td>{{ row.estado }}</td>
+                <td>{{ row.lugar }}</td>
+                <td>{{ row.vigencia }}</td>
               </tr>
               {% endfor %}
             </tbody>
           </table>
         </div>
         <div style="font-size:.72rem;color:#4a5a6a;margin-top:.25rem">
-          Fuente: <a href="https://www.datos.gov.co/resource/72nf-y4v3" target="_blank"
+          Fuente: <a href="https://www.datos.gov.co/resource/{{ simit.metadata.dataset }}" target="_blank"
             rel="noopener" style="color:#4bc8a8">datos.gov.co/SIMIT</a>
           {% if simit.metadata.latency_ms %} — {{ simit.metadata.latency_ms }}ms{% endif %}
         </div>
@@ -109,36 +102,100 @@
   </div>
   {% endif %}
 
-  {% if truecaller %}
+  {% if rues %}
   <div class="section">
-    <div class="section-hdr" onclick="odToggle('od-tc')">
-      <span class="section-tag">TRUECALLER</span>
-      <span>Información Telefónica</span>
-      <span class="section-toggle" id="od-tc-icon">▼</span>
+    <div class="section-hdr" onclick="odToggle('od-rues')">
+      <span class="section-tag">RUES</span>
+      <span>Actividad Empresarial</span>
+      {% if rues.ok %}<span class="section-count">{{ rues.data.expedientes|length }} expediente(s)</span>{% endif %}
+      <span class="section-toggle" id="od-rues-icon">▼</span>
     </div>
-    <div id="od-tc">
-      {% if truecaller.metadata.status == 'unconfigured' %}
-        <div class="warn-banner">
-          ⚠ Truecaller no está configurado. Define
-          <code>TRUECALLER_API_KEY</code> en el entorno para habilitar este conector.
+    <div id="od-rues">
+      {% if not rues.ok %}
+        <p class="empty-note">Sin actividad empresarial registrada en RUES para <em>{{ q }}</em>.</p>
+      {% else %}
+        <div class="table-wrap">
+          <table class="data-table">
+            <thead>
+              <tr><th>Razón Social</th><th>Matrícula</th><th>Estado</th><th>Cámara</th><th>NIT/ID</th></tr>
+            </thead>
+            <tbody>
+              {% for e in rues.data.expedientes %}
+              <tr>
+                <td>{{ e.razon_social }}</td><td>{{ e.matricula }}</td>
+                <td>{{ e.estado }}</td><td>{{ e.camara }}</td><td>{{ e.nit }}</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
         </div>
-      {% elif not truecaller.ok %}
-        <p class="empty-note">Sin resultados en Truecaller para <em>{{ q }}</em>.</p>
+        <div style="font-size:.72rem;color:#4a5a6a;margin-top:.25rem">
+          Fuente: <a href="https://www.rues.org.co/" target="_blank" rel="noopener" style="color:#4bc8a8">RUES</a>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+  {% endif %}
+
+  {% if phone %}
+  <div class="section">
+    <div class="section-hdr" onclick="odToggle('od-phone')">
+      <span class="section-tag">TELÉFONO</span>
+      <span>Información Telefónica</span>
+      {% if phone.ok %}<span class="section-count">{{ phone.data.mentions_count }} mención(es)</span>{% endif %}
+      <span class="section-toggle" id="od-phone-icon">▼</span>
+    </div>
+    <div id="od-phone">
+      {% if not phone.ok %}
+        <p class="empty-note">Sin resultados telefónicos para <em>{{ q }}</em>.</p>
       {% else %}
         <table class="kv-table">
           <tbody>
-            <tr><td class="k">Nombre registrado</td><td>{{ truecaller.data.nombre or '—' }}</td></tr>
-            <tr><td class="k">Operador</td><td>{{ truecaller.data.operador or '—' }}</td></tr>
-            <tr><td class="k">País</td><td>{{ truecaller.data.pais or '—' }}</td></tr>
-            <tr><td class="k">Tipo de línea</td><td>{{ truecaller.data.tipo_linea or '—' }}</td></tr>
-            <tr><td class="k">Spam score</td><td>{{ truecaller.data.spam_score }}</td></tr>
-            <tr><td class="k">¿Es spam?</td><td>{{ 'Sí' if truecaller.data.es_spam else 'No' }}</td></tr>
+            <tr><td class="k">Número internacional</td><td>{{ phone.data.international or '—' }}</td></tr>
+            <tr><td class="k">Válido</td><td>{{ 'Sí' if phone.data.valid else 'No' }}</td></tr>
+            <tr><td class="k">Operador</td><td>{{ phone.data.carrier or '—' }}</td></tr>
+            <tr><td class="k">Tipo de línea</td><td>{{ phone.data.line_type or '—' }}</td></tr>
+            <tr><td class="k">País</td><td>{{ phone.data.country or '—' }}</td></tr>
+            <tr><td class="k">Ubicación</td><td>{{ phone.data.location or '—' }}</td></tr>
+            {% if phone.data.timezone %}
+            <tr><td class="k">Zona horaria</td><td>{{ phone.data.timezone | join(', ') }}</td></tr>
+            {% endif %}
+            {% if phone.metadata.enriched %}
+            <tr><td class="k">Fuente</td><td><span style="color:#4bc8a8">NumVerify ✓</span></td></tr>
+            {% endif %}
           </tbody>
         </table>
-        {% if truecaller.metadata.latency_ms %}
-          <div style="font-size:.72rem;color:#4a5a6a;margin-top:.25rem">{{ truecaller.metadata.latency_ms }}ms</div>
+        {% if phone.data.dork_results %}
+        <div style="margin-top:.75rem">
+          <div style="font-size:.75rem;color:#6b8aaa;margin-bottom:.4rem">Menciones web ({{ phone.data.mentions_count }})</div>
+          {% for r in phone.data.dork_results[:5] %}
+          <div style="margin-bottom:.5rem;font-size:.77rem">
+            <a href="{{ r.url }}" target="_blank" rel="noopener" style="color:#4bc8a8;word-break:break-all">{{ r.title or r.url }}</a>
+            {% if r.snippet %}<div style="color:#8ab4cc;margin-top:2px">{{ r.snippet }}</div>{% endif %}
+          </div>
+          {% endfor %}
+        </div>
         {% endif %}
       {% endif %}
+    </div>
+  </div>
+  {% endif %}
+
+  {% if dork_results %}
+  <div class="section">
+    <div class="section-hdr" onclick="odToggle('od-web')">
+      <span class="section-tag">WEB</span>
+      <span>Menciones en la Web Abierta</span>
+      <span class="section-count">{{ dork_results|length }} resultado(s)</span>
+      <span class="section-toggle" id="od-web-icon">▼</span>
+    </div>
+    <div id="od-web">
+      {% for r in dork_results[:10] %}
+      <div style="margin-bottom:.5rem;font-size:.77rem">
+        <a href="{{ r.url }}" target="_blank" rel="noopener" style="color:#4bc8a8;word-break:break-all">{{ r.title or r.url }}</a>
+        {% if r.snippet %}<div style="color:#8ab4cc;margin-top:2px">{{ r.snippet }}</div>{% endif %}
+      </div>
+      {% endfor %}
     </div>
   </div>
   {% endif %}
