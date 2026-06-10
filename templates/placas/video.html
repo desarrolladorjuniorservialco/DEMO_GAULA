@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>NEXO-147 | Análisis de Video — Placas</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles_pc.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles_media.css') }}">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="bg-scanline"></div>
+  <div class="glow-orb orb-one"></div>
+  <div class="glow-orb orb-two"></div>
+
+  <div class="console-layout">
+    <div class="console-main">
+      <header class="console-topbar">
+        <div class="topbar-left">
+          <a href="{{ url_for('placas.index') }}" class="btn-sidebar-toggle" aria-label="Volver a imágenes" title="Volver a imágenes">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+          </a>
+          <div class="breadcrumb-tactical">
+            <span class="active-category">NEXO-147</span>
+            <span class="divider">/</span>
+            <span class="active-panel-name">HERRAMIENTAS</span>
+            <span class="divider">/</span>
+            <a href="{{ url_for('placas.index') }}" class="active-panel-name" style="text-decoration:none;">Placas</a>
+            <span class="divider">/</span>
+            <span class="active-panel-name">ANÁLISIS DE VIDEO</span>
+          </div>
+        </div>
+        <div class="topbar-right">
+          <div class="topbar-system-time" id="system-time">00:00:00 UTC</div>
+        </div>
+      </header>
+
+      <main class="console-workspace">
+        <section class="pv-container">
+
+          <!-- ── Cabecera ───────────────────────────────────────────────── -->
+          <div class="pv-header">
+            <h2 class="pv-title">ANÁLISIS DE VIDEO</h2>
+            <p class="pv-subtitle">YOLO · ByteTrack · EasyOCR · Canvas Overlay · Colombia</p>
+          </div>
+
+          <!-- ── Zona de upload ─────────────────────────────────────────── -->
+          <div class="pv-upload-area" id="drop-zone">
+            <div class="pv-drop-inner" id="drop-inner">
+              <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3">
+                <rect x="2" y="2" width="20" height="20" rx="3"/>
+                <polygon points="10,8 16,12 10,16"/>
+              </svg>
+              <p>Arrastra un video aquí o <label for="video-input" class="pv-browse-link">selecciona un archivo</label></p>
+              <p class="pv-hint">MP4, MOV, AVI, MKV, WEBM — máximo 200 MB</p>
+            </div>
+            <div id="drop-file-name" class="pv-file-name" style="display:none;"></div>
+            <input type="file" id="video-input" accept="video/*" style="display:none;">
+          </div>
+
+          <button id="btn-analizar" class="pv-btn" disabled>Analizar video</button>
+
+          <!-- ── Progreso ───────────────────────────────────────────────── -->
+          <div id="pv-progress-wrap" style="display:none;">
+            <div class="pv-progress-bar-track">
+              <div class="pv-progress-bar-fill" id="progress-bar" style="width:0%"></div>
+            </div>
+            <div class="pv-status-row">
+              <span id="status-label" class="pv-status-label">Iniciando…</span>
+              <span id="status-pct" class="pv-status-pct">0%</span>
+            </div>
+          </div>
+
+          <!-- ── Banners ────────────────────────────────────────────────── -->
+          <div id="banner-error" class="pv-banner pv-banner--error" style="display:none;">
+            <span id="error-msg"></span>
+          </div>
+
+          <!-- ── Área de reproducción ───────────────────────────────────── -->
+          <div id="pv-player-wrap" style="display:none;">
+            <div class="pv-player-outer">
+              <video id="placas-video" class="pv-video" controls preload="metadata"></video>
+              <canvas id="placas-canvas" class="pv-canvas"></canvas>
+            </div>
+          </div>
+
+          <!-- ── Panel de resultados ────────────────────────────────────── -->
+          <div id="pv-results-panel" style="display:none;">
+            <div class="pv-results-header">PLACAS DETECTADAS</div>
+            <ul id="placas-list" class="pv-placas-list"></ul>
+          </div>
+
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <!-- ══ Estilos ══════════════════════════════════════════════════════════════ -->
+  <style>
+  .pv-container { max-width: 920px; margin: 0 auto; padding: 0 1rem 2rem; font-family: 'IBM Plex Mono', monospace; }
+
+  .pv-header { text-align: center; margin-bottom: 1.5rem; }
+  .pv-title  { font-size: 1.2rem; letter-spacing: 4px; color: var(--color-accent, #c8a84b); margin: 0; }
+  .pv-subtitle { font-size: 0.72rem; letter-spacing: 2px; color: #6b7280; margin: 0.3rem 0 0; }
+
+  /* Upload */
+  .pv-upload-area {
+    border: 2px dashed var(--color-accent, #c8a84b);
+    border-radius: 10px; padding: 2rem; text-align: center; cursor: pointer;
+    transition: border-color 0.2s, background 0.2s;
+  }
+  .pv-upload-area.drag-over { border-color: #fff; background: rgba(200,168,75,0.05); }
+  .pv-drop-inner { color: #9ca3af; font-size: 0.85rem; }
+  .pv-browse-link { color: var(--color-accent, #c8a84b); cursor: pointer; text-decoration: underline; }
+  .pv-hint { font-size: 0.72rem; color: #4b5563; margin-top: 0.4rem; }
+  .pv-file-name { font-size: 0.8rem; color: var(--color-accent, #c8a84b); margin-top: 0.6rem; }
+
+  .pv-btn {
+    display: block; margin: 1rem auto 0; padding: 0.6rem 2.5rem;
+    background: var(--color-accent, #c8a84b); color: #0d1117;
+    border: none; border-radius: 6px; font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.85rem; font-weight: 700; letter-spacing: 2px; cursor: pointer;
+    transition: opacity 0.2s;
+  }
+  .pv-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+
+  /* Progreso */
+  .pv-progress-bar-track {
+    margin-top: 1.2rem; height: 6px; background: #1f2937; border-radius: 3px; overflow: hidden;
+  }
+  .pv-progress-bar-fill { height: 100%; background: var(--color-accent, #c8a84b); transition: width 0.4s; }
+  .pv-status-row { display: flex; justify-content: space-between; margin-top: 0.4rem; font-size: 0.72rem; }
+  .pv-status-label { color: #9ca3af; }
+  .pv-status-pct   { color: var(--color-accent, #c8a84b); }
+
+  /* Banners */
+  .pv-banner { margin-top: 1rem; padding: 0.8rem 1rem; border-radius: 6px; font-size: 0.8rem; }
+  .pv-banner--error { background: #1a0a0a; border: 1px solid #7f1d1d; color: #fca5a5; }
+
+  /* Player */
+  .pv-player-outer {
+    position: relative; margin-top: 1.4rem; border-radius: 8px; overflow: hidden;
+    border: 1px solid #1f2937; background: #000;
+  }
+  .pv-video  { display: block; width: 100%; max-height: 480px; object-fit: contain; }
+  .pv-canvas {
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    pointer-events: none;
+  }
+
+  /* Lista de placas */
+  .pv-results-header {
+    font-size: 0.66rem; letter-spacing: 3px; color: var(--color-accent, #c8a84b);
+    margin: 1.4rem 0 0.5rem;
+  }
+  .pv-placas-list { list-style: none; padding: 0; margin: 0; }
+  .pv-placas-list li {
+    display: flex; align-items: center; gap: 0.8rem;
+    padding: 0.45rem 0; border-bottom: 1px solid #1f2937;
+    font-size: 0.8rem;
+  }
+  .pv-placa-tag {
+    font-weight: 700; font-size: 1rem; letter-spacing: 3px;
+    color: #fff; background: #1a1500; border: 1px solid var(--color-accent, #c8a84b);
+    border-radius: 4px; padding: 0.1rem 0.5rem;
+  }
+  .pv-placa-tipo { color: #6b7280; font-size: 0.7rem; }
+  .pv-placa-ts   { color: #4b5563; font-size: 0.68rem; margin-left: auto; }
+  .pv-placa-btn  {
+    padding: 0.2rem 0.6rem; font-size: 0.68rem; font-family: inherit;
+    background: transparent; border: 1px solid #374151; color: #9ca3af;
+    border-radius: 4px; cursor: pointer; transition: border-color 0.15s, color 0.15s;
+  }
+  .pv-placa-btn:hover { border-color: var(--color-accent, #c8a84b); color: var(--color-accent, #c8a84b); }
+  </style>
+
+  <!-- ══ JavaScript ══════════════════════════════════════════════════════════ -->
+  <script src="{{ url_for('static', filename='js/placas-video.js') }}"></script>
+  <script>
+  (function tick() {
+    const t = new Date();
+    document.getElementById("system-time").textContent =
+      t.getUTCHours().toString().padStart(2,"0") + ":" +
+      t.getUTCMinutes().toString().padStart(2,"0") + ":" +
+      t.getUTCSeconds().toString().padStart(2,"0") + " UTC";
+    setTimeout(tick, 1000);
+  })();
+  </script>
+</body>
+</html>
