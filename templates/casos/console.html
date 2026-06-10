@@ -797,9 +797,9 @@
           <!-- Sub-tabs -->
           <div class="osint-tabs" style="display:flex;gap:.5rem;margin-bottom:1rem;border-bottom:1px solid rgba(79,138,104,0.16);padding-bottom:.5rem">
             <button class="osint-tab-btn btn btn-secondary-tactical active" data-tab="social" onclick="osintSwitchTab('social')">Redes Sociales</button>
-            <button class="osint-tab-btn btn btn-secondary-tactical" data-tab="opendata" onclick="osintSwitchTab('opendata')">Datos Abiertos <span id="osint-od-badge" style="display:none;background:#b59a5a;color:#0f1419;font-size:.65rem;padding:1px 5px;border-radius:4px;margin-left:4px;font-weight:700">✓</span></button>
             <button class="osint-tab-btn btn btn-secondary-tactical" data-tab="history" onclick="osintSwitchTab('history')">Historial <span id="osint-history-badge" style="display:none;background:#4f8a68;color:#0f1419;font-size:.65rem;padding:1px 5px;border-radius:4px;margin-left:4px;font-weight:700">✓</span></button>
             <button class="osint-tab-btn btn btn-secondary-tactical" data-tab="graph" onclick="osintSwitchTab('graph')">Grafo de Relaciones <span id="osint-graph-badge" style="display:none;background:#4f8a68;color:#0f1419;font-size:.65rem;padding:1px 5px;border-radius:4px;margin-left:4px;font-weight:700">✓</span></button>
+            <button class="osint-tab-btn btn btn-secondary-tactical" data-tab="opendata" onclick="osintSwitchTab('opendata')">Datos Abiertos</button>
           </div>
 
           <!-- Tab: Redes Sociales -->
@@ -815,37 +815,6 @@
                 </div>
                 <div id="osint-social-spinner" style="display:none;color:#4f8a68;font-size:.8rem;margin-bottom:.5rem">⟳ Ejecutando búsqueda...</div>
                 <div id="osint-social-results" style="max-height:500px;overflow-y:auto"></div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Tab: Datos Abiertos -->
-          <div class="osint-tab-pane" id="osint-tab-opendata" style="display:none">
-            <div class="dashboard-card double-bezel">
-              <div class="inner-core">
-                <h3>Datos Abiertos y Fuentes Oficiales</h3>
-                <p class="helper-text-mono">Placas, expedientes, catálogos oficiales y trazas técnicas de dominios/IP.</p>
-                <div style="display:flex;flex-wrap:wrap;gap:.5rem;align-items:center;margin-bottom:.75rem">
-                  <input type="text" id="osint-od-q" class="search-input-tactical" placeholder="placa, cédula, expediente, dominio o IP..." style="flex:1;min-width:150px">
-                  <select id="osint-od-source" class="search-input-tactical" style="max-width:220px">
-                    <option value="official" selected>Fuentes oficiales</option>
-                    <option value="simit">SIMIT</option>
-                    <option value="rnmc">RNMC</option>
-                    <option value="datos_gov">Catálogo datos.gov.co</option>
-                    <option value="secop">SECOP</option>
-                    <option value="rama_judicial">Rama Judicial</option>
-                    <option value="procuraduria">Procuraduría</option>
-                    <option value="contraloria">Contraloría</option>
-                    <option value="supersociedades">Supersociedades</option>
-                  </select>
-                  <span style="font-size:.73rem;font-family:'JetBrains Mono',monospace;color:#4f8a68;padding:.3rem .6rem;border:1px solid rgba(79,138,104,0.3);border-radius:4px;white-space:nowrap;letter-spacing:.04em;">▣ FUENTES OFICIALES</span>
-                  <button class="btn btn-primary-tactical" onclick="osintFetchOpendata()">EJECUTAR</button>
-                </div>
-                <p class="helper-text-mono" style="margin-top:0;margin-bottom:.75rem">
-                  Usa <strong>SIMIT</strong> para placas, <strong>RNMC</strong> para expedientes o identificaciones y <strong>Catálogo datos.gov.co</strong> para explorar fuentes oficiales relacionadas.
-                </p>
-                <div id="osint-od-spinner" style="display:none;color:#4f8a68;font-size:.8rem;margin-bottom:.5rem">⟳ Consultando fuentes abiertas...</div>
-                <div id="osint-od-results" style="max-height:500px;overflow-y:auto"></div>
               </div>
             </div>
           </div>
@@ -1069,6 +1038,26 @@
                   <div class="og-findings-grid" id="og-findings-grid"></div>
                 </div>
 
+              </div>
+            </div>
+          </div>
+
+          <!-- Tab: Datos Abiertos -->
+          <div class="osint-tab-pane" id="osint-tab-opendata" style="display:none">
+            <div class="dashboard-card double-bezel">
+              <div class="inner-core">
+                <h3>Datos Abiertos</h3>
+                <p class="helper-text-mono">Consulta universal en fuentes gubernamentales. Ingresa cédula, nombre, placa o teléfono.</p>
+                <div style="display:flex;flex-wrap:wrap;gap:.5rem;align-items:center;margin-bottom:.75rem">
+                  <input type="text" id="osint-opendata-q" class="search-input-tactical"
+                         placeholder="cédula, nombre, placa o teléfono..."
+                         style="flex:1;min-width:150px"
+                         onkeydown="if(event.key==='Enter') osintFetchOpendata()">
+                  <span style="font-size:.73rem;font-family:'JetBrains Mono',monospace;color:#4f8a68;padding:.3rem .6rem;border:1px solid rgba(79,138,104,0.3);border-radius:4px;white-space:nowrap;letter-spacing:.04em;">▣ DATOS ABIERTOS</span>
+                  <button class="btn btn-primary-tactical" onclick="osintFetchOpendata()">CONSULTAR</button>
+                </div>
+                <div id="osint-opendata-spinner" style="display:none;color:#4f8a68;font-size:.8rem;margin-bottom:.5rem">⟳ Consultando fuentes...</div>
+                <div id="osint-opendata-results" style="max-height:500px;overflow-y:auto"></div>
               </div>
             </div>
           </div>
@@ -1820,7 +1809,6 @@ function osintFetchSocial() {
   spinner.style.display = '';
   results.innerHTML = '';
 
-  document.getElementById('osint-od-badge').style.display = 'none';
   document.getElementById('osint-graph-badge').style.display = 'none';
 
   fetch('/osint/social/lookup?q=' + encodeURIComponent(q) + '&source=' + source)
@@ -1830,8 +1818,6 @@ function osintFetchSocial() {
     })
     .then(html => {
       results.innerHTML = html;
-      document.getElementById('osint-od-q').value = q;
-      document.getElementById('osint-od-badge').style.display = 'inline';
       document.getElementById('osint-graph-q').value = q;
       document.getElementById('osint-graph-badge').style.display = 'inline';
       currentGraphSource = source;
@@ -1842,29 +1828,23 @@ function osintFetchSocial() {
 }
 
 function osintFetchOpendata() {
-  const q      = document.getElementById('osint-od-q').value.trim();
-  const source = document.getElementById('osint-od-source').value || 'official';
-  if (!q) { alert('Ingresa una placa, cédula, expediente, dominio o IP.'); return; }
-
-  const spinner = document.getElementById('osint-od-spinner');
-  const results = document.getElementById('osint-od-results');
-  spinner.style.display = '';
+  var q = document.getElementById('osint-opendata-q').value.trim();
+  if (!q) return;
+  var spinner = document.getElementById('osint-opendata-spinner');
+  var results = document.getElementById('osint-opendata-results');
+  spinner.style.display = 'block';
   results.innerHTML = '';
-
-  fetch('/osint/opendata/lookup?q=' + encodeURIComponent(q) + '&source=' + source)
-    .then(r => {
-      if (!r.ok) throw new Error('HTTP ' + r.status);
-      return r.text();
-    })
-    .then(html => {
+  var casoId = document.querySelector('[data-caso-id]') ? document.querySelector('[data-caso-id]').dataset.casoId : '';
+  fetch('/osint/opendata/lookup?q=' + encodeURIComponent(q) + (casoId ? '&caso_id=' + casoId : ''))
+    .then(function(r) { return r.text(); })
+    .then(function(html) {
+      spinner.style.display = 'none';
       results.innerHTML = html;
-      document.getElementById('osint-graph-q').value = q;
-      document.getElementById('osint-graph-badge').style.display = 'inline';
-      currentGraphSource = source;
-      osintLoadGraph('government');
     })
-    .catch(err => { results.innerHTML = '<p style="color:#f87171;font-size:.8rem">⚠ Error: ' + err.message + '</p>'; })
-    .finally(() => { spinner.style.display = 'none'; });
+    .catch(function(err) {
+      spinner.style.display = 'none';
+      results.innerHTML = '<p style="color:#f87171;font-size:.8rem">Error: ' + err + '</p>';
+    });
 }
 
 function osintLoadGraph(source = currentGraphSource || 'all') {
@@ -1881,7 +1861,7 @@ function osintLoadGraph(source = currentGraphSource || 'all') {
       const nodes = data.nodes || [];
       const links = data.links || [];
       if (!nodes.length) {
-        info.textContent = 'Sin nodos. Ejecuta primero una búsqueda en Redes Sociales o Datos Abiertos.';
+        info.textContent = 'Sin nodos. Ejecuta primero una búsqueda en Redes Sociales.';
         return;
       }
       const counts = (data.stats || {}).entity_counts || {};
@@ -1904,8 +1884,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
   document.getElementById('osint-social-q')
     .addEventListener('keydown', e => { if (e.key === 'Enter') osintFetchSocial(); });
-  document.getElementById('osint-od-q')
-    .addEventListener('keydown', e => { if (e.key === 'Enter') osintFetchOpendata(); });
   document.getElementById('osint-graph-q')
     .addEventListener('keydown', e => { if (e.key === 'Enter') osintLoadGraph(); });
   const historyQuery = document.getElementById('osint-history-q');
