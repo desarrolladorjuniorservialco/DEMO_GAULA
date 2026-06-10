@@ -1,4 +1,283 @@
 {% extends "base.html" %}
 {% block contenido %}
-<h1>Reconocimiento de Placas</h1>
+<section class="placas-container">
+
+  <!-- Encabezado -->
+  <div class="placas-header">
+    <h2 class="placas-title">RECONOCIMIENTO DE PLACAS</h2>
+    <p class="placas-subtitle">Motor visual EasyOCR · Detección HSV · Colombia</p>
+  </div>
+
+  <!-- Drop-zone -->
+  <div class="placas-upload-area" id="drop-zone">
+    <div class="placas-drop-inner" id="drop-inner">
+      <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4">
+        <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12"/>
+      </svg>
+      <p>Arrastra una imagen aquí o <label for="imagen-input" class="placas-browse-link">selecciona un archivo</label></p>
+      <p class="placas-hint">JPG, PNG — máximo 10 MB</p>
+    </div>
+    <img id="preview-img" class="placas-preview" style="display:none;" alt="Vista previa">
+    <input type="file" id="imagen-input" accept="image/*" style="display:none;">
+  </div>
+
+  <!-- Botón -->
+  <button id="btn-analizar" class="placas-btn" disabled>Analizar</button>
+
+  <!-- Spinner -->
+  <div id="spinner" class="placas-spinner" style="display:none;">
+    <div class="placas-spinner-ring"></div>
+    <span>Procesando imagen...</span>
+  </div>
+
+  <!-- Banner: dependencias faltantes -->
+  <div id="banner-deps" class="placas-banner placas-banner--warn" style="display:none;">
+    <strong>Dependencias ML no instaladas.</strong>
+    Ejecuta en el servidor:
+    <code id="install-cmd"></code>
+  </div>
+
+  <!-- Banner: error genérico -->
+  <div id="banner-error" class="placas-banner placas-banner--error" style="display:none;">
+    <span id="error-msg"></span>
+  </div>
+
+  <!-- Resultados -->
+  <div id="resultados" style="display:none;">
+
+    <!-- Placa extraída -->
+    <div class="placas-resultado-box">
+      <div class="placas-resultado-label">PLACA EXTRAÍDA</div>
+      <div class="placas-resultado-texto" id="placa-texto">—</div>
+      <div class="placas-resultado-meta" id="placa-meta"></div>
+    </div>
+
+    <!-- Grid 2×2 paneles -->
+    <div class="placas-grid">
+      <div class="placas-panel">
+        <div class="placas-panel-label">1 · IMAGEN ORIGINAL</div>
+        <img id="panel-1" class="placas-panel-img" alt="Imagen original">
+      </div>
+      <div class="placas-panel">
+        <div class="placas-panel-label">2 · COLOR AMARILLO HSV</div>
+        <img id="panel-2" class="placas-panel-img" alt="Máscara amarilla HSV">
+      </div>
+      <div class="placas-panel">
+        <div class="placas-panel-label">3 · LECTURAS OCR + %</div>
+        <img id="panel-3" class="placas-panel-img" alt="Lecturas OCR">
+      </div>
+      <div class="placas-panel">
+        <div class="placas-panel-label">4 · RECONOCIMIENTO FINAL</div>
+        <img id="panel-4" class="placas-panel-img" alt="Resultado final">
+      </div>
+    </div>
+
+    <!-- Alternativas -->
+    <div id="alternativas-section" style="display:none;">
+      <div class="placas-alt-label">CANDIDATOS ALTERNATIVOS</div>
+      <ul id="alternativas-lista" class="placas-alt-lista"></ul>
+    </div>
+
+  </div>
+
+</section>
+
+<style>
+.placas-container { max-width: 860px; margin: 2rem auto; padding: 0 1rem; font-family: 'IBM Plex Mono', monospace; }
+.placas-header { text-align: center; margin-bottom: 1.5rem; }
+.placas-title { font-size: 1.2rem; letter-spacing: 4px; color: var(--color-accent, #c8a84b); margin: 0; }
+.placas-subtitle { font-size: 0.72rem; letter-spacing: 2px; color: #6b7280; margin: 0.3rem 0 0; }
+
+.placas-upload-area {
+  border: 2px dashed var(--color-accent, #c8a84b);
+  border-radius: 10px;
+  padding: 2rem;
+  text-align: center;
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+.placas-upload-area.drag-over { border-color: #fff; background: rgba(200,168,75,0.05); }
+.placas-drop-inner { color: #9ca3af; font-size: 0.85rem; }
+.placas-browse-link { color: var(--color-accent, #c8a84b); cursor: pointer; text-decoration: underline; }
+.placas-hint { font-size: 0.72rem; color: #4b5563; margin-top: 0.4rem; }
+.placas-preview { max-width: 100%; max-height: 280px; border-radius: 6px; margin-top: 0.8rem; }
+
+.placas-btn {
+  display: block;
+  margin: 1rem auto 0;
+  padding: 0.6rem 2.5rem;
+  background: var(--color-accent, #c8a84b);
+  color: #0d1117;
+  border: none;
+  border-radius: 6px;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 2px;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+.placas-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+
+.placas-spinner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.8rem;
+  margin-top: 1.2rem;
+  color: #9ca3af;
+  font-size: 0.8rem;
+}
+.placas-spinner-ring {
+  width: 24px; height: 24px;
+  border: 3px solid #1f2937;
+  border-top-color: var(--color-accent, #c8a84b);
+  border-radius: 50%;
+  animation: placas-spin 0.8s linear infinite;
+}
+@keyframes placas-spin { to { transform: rotate(360deg); } }
+
+.placas-banner {
+  margin-top: 1rem;
+  padding: 0.8rem 1rem;
+  border-radius: 6px;
+  font-size: 0.8rem;
+}
+.placas-banner--warn { background: #1c1506; border: 1px solid #854d0e; color: #fde68a; }
+.placas-banner--warn code { display: block; margin-top: 0.4rem; color: #fff; background: #0d1117; padding: 0.3rem 0.6rem; border-radius: 4px; }
+.placas-banner--error { background: #1a0a0a; border: 1px solid #7f1d1d; color: #fca5a5; }
+
+.placas-resultado-box {
+  text-align: center;
+  margin: 1.5rem auto;
+  padding: 1rem 2rem;
+  border: 2px solid var(--color-accent, #c8a84b);
+  border-radius: 10px;
+  max-width: 360px;
+  background: linear-gradient(135deg, #1a1500, #2d2500);
+}
+.placas-resultado-label { font-size: 0.68rem; letter-spacing: 3px; color: var(--color-accent, #c8a84b); }
+.placas-resultado-texto { font-size: 2.4rem; font-weight: 900; letter-spacing: 8px; color: #fff; margin: 0.3rem 0; }
+.placas-resultado-meta { font-size: 0.72rem; color: #9ca3af; }
+
+.placas-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 1rem; }
+.placas-panel-label { font-size: 0.62rem; letter-spacing: 2px; color: #4b5563; margin-bottom: 5px; }
+.placas-panel-img { width: 100%; border-radius: 6px; border: 1px solid #1f2937; }
+
+.placas-alt-label { font-size: 0.66rem; letter-spacing: 2px; color: #4b5563; margin: 1rem 0 0.4rem; }
+.placas-alt-lista { list-style: none; padding: 0; margin: 0; }
+.placas-alt-lista li { font-size: 0.78rem; color: #9ca3af; padding: 0.2rem 0; border-bottom: 1px solid #1f2937; }
+
+@media (max-width: 600px) { .placas-grid { grid-template-columns: 1fr; } }
+</style>
+
+<script>
+(function () {
+  const dropZone    = document.getElementById("drop-zone");
+  const input       = document.getElementById("imagen-input");
+  const preview     = document.getElementById("preview-img");
+  const dropInner   = document.getElementById("drop-inner");
+  const btnAnalizar = document.getElementById("btn-analizar");
+  const spinner     = document.getElementById("spinner");
+  const bannerDeps  = document.getElementById("banner-deps");
+  const bannerErr   = document.getElementById("banner-error");
+  const resultados  = document.getElementById("resultados");
+  const placaTexto  = document.getElementById("placa-texto");
+  const placaMeta   = document.getElementById("placa-meta");
+  const altSec      = document.getElementById("alternativas-section");
+  const altLista    = document.getElementById("alternativas-lista");
+
+  let archivoSeleccionado = null;
+
+  function mostrarPreview(file) {
+    archivoSeleccionado = file;
+    preview.src = URL.createObjectURL(file);
+    preview.style.display = "block";
+    dropInner.style.display = "none";
+    btnAnalizar.disabled = false;
+  }
+
+  function resetearResultados() {
+    bannerDeps.style.display = "none";
+    bannerErr.style.display  = "none";
+    resultados.style.display = "none";
+    altSec.style.display     = "none";
+    altLista.innerHTML       = "";
+  }
+
+  dropZone.addEventListener("click", () => input.click());
+
+  input.addEventListener("change", () => {
+    if (input.files[0]) mostrarPreview(input.files[0]);
+  });
+
+  dropZone.addEventListener("dragover",  (e) => { e.preventDefault(); dropZone.classList.add("drag-over"); });
+  dropZone.addEventListener("dragleave", ()  => dropZone.classList.remove("drag-over"));
+  dropZone.addEventListener("drop", (e) => {
+    e.preventDefault();
+    dropZone.classList.remove("drag-over");
+    const f = e.dataTransfer.files[0];
+    if (f && f.type.startsWith("image/")) mostrarPreview(f);
+  });
+
+  btnAnalizar.addEventListener("click", async () => {
+    if (!archivoSeleccionado) return;
+    resetearResultados();
+    spinner.style.display = "flex";
+    btnAnalizar.disabled = true;
+
+    const formData = new FormData();
+    formData.append("imagen", archivoSeleccionado);
+
+    try {
+      const resp = await fetch("{{ url_for('placas.analizar') }}", {
+        method: "POST", body: formData,
+      });
+      const data = await resp.json();
+
+      spinner.style.display = "none";
+      btnAnalizar.disabled = false;
+
+      if (!data.ok) {
+        if (data.missing_deps) {
+          document.getElementById("install-cmd").textContent = data.install_cmd;
+          bannerDeps.style.display = "block";
+        } else {
+          document.getElementById("error-msg").textContent = data.error || "Error desconocido";
+          bannerErr.style.display = "block";
+        }
+        return;
+      }
+
+      ["panel-1","panel-2","panel-3","panel-4"].forEach((id, i) => {
+        const el = document.getElementById(id);
+        if (el && data.paneles && data.paneles[i])
+          el.src = "data:image/jpeg;base64," + data.paneles[i];
+      });
+
+      placaTexto.textContent = data.placa || "Sin placa válida";
+      placaMeta.textContent  = data.placa
+        ? (data.tipo || "") + " · confianza " + Math.round((data.confianza || 0) * 100) + "%"
+        : "No se detectó una placa colombiana";
+
+      if (data.alternativas && data.alternativas.length > 0) {
+        data.alternativas.forEach(([p, tipo, conf]) => {
+          const li = document.createElement("li");
+          li.textContent = p + " — " + tipo + " (" + Math.round(conf * 100) + "%)";
+          altLista.appendChild(li);
+        });
+        altSec.style.display = "block";
+      }
+
+      resultados.style.display = "block";
+
+    } catch (err) {
+      spinner.style.display = "none";
+      btnAnalizar.disabled = false;
+      document.getElementById("error-msg").textContent = "Error de red: " + err.message;
+      bannerErr.style.display = "block";
+    }
+  });
+})();
+</script>
 {% endblock %}
