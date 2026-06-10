@@ -72,7 +72,7 @@ def test_placas_index_renderiza_con_login(app):
     client = _auth_client(app)
     resp = client.get("/placas/")
     assert resp.status_code == 200
-    assert b"placa" in resp.data.lower() or b"Placa" in resp.data
+    assert b"placa" in resp.data.lower()
 
 
 def test_analizar_sin_archivo_retorna_400(app):
@@ -105,3 +105,25 @@ def test_analizar_redirige_sin_login(app):
     data = {"imagen": (io.BytesIO(_minimal_png()), "test.png", "image/png")}
     resp = client.post("/placas/analizar", data=data, content_type="multipart/form-data")
     assert resp.status_code == 302
+
+
+def test_analizar_ok_devuelve_json_con_placa(app):
+    """Happy path: engine retorna placa → endpoint devuelve JSON con placa."""
+    from modules.placas import engine
+    fake_resultado = {
+        "ok": True,
+        "placa": "ABC123",
+        "tipo": "CARRO",
+        "confianza": 0.94,
+        "paneles": ["b64a", "b64b", "b64c", "b64d"],
+        "alternativas": [],
+    }
+    client = _auth_client(app)
+    with patch.object(engine, "reconocer_placa", return_value=fake_resultado):
+        data = {"imagen": (io.BytesIO(_minimal_png()), "test.png", "image/png")}
+        resp = client.post("/placas/analizar", data=data, content_type="multipart/form-data")
+    assert resp.status_code == 200
+    body = resp.get_json()
+    assert body["ok"] is True
+    assert body["placa"] == "ABC123"
+    assert len(body["paneles"]) == 4
