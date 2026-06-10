@@ -190,6 +190,11 @@
   let archivoSeleccionado = null;
 
   function mostrarPreview(file) {
+    if (file.size > 10 * 1024 * 1024) {
+      document.getElementById("error-msg").textContent = "La imagen supera los 10 MB";
+      bannerErr.style.display = "block";
+      return;
+    }
     archivoSeleccionado = file;
     preview.src = URL.createObjectURL(file);
     preview.style.display = "block";
@@ -205,7 +210,10 @@
     altLista.innerHTML       = "";
   }
 
-  dropZone.addEventListener("click", () => input.click());
+  dropZone.addEventListener("click", (e) => {
+    if (e.target.closest("label")) return;
+    input.click();
+  });
 
   input.addEventListener("change", () => {
     if (input.files[0]) mostrarPreview(input.files[0]);
