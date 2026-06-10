@@ -797,8 +797,9 @@
           <!-- Sub-tabs -->
           <div class="osint-tabs" style="display:flex;gap:.5rem;margin-bottom:1rem;border-bottom:1px solid rgba(79,138,104,0.16);padding-bottom:.5rem">
             <button class="osint-tab-btn btn btn-secondary-tactical active" data-tab="social" onclick="osintSwitchTab('social')">Redes Sociales</button>
-            <button class="osint-tab-btn btn btn-secondary-tactical" data-tab="opendata" onclick="osintSwitchTab('opendata')">Datos Abiertos <span id="osint-od-badge" style="display:none;background:#b59a5a;color:#0f1419;font-size:.65rem;padding:1px 5px;border-radius:4px;margin-left:4px;font-weight:700">✓</span></button>
+            <button class="osint-tab-btn btn btn-secondary-tactical" data-tab="history" onclick="osintSwitchTab('history')">Historial <span id="osint-history-badge" style="display:none;background:#4f8a68;color:#0f1419;font-size:.65rem;padding:1px 5px;border-radius:4px;margin-left:4px;font-weight:700">✓</span></button>
             <button class="osint-tab-btn btn btn-secondary-tactical" data-tab="graph" onclick="osintSwitchTab('graph')">Grafo de Relaciones <span id="osint-graph-badge" style="display:none;background:#4f8a68;color:#0f1419;font-size:.65rem;padding:1px 5px;border-radius:4px;margin-left:4px;font-weight:700">✓</span></button>
+            <button class="osint-tab-btn btn btn-secondary-tactical" data-tab="opendata" onclick="osintSwitchTab('opendata')">Datos Abiertos</button>
           </div>
 
           <!-- Tab: Redes Sociales -->
@@ -809,16 +810,7 @@
                 <p class="helper-text-mono">Extracción de identidades digitales mediante API, scraping y dorking.</p>
                 <div style="display:flex;flex-wrap:wrap;gap:.5rem;align-items:center;margin-bottom:.75rem">
                   <input type="text" id="osint-social-q" class="search-input-tactical" placeholder="usuario o alias..." style="flex:1;min-width:150px">
-                  <select id="osint-social-source" class="select-tactical">
-                    <option value="github">GitHub</option>
-                    <option value="reddit">Reddit</option>
-                    <option value="both">GitHub + Reddit</option>
-                    <option value="facebook">Facebook</option>
-                    <option value="x">X (Twitter)</option>
-                    <option value="tiktok">TikTok</option>
-                    <option value="deep_all">Profunda (FB+X+TikTok)</option>
-                    <option value="all">Todas las fuentes</option>
-                  </select>
+                  <span style="font-size:.73rem;font-family:'JetBrains Mono',monospace;color:#4f8a68;padding:.3rem .6rem;border:1px solid rgba(79,138,104,0.3);border-radius:4px;white-space:nowrap;letter-spacing:.04em;">▣ REDES SOCIALES</span>
                   <button class="btn btn-primary-tactical" onclick="osintFetchSocial()">EJECUTAR</button>
                 </div>
                 <div id="osint-social-spinner" style="display:none;color:#4f8a68;font-size:.8rem;margin-bottom:.5rem">⟳ Ejecutando búsqueda...</div>
@@ -827,23 +819,140 @@
             </div>
           </div>
 
-          <!-- Tab: Datos Abiertos -->
-          <div class="osint-tab-pane" id="osint-tab-opendata" style="display:none">
-            <div class="dashboard-card double-bezel">
+          <!-- Tab: Historial -->
+          <div class="osint-tab-pane" id="osint-tab-history" style="display:none">
+            <div class="dashboard-card double-bezel osint-history-shell">
               <div class="inner-core">
-                <h3>Datos Abiertos: IP y Dominios</h3>
-                <p class="helper-text-mono">Geolocalización de IPs, registros RDAP y certificados de transparencia.</p>
-                <div style="display:flex;flex-wrap:wrap;gap:.5rem;align-items:center;margin-bottom:.75rem">
-                  <input type="text" id="osint-od-q" class="search-input-tactical" placeholder="IP o dominio..." style="flex:1;min-width:150px">
-                  <select id="osint-od-source" class="select-tactical">
-                    <option value="ip">Geoloc. IP</option>
-                    <option value="domain">Dominio RDAP + Certs</option>
-                    <option value="both">Ambos</option>
-                  </select>
-                  <button class="btn btn-primary-tactical" onclick="osintFetchOpendata()">EJECUTAR</button>
+                <div class="osint-history-header">
+                  <div>
+                    <h3>Historial de consultas OSINT</h3>
+                    <p class="helper-text-mono">Vista directa sobre la tabla <code>consultas_osint</code> en <code>data/osint.db</code>. Revisa búsquedas previas, filtra por contexto y reejecuta una consulta cuando necesites repetirla.</p>
+                  </div>
+                  <div class="osint-history-actions">
+                    <a class="btn btn-secondary-tactical" href="{{ url_for('history_osint.history') }}" target="_blank" rel="noopener">Abrir vista completa</a>
+                    <button class="btn btn-primary-tactical" type="button" onclick="osintLoadHistory(1, true)">Actualizar</button>
+                  </div>
                 </div>
-                <div id="osint-od-spinner" style="display:none;color:#4f8a68;font-size:.8rem;margin-bottom:.5rem">⟳ Consultando fuentes abiertas...</div>
-                <div id="osint-od-results" style="max-height:500px;overflow-y:auto"></div>
+
+                <div class="osint-history-filters">
+                  <label class="osint-history-field">
+                    <span>Objetivo</span>
+                    <input type="text" id="osint-history-q" class="search-input-tactical" placeholder="usuario, correo, IP o dominio">
+                  </label>
+                  <label class="osint-history-field">
+                    <span>Fuente</span>
+                    <select id="osint-history-source" class="select-tactical">
+                      <option value="all">all</option>
+                    </select>
+                  </label>
+                  <label class="osint-history-field">
+                    <span>Tipo</span>
+                    <select id="osint-history-type" class="select-tactical">
+                      <option value="all">all</option>
+                    </select>
+                  </label>
+                  <label class="osint-history-field">
+                    <span>Riesgo</span>
+                    <select id="osint-history-risk" class="select-tactical">
+                      <option value="all">all</option>
+                      <option value="Bajo">Bajo</option>
+                      <option value="Medio">Medio</option>
+                      <option value="Alto">Alto</option>
+                      <option value="Crítico">Crítico</option>
+                    </select>
+                  </label>
+                  <label class="osint-history-field">
+                    <span>Desde</span>
+                    <input type="date" id="osint-history-from" class="search-input-tactical">
+                  </label>
+                  <label class="osint-history-field">
+                    <span>Hasta</span>
+                    <input type="date" id="osint-history-to" class="search-input-tactical">
+                  </label>
+                </div>
+
+                <div class="osint-history-filters" style="grid-template-columns:minmax(0,1fr) 150px 150px 160px 160px 160px; margin-top:-2px;">
+                  <label class="osint-history-field">
+                    <span>Estado visual</span>
+                    <input type="text" class="search-input-tactical" value="Consultas persistidas en osint.db" readonly>
+                  </label>
+                  <label class="osint-history-field">
+                    <span>Límite</span>
+                    <select id="osint-history-limit" class="select-tactical">
+                      <option value="10">10</option>
+                      <option value="15" selected>15</option>
+                      <option value="25">25</option>
+                      <option value="50">50</option>
+                    </select>
+                  </label>
+                  <label class="osint-history-field">
+                    <span>Estado</span>
+                    <input type="text" id="osint-history-status" class="search-input-tactical" value="Listo para consultar" readonly>
+                  </label>
+                  <label class="osint-history-field">
+                    <span>&nbsp;</span>
+                    <button class="btn btn-secondary-tactical" type="button" onclick="osintResetHistory()">Limpiar filtros</button>
+                  </label>
+                  <label class="osint-history-field">
+                    <span>&nbsp;</span>
+                    <button class="btn btn-secondary-tactical" type="button" onclick="osintLoadHistory(1, true)">Buscar</button>
+                  </label>
+                  <label class="osint-history-field">
+                    <span>&nbsp;</span>
+                    <button class="btn btn-secondary-tactical" type="button" onclick="osintLoadHistory(1, true)">Refrescar</button>
+                  </label>
+                </div>
+
+                <div class="osint-history-summary">
+                  <article class="osint-history-metric">
+                    <span>Consultas</span>
+                    <strong id="osint-history-total">0</strong>
+                  </article>
+                  <article class="osint-history-metric">
+                    <span>Página</span>
+                    <strong id="osint-history-page">1 / 1</strong>
+                  </article>
+                  <article class="osint-history-metric">
+                    <span>Resultados visibles</span>
+                    <strong id="osint-history-visible">0</strong>
+                  </article>
+                  <article class="osint-history-metric">
+                    <span>Límite</span>
+                    <strong id="osint-history-limit-kpi">15</strong>
+                  </article>
+                </div>
+
+                <div id="osint-history-spinner" style="display:none;color:#4f8a68;font-size:.8rem;margin-bottom:.5rem">⟳ Cargando historial...</div>
+
+                <div class="table-wrap osint-history-table-wrap">
+                  <table class="osint-history-table">
+                    <thead>
+                      <tr>
+                        <th>Fecha</th>
+                        <th>Objetivo</th>
+                        <th>Tipo</th>
+                        <th>Fuente</th>
+                        <th>Estado</th>
+                        <th>Riesgo</th>
+                        <th>Hallazgos</th>
+                        <th>Acciones</th>
+                      </tr>
+                    </thead>
+                    <tbody id="osint-history-body">
+                      <tr>
+                        <td colspan="8" class="text-center">Selecciona filtros y pulsa buscar para cargar el historial.</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+
+                <div class="osint-history-footer">
+                  <span class="osint-history-status" id="osint-history-page-info">Página 1 de 1</span>
+                  <div class="osint-history-pager">
+                    <button class="btn btn-secondary-tactical" type="button" id="osint-history-prev" onclick="osintHistoryPage(-1)" disabled>Anterior</button>
+                    <button class="btn btn-secondary-tactical" type="button" id="osint-history-next" onclick="osintHistoryPage(1)" disabled>Siguiente</button>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -929,6 +1038,26 @@
                   <div class="og-findings-grid" id="og-findings-grid"></div>
                 </div>
 
+              </div>
+            </div>
+          </div>
+
+          <!-- Tab: Datos Abiertos -->
+          <div class="osint-tab-pane" id="osint-tab-opendata" style="display:none">
+            <div class="dashboard-card double-bezel">
+              <div class="inner-core">
+                <h3>Datos Abiertos</h3>
+                <p class="helper-text-mono">Consulta universal en fuentes gubernamentales. Ingresa cédula, nombre, placa o teléfono.</p>
+                <div style="display:flex;flex-wrap:wrap;gap:.5rem;align-items:center;margin-bottom:.75rem">
+                  <input type="text" id="osint-opendata-q" class="search-input-tactical"
+                         placeholder="cédula, nombre, placa o teléfono..."
+                         style="flex:1;min-width:150px"
+                         onkeydown="if(event.key==='Enter') osintFetchOpendata()">
+                  <span style="font-size:.73rem;font-family:'JetBrains Mono',monospace;color:#4f8a68;padding:.3rem .6rem;border:1px solid rgba(79,138,104,0.3);border-radius:4px;white-space:nowrap;letter-spacing:.04em;">▣ DATOS ABIERTOS</span>
+                  <button class="btn btn-primary-tactical" onclick="osintFetchOpendata()">CONSULTAR</button>
+                </div>
+                <div id="osint-opendata-spinner" style="display:none;color:#4f8a68;font-size:.8rem;margin-bottom:.5rem">⟳ Consultando fuentes...</div>
+                <div id="osint-opendata-results" style="max-height:500px;overflow-y:auto"></div>
               </div>
             </div>
           </div>
@@ -1403,11 +1532,25 @@
 <script>
 // ── OSINT Panel ────────────────────────────────────────────────────────────
 
+const OSINT_HISTORY_API = "{{ url_for('history_osint.history_api') }}";
+const OSINT_HISTORY_REPLAY_PREFIX = "/osint/history/";
+const OSINT_HISTORY_DETAIL_PREFIX = "/osint/history/";
+const OSINT_HISTORY_STATE = {
+  page: 1,
+  pages: 1,
+  total: 0,
+  limit: 15,
+  loaded: false,
+};
+
 function osintSwitchTab(tab) {
   document.querySelectorAll('.osint-tab-pane').forEach(p => p.style.display = 'none');
   document.querySelectorAll('.osint-tab-btn').forEach(b => b.classList.remove('active'));
   document.getElementById('osint-tab-' + tab).style.display = '';
   document.querySelector('[data-tab="' + tab + '"]').classList.add('active');
+  if (tab === 'history') {
+    osintLoadHistory(OSINT_HISTORY_STATE.page || 1, false);
+  }
 }
 
 function _ogSpinner(show) {
@@ -1415,9 +1558,250 @@ function _ogSpinner(show) {
   if (s) s.style.display = show ? 'flex' : 'none';
 }
 
+function _historySpinner(show) {
+  const s = document.getElementById('osint-history-spinner');
+  if (s) s.style.display = show ? 'block' : 'none';
+}
+
+function _historyStatus(message) {
+  const el = document.getElementById('osint-history-status');
+  if (el) el.value = message;
+}
+
+function _historyPager(page, pages) {
+  const info = document.getElementById('osint-history-page-info');
+  const prev = document.getElementById('osint-history-prev');
+  const next = document.getElementById('osint-history-next');
+  if (info) info.textContent = `Página ${page} de ${pages}`;
+  if (prev) prev.disabled = page <= 1;
+  if (next) next.disabled = page >= pages;
+}
+
+function _historyNormalize(value) {
+  return (value || 'all')
+    .toString()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z0-9]+/gi, '-')
+    .replace(/^-+|-+$/g, '')
+    .toLowerCase();
+}
+
+function _historyRiskClass(level) {
+  const normalized = _historyNormalize(level);
+  if (normalized.includes('crit')) return 'nivel-critico';
+  if (normalized.includes('alto')) return 'nivel-alto';
+  if (normalized.includes('medio')) return 'nivel-medio';
+  return 'nivel-bajo';
+}
+
+function _historyOptionExists(select, value) {
+  return Array.from(select.options).some(option => option.value === value);
+}
+
+function _historyPopulateSelect(selectId, values, currentValue) {
+  const select = document.getElementById(selectId);
+  if (!select) return;
+
+  const wanted = ['all', ...(values || [])];
+  const existing = Array.from(select.options).map(option => option.value);
+
+  wanted.forEach(value => {
+    if (!existing.includes(value)) {
+      const option = document.createElement('option');
+      option.value = value;
+      option.textContent = value;
+      select.appendChild(option);
+    }
+  });
+
+  if (_historyOptionExists(select, currentValue)) {
+    select.value = currentValue;
+  } else {
+    select.value = 'all';
+  }
+}
+
+function _historyFilters() {
+  return {
+    q: (document.getElementById('osint-history-q')?.value || '').trim(),
+    source: document.getElementById('osint-history-source')?.value || 'all',
+    target_type: document.getElementById('osint-history-type')?.value || 'all',
+    risk: document.getElementById('osint-history-risk')?.value || 'all',
+    from: document.getElementById('osint-history-from')?.value || '',
+    to: document.getElementById('osint-history-to')?.value || '',
+    limit: document.getElementById('osint-history-limit')?.value || '15',
+  };
+}
+
+function _historySetKpis(total, page, pages, visible, limit) {
+  const totalEl = document.getElementById('osint-history-total');
+  const pageEl = document.getElementById('osint-history-page');
+  const visibleEl = document.getElementById('osint-history-visible');
+  const limitEl = document.getElementById('osint-history-limit-kpi');
+  if (totalEl) totalEl.textContent = total;
+  if (pageEl) pageEl.textContent = `${page} / ${pages}`;
+  if (visibleEl) visibleEl.textContent = visible;
+  if (limitEl) limitEl.textContent = limit;
+}
+
+function _historyRenderEmpty(message) {
+  const tbody = document.getElementById('osint-history-body');
+  if (!tbody) return;
+  tbody.innerHTML = `<tr><td colspan="8" class="text-center">${message}</td></tr>`;
+}
+
+function _historyRenderRows(rows) {
+  const tbody = document.getElementById('osint-history-body');
+  if (!tbody) return;
+
+  if (!rows || !rows.length) {
+    _historyRenderEmpty('No se encontraron consultas con los filtros actuales.');
+    return;
+  }
+
+  tbody.innerHTML = rows.map(row => {
+    const createdAt = row.created_at ? row.created_at.replace('T', ' ').slice(0, 16) : '—';
+    const risk = row.risk || {};
+    const riskLevel = risk.level || 'Bajo';
+    const riskScore = typeof risk.score === 'number' ? risk.score : 0;
+    const riskClass = _historyRiskClass(riskLevel);
+    const target = row.target || '';
+    const source = row.fuente || '';
+    const targetType = row.target_type || '';
+    const estado = row.estado || '—';
+    const resultsCount = row.results_count ?? 0;
+
+    return `
+      <tr class="slide-up-item">
+        <td>${createdAt}</td>
+        <td class="osint-history-target">${target}</td>
+        <td>${targetType}</td>
+        <td>${source}</td>
+        <td>${estado}</td>
+        <td><span class="osint-risk-badge ${riskClass}">${riskLevel} · ${riskScore}</span></td>
+        <td>${resultsCount}</td>
+        <td>
+          <div class="osint-history-row-actions">
+            <button type="button" class="btn btn-secondary-tactical" onclick="osintReplayHistory(${row.id})">Reejecutar</button>
+            <a class="btn btn-secondary-tactical" href="${OSINT_HISTORY_DETAIL_PREFIX}${row.id}" target="_blank" rel="noopener">JSON</a>
+          </div>
+        </td>
+      </tr>
+    `;
+  }).join('');
+}
+
+function osintLoadHistory(page = 1, force = false) {
+  const filters = _historyFilters();
+  const pageNumber = Math.max(parseInt(page, 10) || 1, 1);
+  const limit = Math.min(Math.max(parseInt(filters.limit, 10) || 15, 5), 100);
+
+  OSINT_HISTORY_STATE.page = pageNumber;
+  OSINT_HISTORY_STATE.limit = limit;
+
+  const params = new URLSearchParams({
+    q: filters.q,
+    source: filters.source,
+    target_type: filters.target_type,
+    risk: filters.risk,
+    from: filters.from,
+    to: filters.to,
+    page: String(pageNumber),
+    limit: String(limit),
+  });
+
+  _historySpinner(true);
+  _historyStatus(force ? 'Actualizando historial...' : 'Cargando historial...');
+  fetch(`${OSINT_HISTORY_API}?${params.toString()}`)
+    .then(r => {
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      return r.json();
+    })
+    .then(data => {
+      const facets = data.facets || {};
+      _historyPopulateSelect('osint-history-source', facets.sources || [], filters.source);
+      _historyPopulateSelect('osint-history-type', facets.target_types || [], filters.target_type);
+
+      const rows = data.rows || [];
+      OSINT_HISTORY_STATE.page = data.page || pageNumber;
+      OSINT_HISTORY_STATE.pages = data.pages || 1;
+      OSINT_HISTORY_STATE.total = data.total || 0;
+      OSINT_HISTORY_STATE.loaded = true;
+
+      _historySetKpis(OSINT_HISTORY_STATE.total, OSINT_HISTORY_STATE.page, OSINT_HISTORY_STATE.pages, rows.length, data.limit || limit);
+      _historyPager(OSINT_HISTORY_STATE.page, OSINT_HISTORY_STATE.pages);
+      _historyRenderRows(rows);
+      _historyStatus(OSINT_HISTORY_STATE.total > 0
+        ? `Mostrando ${rows.length} de ${OSINT_HISTORY_STATE.total} consultas persistidas en osint.db.`
+        : 'No hay consultas para los filtros elegidos.');
+
+      const badge = document.getElementById('osint-history-badge');
+      if (badge) badge.style.display = OSINT_HISTORY_STATE.total > 0 ? 'inline' : 'none';
+    })
+    .catch(err => {
+      _historyRenderEmpty('No fue posible cargar el historial. ' + err.message);
+      _historyStatus('Error al cargar el historial.');
+      _historyPager(1, 1);
+    })
+    .finally(() => {
+      _historySpinner(false);
+    });
+}
+
+function osintHistoryPage(delta) {
+  const nextPage = Math.max((OSINT_HISTORY_STATE.page || 1) + delta, 1);
+  if (delta < 0 && nextPage === OSINT_HISTORY_STATE.page) return;
+  if (delta > 0 && OSINT_HISTORY_STATE.pages && nextPage > OSINT_HISTORY_STATE.pages) return;
+  osintLoadHistory(nextPage, true);
+}
+
+function osintResetHistory() {
+  const q = document.getElementById('osint-history-q');
+  const source = document.getElementById('osint-history-source');
+  const targetType = document.getElementById('osint-history-type');
+  const risk = document.getElementById('osint-history-risk');
+  const from = document.getElementById('osint-history-from');
+  const to = document.getElementById('osint-history-to');
+  const limit = document.getElementById('osint-history-limit');
+
+  if (q) q.value = '';
+  if (source) source.value = 'all';
+  if (targetType) targetType.value = 'all';
+  if (risk) risk.value = 'all';
+  if (from) from.value = '';
+  if (to) to.value = '';
+  if (limit) limit.value = '15';
+
+  osintLoadHistory(1, true);
+}
+
+function osintReplayHistory(consultaId) {
+  _historyStatus('Reejecutando consulta...');
+  fetch(`${OSINT_HISTORY_REPLAY_PREFIX}${consultaId}/replay`, {
+    method: 'POST',
+    headers: {
+      'X-Requested-With': 'XMLHttpRequest',
+    },
+  })
+    .then(r => {
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      return r.json();
+    })
+    .then(() => {
+      _historyStatus('Consulta reejecutada. Actualizando historial...');
+      osintLoadHistory(1, true);
+    })
+    .catch(err => {
+      _historyStatus('No se pudo reejecutar la consulta: ' + err.message);
+    });
+}
+
+let currentGraphSource = 'all';
+
 function osintFetchSocial() {
   const q      = document.getElementById('osint-social-q').value.trim();
-  const source = document.getElementById('osint-social-source').value;
+  const source = 'social';
   if (!q) { alert('Ingresa un objetivo.'); return; }
 
   const spinner = document.getElementById('osint-social-spinner');
@@ -1425,7 +1809,6 @@ function osintFetchSocial() {
   spinner.style.display = '';
   results.innerHTML = '';
 
-  document.getElementById('osint-od-badge').style.display = 'none';
   document.getElementById('osint-graph-badge').style.display = 'none';
 
   fetch('/osint/social/lookup?q=' + encodeURIComponent(q) + '&source=' + source)
@@ -1435,50 +1818,50 @@ function osintFetchSocial() {
     })
     .then(html => {
       results.innerHTML = html;
-      document.getElementById('osint-od-q').value = q;
-      document.getElementById('osint-od-badge').style.display = 'inline';
       document.getElementById('osint-graph-q').value = q;
       document.getElementById('osint-graph-badge').style.display = 'inline';
-      osintLoadGraph();
+      currentGraphSource = source;
+      osintLoadGraph('social');
     })
     .catch(err => { results.innerHTML = '<p style="color:#f87171;font-size:.8rem">⚠ Error: ' + err.message + '</p>'; })
     .finally(() => { spinner.style.display = 'none'; });
 }
 
 function osintFetchOpendata() {
-  const q      = document.getElementById('osint-od-q').value.trim();
-  const source = document.getElementById('osint-od-source').value;
-  if (!q) { alert('Ingresa una IP o dominio.'); return; }
-
-  const spinner = document.getElementById('osint-od-spinner');
-  const results = document.getElementById('osint-od-results');
-  spinner.style.display = '';
+  var q = document.getElementById('osint-opendata-q').value.trim();
+  if (!q) return;
+  var spinner = document.getElementById('osint-opendata-spinner');
+  var results = document.getElementById('osint-opendata-results');
+  spinner.style.display = 'block';
   results.innerHTML = '';
-
-  fetch('/osint/opendata/lookup?q=' + encodeURIComponent(q) + '&source=' + source)
-    .then(r => {
-      if (!r.ok) throw new Error('HTTP ' + r.status);
-      return r.text();
+  var casoId = document.querySelector('[data-caso-id]') ? document.querySelector('[data-caso-id]').dataset.casoId : '';
+  fetch('/osint/opendata/lookup?q=' + encodeURIComponent(q) + (casoId ? '&caso_id=' + casoId : ''))
+    .then(function(r) { return r.text(); })
+    .then(function(html) {
+      spinner.style.display = 'none';
+      results.innerHTML = html;
     })
-    .then(html => { results.innerHTML = html; })
-    .catch(err => { results.innerHTML = '<p style="color:#f87171;font-size:.8rem">⚠ Error: ' + err.message + '</p>'; })
-    .finally(() => { spinner.style.display = 'none'; });
+    .catch(function(err) {
+      spinner.style.display = 'none';
+      results.innerHTML = '<p style="color:#f87171;font-size:.8rem">Error: ' + err + '</p>';
+    });
 }
 
-function osintLoadGraph() {
+function osintLoadGraph(source = currentGraphSource || 'all') {
+  currentGraphSource = source;
   const q    = (document.getElementById('osint-graph-q').value || '').trim();
   const info = document.getElementById('osint-graph-info');
   info.textContent = '';
   _ogSpinner(true);
   document.getElementById('og-findings-wrap').style.display = 'none';
 
-  fetch('/osint/analytics/graph?q=' + encodeURIComponent(q))
+  fetch('/osint/analytics/graph?q=' + encodeURIComponent(q) + '&source=' + encodeURIComponent(source))
     .then(r => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
     .then(data => {
       const nodes = data.nodes || [];
       const links = data.links || [];
       if (!nodes.length) {
-        info.textContent = 'Sin nodos. Ejecuta primero una búsqueda en Redes Sociales o Datos Abiertos.';
+        info.textContent = 'Sin nodos. Ejecuta primero una búsqueda en Redes Sociales.';
         return;
       }
       const counts = (data.stats || {}).entity_counts || {};
@@ -1501,10 +1884,19 @@ document.addEventListener('DOMContentLoaded', function() {
 
   document.getElementById('osint-social-q')
     .addEventListener('keydown', e => { if (e.key === 'Enter') osintFetchSocial(); });
-  document.getElementById('osint-od-q')
-    .addEventListener('keydown', e => { if (e.key === 'Enter') osintFetchOpendata(); });
   document.getElementById('osint-graph-q')
     .addEventListener('keydown', e => { if (e.key === 'Enter') osintLoadGraph(); });
+  const historyQuery = document.getElementById('osint-history-q');
+  if (historyQuery) {
+    historyQuery.addEventListener('keydown', e => { if (e.key === 'Enter') osintLoadHistory(1, true); });
+  }
+  const historyFilters = ['osint-history-source', 'osint-history-type', 'osint-history-risk', 'osint-history-limit', 'osint-history-from', 'osint-history-to'];
+  historyFilters.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) {
+      el.addEventListener('change', () => osintLoadHistory(1, true));
+    }
+  });
 
   // Inicializar vitals del panel operacional
   _initOpsVitals();

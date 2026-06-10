@@ -156,8 +156,6 @@ ALL_SOCIAL_STUBS: list[type[_SocialStub]] = [
     GoogleConnector,
     BingConnector,
     BraveConnector,
-    ShodanConnector,
     CensysConnector,
-    VirusTotalConnector,
     IntelligenceXConnector,
 ]

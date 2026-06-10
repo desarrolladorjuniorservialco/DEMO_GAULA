@@ -110,6 +110,9 @@ class OsintOrchestrator:
         from modules.osint.connectors.alienvault import AlienVaultConnector
         from modules.osint.connectors.hibp import HibpConnector
         from modules.osint.connectors.whois import WhoisConnector
+        from modules.osint.connectors.phone import PhoneConnector
+        from modules.osint.connectors.shodan import ShodanApiConnector
+        from modules.osint.connectors.virustotal import VirusTotalApiConnector
         from modules.osint.connectors.social_stubs import ALL_SOCIAL_STUBS
 
         working = [
@@ -122,6 +125,9 @@ class OsintOrchestrator:
             AlienVaultConnector(),
             HibpConnector(),
             WhoisConnector(),
+            PhoneConnector(),
+            ShodanApiConnector(),
+            VirusTotalApiConnector(),
         ]
         stubs = [klass() for klass in ALL_SOCIAL_STUBS]
         return cls(working + stubs)

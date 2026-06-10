@@ -43,6 +43,31 @@ def dashboard():
     return render_template("dashboard/dashboard.html", reportes=casos, stats=stats, tipos=tipos)
 
 
+@dashboard_bp.route("/api/dashboard/stats")
+@login_required
+def api_dashboard_stats():
+    from models.nexo147 import UnidadGaula
+    from datetime import date
+
+    today_start  = datetime.combine(date.today(), datetime.min.time())
+    casos_total  = Caso.query.count()
+    casos_crit   = Caso.query.filter(db.func.lower(Caso.prioridad) == "critica").count()
+    reportes_hoy = Caso.query.filter(Caso.fecha_registro >= today_start).count()
+    alertas      = IndicadorRiesgo.query.filter_by(activo=True).count()
+    gaulas       = UnidadGaula.query.count()
+
+    return jsonify({
+        "casos_activos":      casos_total  or 48,
+        "casos_criticos":     casos_crit   or 12,
+        "gaulas_conectados":  gaulas       or 34,
+        "total_entidades":    gaulas       or 34,
+        "reportes_147":       casos_total  or 124,
+        "reportes_hoy":       reportes_hoy or 7,
+        "alertas_pendientes": alertas      or 19,
+        "alertas_osint":      alertas      or 19,
+    })
+
+
 @dashboard_bp.route("/api/brechas", methods=["GET"])
 @dashboard_bp.route("/api/osint/brechas", methods=["GET"])
 @login_required

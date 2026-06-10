@@ -23,6 +23,10 @@ from modules.osint.core.target_detection import TargetDetection, detect_target_t
 from modules.osint.engines.orchestration import OsintOrchestrator
 from modules.osint.plugins.registry import get_plugins
 from modules.osint.services.search_engine import ejecutar_dork_universal
+from modules.osint.services.x_osint import extract_x_profiles
+from modules.osint.services.tiktok_osint import extract_tiktok_profiles
+from modules.osint.services.instagram_osint import extract_instagram_profiles
+from modules.osint.services.linkedin_osint import extract_linkedin_profiles
 
 log = logging.getLogger(__name__)
 
@@ -36,30 +40,66 @@ class UniversalOsintEngine:
         return detect_target_type(target)
 
     def discover_sources(self, target_type: str, source_hint: str = "all") -> list[str]:
+        _social = ["github", "reddit", "facebook", "x", "tiktok", "instagram", "linkedin", "plugins"]
         catalog = {
-            "username": ["github", "reddit", "facebook", "x", "tiktok", "plugins"],
-            "alias": ["github", "reddit", "facebook", "x", "tiktok", "plugins"],
-            "full_name": ["github", "reddit", "facebook", "x", "tiktok", "plugins"],
-            "email": ["github", "reddit", "facebook", "x", "tiktok", "plugins"],
-            "phone": ["facebook", "plugins"],
-            "domain": ["domain", "plugins"],
-            "url": ["domain", "plugins"],
-            "ip": ["ip", "plugins"],
-            "hash": ["plugins"],
-            "unknown": ["github", "reddit", "duckduckgo", "plugins"],
+            "username":  _social,
+            "alias":     _social,
+            "full_name": _social,
+            "email":     _social,
+            "phone":     ["plugins"],
+            "domain":    ["plugins"],
+            "url":       ["plugins"],
+            "ip":        ["plugins"],
+            "hash":      ["plugins"],
+            "unknown":   ["github", "reddit", "duckduckgo", "plugins"],
         }
         hint_map = {
-            "both": ["github", "reddit"],
-            "social": ["github", "reddit", "facebook", "x", "tiktok", "plugins"],
-            "deep_all": ["github", "reddit", "facebook", "x", "tiktok", "plugins"],
-            "network": ["ip", "domain", "plugins"],
-            "osint_all": ["github", "reddit", "duckduckgo", "domain", "ip", "plugins"],
+            "both":        ["github", "reddit"],
+            "social":      _social,
+            "deep_all":    _social,
+            "network":     ["ip", "domain", "plugins"],
+            "osint_all":   ["github", "reddit", "duckduckgo", "domain", "ip", "plugins"],
         }
+        if source_hint == "government":
+            return self._government_sources(target_type)
         if source_hint in hint_map:
             return hint_map[source_hint]
         if source_hint and source_hint not in {"all", "auto"}:
             return [source_hint]
         return catalog.get(target_type, ["github", "reddit", "facebook", "x", "tiktok", "plugins"])
+
+    def _government_sources(self, target_type: str) -> list[str]:
+        if target_type in {"hash"}:
+            return ["plugins"]
+        return ["duckduckgo", "plugins"]
+
+    def _discover_connector_names(self, source_hint: str) -> list[str] | None:
+        """
+        Restrict the orchestrator connectors to the same search family as the UI tab.
+
+        Returning None keeps the default "all connectors" behavior.
+        """
+        social_connectors = {"github", "reddit"}
+        government_connectors = {
+            "duckduckgo",
+            "crtsh",
+            "rdap",
+            "whois",
+            "abuseipdb",
+            "alienvault",
+            "hibp",
+        }
+        network_connectors = government_connectors | {"shodan", "censys", "virustotal", "intelligencex"}
+
+        if source_hint == "social":
+            return sorted(social_connectors)
+        if source_hint == "government":
+            return sorted(government_connectors)
+        if source_hint == "network":
+            return sorted(network_connectors)
+        if source_hint == "both":
+            return sorted({"github", "reddit"})
+        return None
 
     def _collect_github(self, target: str) -> tuple[dict[str, Any] | None, list[dict], list[str]]:
         from modules.osint.social.routes import _fetch_github
@@ -91,19 +131,17 @@ class UniversalOsintEngine:
         data = extract_tiktok_profiles(res.get("results", []), target) if extract_tiktok_profiles else None
         return data, res.get("errors", [])
 
-    def _collect_ip(self, target: str) -> tuple[dict[str, Any] | None, list[str]]:
-        from modules.osint.opendata.routes import _fetch_ip_geo
+    def _collect_instagram(self, target: str) -> tuple[dict[str, Any] | None, list[str]]:
+        raw = ejecutar_dork_universal(target, ["instagram"], max_results=30)
+        res = raw.get("instagram", {})
+        data = extract_instagram_profiles(res.get("results", []), target)
+        return data, res.get("errors", [])
 
-        data, errors = _fetch_ip_geo(target)
-        return data, errors or []
-
-    def _collect_domain(self, target: str) -> tuple[dict[str, Any] | None, dict[str, Any] | None, list[str]]:
-        from modules.osint.opendata.routes import _fetch_crt_sh, _fetch_domain_rdap, _parse_rdap
-
-        rdap_raw, rdap_errors = _fetch_domain_rdap(target)
-        rdap_data = _parse_rdap(rdap_raw) if rdap_raw else None
-        crt_data, crt_errors = _fetch_crt_sh(target)
-        return rdap_data, {"certs": crt_data}, (rdap_errors or []) + (crt_errors or [])
+    def _collect_linkedin(self, target: str) -> tuple[dict[str, Any] | None, list[str]]:
+        raw = ejecutar_dork_universal(target, ["linkedin"], max_results=30)
+        res = raw.get("linkedin", {})
+        data = extract_linkedin_profiles(res.get("results", []), target)
+        return data, res.get("errors", [])
 
     def _collect_plugins(self, target: str) -> tuple[list[dict], list[str]]:
         payloads: list[dict] = []
@@ -135,12 +173,12 @@ class UniversalOsintEngine:
             if source == "tiktok":
                 data, errors = self._collect_tiktok(target)
                 return source, {"data": data, "errors": errors}
-            if source == "ip":
-                data, errors = self._collect_ip(target)
+            if source == "instagram":
+                data, errors = self._collect_instagram(target)
                 return source, {"data": data, "errors": errors}
-            if source == "domain":
-                rdap_data, crt_data, errors = self._collect_domain(target)
-                return source, {"rdap_data": rdap_data, "crt_data": crt_data, "errors": errors}
+            if source == "linkedin":
+                data, errors = self._collect_linkedin(target)
+                return source, {"data": data, "errors": errors}
             if source == "plugins":
                 payloads, errors = self._collect_plugins(target)
                 return source, {"plugins": payloads, "errors": errors}
@@ -302,29 +340,44 @@ class UniversalOsintEngine:
                     )
                 )
 
-        ip_data = collected.get("ip", {}).get("data")
-        if ip_data:
-            normalized.append(
-                NormalizedResult(
-                    source="ip-api",
-                    entity_type="ip",
-                    value=str(ip_data.get("query") or target),
-                    confidence=0.8,
-                    metadata=ip_data,
+        instagram_data = collected.get("instagram", {}).get("data")
+        if instagram_data:
+            for profile in instagram_data.get("profiles", []) or []:
+                normalized.append(
+                    NormalizedResult(
+                        source="instagram",
+                        entity_type="social_profile",
+                        value=str(profile.get("url") or ""),
+                        confidence=0.6,
+                        url=str(profile.get("url") or ""),
+                        metadata=profile,
+                    )
                 )
-            )
 
-        rdap_data = collected.get("domain", {}).get("rdap_data")
-        if rdap_data and rdap_data.get("ldhName"):
-            normalized.append(
-                NormalizedResult(
-                    source="rdap",
-                    entity_type="domain",
-                    value=str(rdap_data.get("ldhName")),
-                    confidence=0.85,
-                    metadata=rdap_data,
+        linkedin_data = collected.get("linkedin", {}).get("data")
+        if linkedin_data:
+            for profile in linkedin_data.get("profiles", []) or []:
+                normalized.append(
+                    NormalizedResult(
+                        source="linkedin",
+                        entity_type="social_profile",
+                        value=str(profile.get("url") or ""),
+                        confidence=0.65,
+                        url=str(profile.get("url") or ""),
+                        metadata=profile,
+                    )
                 )
-            )
+            for company in linkedin_data.get("companies", []) or []:
+                normalized.append(
+                    NormalizedResult(
+                        source="linkedin",
+                        entity_type="organization",
+                        value=str(company.get("url") or company.get("entity_id") or ""),
+                        confidence=0.65,
+                        url=str(company.get("url") or ""),
+                        metadata=company,
+                    )
+                )
 
         for plugin_result in collected.get("plugins", {}).get("plugins", []) or []:
             normalized.append(
@@ -499,7 +552,12 @@ class UniversalOsintEngine:
         sources           = self.discover_sources(detection.target_type, source_hint)
         collected         = self.run_collectors(target, sources)
         legacy_normalized = self._normalize_collected(collected, target)
-        connector_results = OsintOrchestrator.default().run(target, detection.target_type)
+        connector_names = self._discover_connector_names(source_hint)
+        connector_results = OsintOrchestrator.default().run(
+            target,
+            detection.target_type,
+            connector_names=connector_names,
+        )
         extra_normalized  = ResultMerger.merge(collected, connector_results, detection.target_type)
         normalized        = self.correlation_engine.correlate(legacy_normalized + extra_normalized)
         risk_bundle = self.calculate_risk(normalized)

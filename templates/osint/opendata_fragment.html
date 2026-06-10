@@ -1,30 +1,35 @@
 <style>
-.osint-frag{font-family:'JetBrains Mono',monospace;color:#d0d8e8;font-size:.82rem}
-.osint-frag .result-section{margin-bottom:1.5rem;border-top:1px solid #1e2535;padding-top:1rem}
-.osint-frag .section-title{display:flex;align-items:center;gap:.5rem;font-size:.85rem;font-weight:600;margin-bottom:.75rem;color:#a0b4cc}
-.osint-frag .section-tag{background:#0d1a2e;border:1px solid #2a4060;color:#4bc8a8;padding:2px 8px;border-radius:3px;font-size:.72rem;letter-spacing:.05em}
-.osint-frag .data-table{width:100%;border-collapse:collapse;margin-bottom:.75rem}
-.osint-frag .data-table td,.osint-frag .data-table th{padding:4px 8px;border-bottom:1px solid #1e2535;vertical-align:top}
-.osint-frag .data-table th{color:#6b8aaa;font-weight:500;text-align:left;font-size:.75rem}
-.osint-frag .col-key{color:#6b8aaa;width:140px;white-space:nowrap}
-.osint-frag .mono-cell{font-family:'JetBrains Mono',monospace;font-size:.77rem}
-.osint-frag .col-desc{max-width:260px;word-break:break-word}
-.osint-frag .table-wrap{overflow-x:auto;max-height:280px;overflow-y:auto}
-.osint-frag .error-block{background:#1a0a0a;border:1px solid #5c1a1a;border-radius:4px;padding:.5rem .75rem;margin-bottom:1rem}
-.osint-frag .error-line{color:#f87171;margin:2px 0;font-size:.78rem}
-.osint-frag .badge{background:#0d1a2e;border:1px solid #2a4060;color:#8ab4cc;padding:1px 7px;border-radius:3px;font-size:.7rem;margin-right:.3rem}
-.osint-frag .subsection-title{color:#6b8aaa;font-size:.78rem;font-weight:600;margin:.75rem 0 .4rem;text-transform:uppercase;letter-spacing:.05em}
-.osint-frag .empty-state{text-align:center;padding:2rem;color:#4a5a6a;font-size:.85rem}
-.osint-frag .results-meta{margin-bottom:.5rem;font-size:.77rem;color:#6b8aaa}
+.od-frag{font-family:'JetBrains Mono',monospace;color:#d0d8e8;font-size:.82rem}
+.od-frag .summary-bar{display:flex;gap:.75rem;flex-wrap:wrap;align-items:center;background:#0d1a2e;border:1px solid #1e2d42;border-radius:4px;padding:.5rem .75rem;margin-bottom:1rem}
+.od-frag .summary-stat{font-size:.78rem;color:#8ab4cc}
+.od-frag .summary-stat strong{color:#4bc8a8}
+.od-frag .source-badge{font-size:.7rem;padding:2px 8px;border-radius:3px;border:1px solid #2a4060;background:#091524;letter-spacing:.05em}
+.od-frag .source-badge.ok{color:#4bc8a8;border-color:#1a4030}
+.od-frag .source-badge.empty{color:#6b8aaa}
+.od-frag .source-badge.warn{color:#f59e0b;border-color:#5c3a00}
+.od-frag .section{margin-bottom:1.25rem;border-top:1px solid #1e2535;padding-top:.875rem}
+.od-frag .section-hdr{display:flex;align-items:center;gap:.5rem;cursor:pointer;user-select:none;margin-bottom:.6rem}
+.od-frag .section-tag{background:#0d1a2e;border:1px solid #2a4060;color:#4bc8a8;padding:2px 8px;border-radius:3px;font-size:.72rem;letter-spacing:.05em}
+.od-frag .section-count{color:#6b8aaa;font-size:.72rem}
+.od-frag .section-toggle{margin-left:auto;color:#4a5a6a;font-size:.75rem}
+.od-frag .data-table{width:100%;border-collapse:collapse;margin-bottom:.75rem}
+.od-frag .data-table th{color:#6b8aaa;font-weight:500;text-align:left;font-size:.75rem;padding:4px 8px;border-bottom:1px solid #1e2535}
+.od-frag .data-table td{padding:4px 8px;border-bottom:1px solid #111d2e;vertical-align:top;font-size:.78rem}
+.od-frag .table-wrap{overflow-x:auto;max-height:260px;overflow-y:auto}
+.od-frag .kv-table td{padding:3px 8px;border-bottom:1px solid #111d2e;font-size:.78rem}
+.od-frag .kv-table .k{color:#6b8aaa;width:130px;white-space:nowrap}
+.od-frag .empty-note{color:#4a5a6a;font-size:.78rem;padding:.4rem 0}
+.od-frag .error-block{background:#1a0a0a;border:1px solid #5c1a1a;border-radius:4px;padding:.5rem .75rem;margin-bottom:1rem}
+.od-frag .error-line{color:#f87171;margin:2px 0;font-size:.78rem}
+.od-frag .warn-banner{background:#1a1200;border:1px solid #5c3a00;border-radius:4px;padding:.45rem .75rem;margin-bottom:.75rem;color:#f59e0b;font-size:.77rem}
+.od-frag .results-meta{margin-bottom:.5rem;font-size:.77rem;color:#6b8aaa}
 </style>
 
-<div class="osint-frag">
+<div class="od-frag">
+
   <div class="results-meta">
-    Consulta: <strong>{{ query }}</strong> —
-    Fuente:
-    {% if source == 'ip' %}<span class="badge">Geoloc. IP</span>
-    {% elif source == 'domain' %}<span class="badge">RDAP</span><span class="badge">crt.sh</span>
-    {% else %}<span class="badge">IP</span><span class="badge">RDAP</span><span class="badge">crt.sh</span>{% endif %}
+    Búsqueda: <strong>{{ q }}</strong> —
+    Tipo detectado: <span style="color:#4bc8a8">{{ target_type }}</span>
   </div>
 
   {% if errors %}
@@ -33,72 +38,122 @@
   </div>
   {% endif %}
 
-  {% if ip_data %}
-  <section class="result-section">
-    <h3 class="section-title"><span class="section-tag">IP-API</span> Geolocalización</h3>
-    <table class="data-table">
-      <tbody>
-        <tr><td class="col-key">IP</td><td>{{ ip_data.query }}</td></tr>
-        <tr><td class="col-key">País</td><td>{{ ip_data.country }} ({{ ip_data.countryCode }})</td></tr>
-        <tr><td class="col-key">Región</td><td>{{ ip_data.regionName }}</td></tr>
-        <tr><td class="col-key">Ciudad</td><td>{{ ip_data.city }}</td></tr>
-        <tr><td class="col-key">Coordenadas</td><td>{{ ip_data.lat }}, {{ ip_data.lon }}</td></tr>
-        <tr><td class="col-key">Zona horaria</td><td>{{ ip_data.timezone }}</td></tr>
-        <tr><td class="col-key">ISP</td><td>{{ ip_data.isp }}</td></tr>
-        <tr><td class="col-key">Organización</td><td>{{ ip_data.org }}</td></tr>
-        <tr><td class="col-key">AS</td><td>{{ ip_data.as }}</td></tr>
-      </tbody>
-    </table>
-  </section>
-  {% endif %}
-
-  {% if rdap_data and rdap_data.ldhName %}
-  <section class="result-section">
-    <h3 class="section-title"><span class="section-tag">RDAP</span> Registro de dominio</h3>
-    <table class="data-table">
-      <tbody>
-        <tr><td class="col-key">Dominio</td><td>{{ rdap_data.ldhName }}</td></tr>
-        <tr><td class="col-key">Handle</td><td>{{ rdap_data.handle or '—' }}</td></tr>
-        <tr><td class="col-key">Estado</td><td>{{ rdap_data.status|join(', ') if rdap_data.status else '—' }}</td></tr>
-        {% for ev in rdap_data.events %}
-        <tr><td class="col-key">{{ ev.action }}</td><td>{{ ev.date }}</td></tr>
-        {% endfor %}
-      </tbody>
-    </table>
-    {% if rdap_data.nameservers %}
-    <p class="subsection-title">Nameservers</p>
-    <table class="data-table"><tbody>{% for ns in rdap_data.nameservers %}<tr><td>{{ ns }}</td></tr>{% endfor %}</tbody></table>
+  {% if q %}
+  <div class="summary-bar">
+    <span class="summary-stat">Fuentes consultadas: <strong>{{ sources_queried }}</strong></span>
+    <span class="summary-stat">Hallazgos: <strong>{{ findings_count }}</strong></span>
+    {% if simit %}
+      {% if simit.metadata.status == 'unconfigured' %}
+        <span class="source-badge warn">SIMIT sin config</span>
+      {% elif simit.ok %}
+        <span class="source-badge ok">SIMIT ✓ ({{ simit.data.rows|length }})</span>
+      {% else %}
+        <span class="source-badge empty">SIMIT sin resultados</span>
+      {% endif %}
     {% endif %}
-    {% if rdap_data.entities %}
-    <p class="subsection-title">Entidades</p>
-    <table class="data-table"><thead><tr><th>Nombre</th><th>Roles</th></tr></thead>
-    <tbody>{% for ent in rdap_data.entities %}<tr><td>{{ ent.name or '—' }}</td><td>{{ ent.roles|join(', ') }}</td></tr>{% endfor %}</tbody></table>
+    {% if truecaller %}
+      {% if truecaller.metadata.status == 'unconfigured' %}
+        <span class="source-badge warn">Truecaller sin config</span>
+      {% elif truecaller.ok %}
+        <span class="source-badge ok">Truecaller ✓</span>
+      {% else %}
+        <span class="source-badge empty">Truecaller sin resultados</span>
+      {% endif %}
     {% endif %}
-  </section>
-  {% endif %}
+  </div>
 
-  {% if crt_data %}
-  <section class="result-section">
-    <h3 class="section-title"><span class="section-tag">CRT.SH</span> Certificados ({{ crt_data|length }})</h3>
-    <div class="table-wrap">
-      <table class="data-table">
-        <thead><tr><th>Nombre / Subdominio</th><th>Emisor</th><th>Válido desde</th><th>Válido hasta</th></tr></thead>
-        <tbody>
-          {% for cert in crt_data %}
-          <tr>
-            <td class="mono-cell">{{ cert.name }}</td>
-            <td class="col-desc">{{ cert.issuer[:60] }}{% if cert.issuer|length > 60 %}…{% endif %}</td>
-            <td>{{ cert.not_before[:10] if cert.not_before else '—' }}</td>
-            <td>{{ cert.not_after[:10] if cert.not_after else '—' }}</td>
-          </tr>
-          {% endfor %}
-        </tbody>
-      </table>
+  {% if simit %}
+  <div class="section">
+    <div class="section-hdr" onclick="odToggle('od-simit')">
+      <span class="section-tag">SIMIT</span>
+      <span>Infracciones de Tránsito</span>
+      {% if simit.ok %}
+        <span class="section-count">{{ simit.data.rows|length }} registro(s)</span>
+      {% endif %}
+      <span class="section-toggle" id="od-simit-icon">▼</span>
     </div>
-  </section>
+    <div id="od-simit">
+      {% if not simit.ok %}
+        <p class="empty-note">Sin resultados en SIMIT para <em>{{ q }}</em>.</p>
+      {% else %}
+        <div class="table-wrap">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Nombre</th><th>Identificación</th><th>Placa</th>
+                <th>Valor</th><th>Estado</th><th>Fecha</th><th>Municipio</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for row in simit.data.rows %}
+              <tr>
+                <td>{{ row.nombre or '—' }}</td>
+                <td>{{ row.numero_identificacion or '—' }}</td>
+                <td>{{ row.placa or '—' }}</td>
+                <td>{{ row.valor_a_pagar or '—' }}</td>
+                <td>{{ row.estado or '—' }}</td>
+                <td>{{ (row.fecha_infraccion or '')[:10] or '—' }}</td>
+                <td>{{ row.municipio or '—' }}</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        <div style="font-size:.72rem;color:#4a5a6a;margin-top:.25rem">
+          Fuente: <a href="https://www.datos.gov.co/resource/72nf-y4v3" target="_blank"
+            rel="noopener" style="color:#4bc8a8">datos.gov.co/SIMIT</a>
+          {% if simit.metadata.latency_ms %} — {{ simit.metadata.latency_ms }}ms{% endif %}
+        </div>
+      {% endif %}
+    </div>
+  </div>
   {% endif %}
 
-  {% if not ip_data and not rdap_data and not crt_data and not errors %}
-  <div class="empty-state"><p>Sin resultados para <strong>{{ query }}</strong>.</p></div>
+  {% if truecaller %}
+  <div class="section">
+    <div class="section-hdr" onclick="odToggle('od-tc')">
+      <span class="section-tag">TRUECALLER</span>
+      <span>Información Telefónica</span>
+      <span class="section-toggle" id="od-tc-icon">▼</span>
+    </div>
+    <div id="od-tc">
+      {% if truecaller.metadata.status == 'unconfigured' %}
+        <div class="warn-banner">
+          ⚠ Truecaller no está configurado. Define
+          <code>TRUECALLER_API_KEY</code> en el entorno para habilitar este conector.
+        </div>
+      {% elif not truecaller.ok %}
+        <p class="empty-note">Sin resultados en Truecaller para <em>{{ q }}</em>.</p>
+      {% else %}
+        <table class="kv-table">
+          <tbody>
+            <tr><td class="k">Nombre registrado</td><td>{{ truecaller.data.nombre or '—' }}</td></tr>
+            <tr><td class="k">Operador</td><td>{{ truecaller.data.operador or '—' }}</td></tr>
+            <tr><td class="k">País</td><td>{{ truecaller.data.pais or '—' }}</td></tr>
+            <tr><td class="k">Tipo de línea</td><td>{{ truecaller.data.tipo_linea or '—' }}</td></tr>
+            <tr><td class="k">Spam score</td><td>{{ truecaller.data.spam_score }}</td></tr>
+            <tr><td class="k">¿Es spam?</td><td>{{ 'Sí' if truecaller.data.es_spam else 'No' }}</td></tr>
+          </tbody>
+        </table>
+        {% if truecaller.metadata.latency_ms %}
+          <div style="font-size:.72rem;color:#4a5a6a;margin-top:.25rem">{{ truecaller.metadata.latency_ms }}ms</div>
+        {% endif %}
+      {% endif %}
+    </div>
+  </div>
   {% endif %}
+
+  {% endif %}
+
 </div>
+
+<script>
+function odToggle(id) {
+  var el = document.getElementById(id);
+  var icon = document.getElementById(id + '-icon');
+  if (!el) return;
+  var hidden = el.style.display === 'none';
+  el.style.display = hidden ? '' : 'none';
+  if (icon) icon.textContent = hidden ? '▼' : '▶';
+}
+</script>

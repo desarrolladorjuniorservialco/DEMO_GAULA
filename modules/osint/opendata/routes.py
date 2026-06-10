@@ -1,191 +1,112 @@
-import ipaddress
+"""opendata/routes.py — Tab Datos Abiertos: búsqueda universal SIMIT + Truecaller."""
+from __future__ import annotations
+
 import re
-import requests
+from typing import Any
+
 from flask import render_template, request
 
 from modules.osint.auth import login_required
-from modules.osint.core.engine import UniversalOsintEngine
-from modules.osint.opendata import opendata_osint_bp
+from modules.osint.connectors.base import ConnectorResult
+from modules.osint.connectors.simit import SimitConnector
+from modules.osint.connectors.truecaller import TruecallerConnector
+from modules.osint.engines.orchestration import OsintOrchestrator
+from modules.osint.opendata import opendata_bp
 
-HEADERS = {"User-Agent": "OSINT-Tool/1.0 (educational research)"}
-TIMEOUT = 8
+_PLATE_RE = re.compile(r"^[A-Za-z]{3}[0-9A-Za-z]{3}$")
+_PHONE_RE = re.compile(r"^(\+57|57)?3\d{9}$")
 
-_DOMAIN_RE = re.compile(
-    r"^(?:[a-zA-Z0-9](?:[a-zA-Z0-9\-]{0,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{2,}$"
+_ORCHESTRATOR = OsintOrchestrator(
+    connectors=[SimitConnector(), TruecallerConnector()],
+    max_workers=2,
+    timeout=20.0,
 )
 
 
-def _is_valid_ip(s):
-    try:
-        ipaddress.ip_address(s)
-        return True
-    except ValueError:
-        return False
+def _detect_type(q: str) -> str:
+    q = q.strip()
+    if _PHONE_RE.match(q) or q.startswith("+"):
+        return "phone"
+    if _PLATE_RE.match(q):
+        return "plate"
+    if q.isdigit() and 6 <= len(q) <= 10:
+        return "document"
+    return "unknown"
 
 
-def _is_valid_domain(s):
-    return bool(_DOMAIN_RE.match(s)) and len(s) <= 253
-
-
-def _fetch_ip_geo(ip):
-    errors = []
-    result = None
-    try:
-        r = requests.get(
-            f"http://ip-api.com/json/{ip}",
-            params={
-                "fields": "status,message,country,countryCode,region,regionName,city,zip,lat,lon,timezone,isp,org,as,query"
-            },
-            timeout=TIMEOUT,
+def _run_connectors(q: str, target_type: str) -> dict[str, ConnectorResult]:
+    results = _ORCHESTRATOR.run(
+        target=q,
+        target_type=target_type,
+        extra_kwargs={
+            "simit": {"target_type": target_type},
+        },
+    )
+    if "truecaller" not in results:
+        results["truecaller"] = ConnectorResult(
+            connector="truecaller", ok=False, data={}, errors=[],
+            metadata={"status": "unconfigured"},
         )
-        if r.status_code == 200:
-            data = r.json()
-            if data.get("status") == "success":
-                result = data
-            else:
-                errors.append(f"ip-api.com: {data.get('message', 'consulta fallida')}.")
-        else:
-            errors.append(f"ip-api.com: respuesta inesperada ({r.status_code}).")
-    except requests.exceptions.ConnectionError:
-        errors.append("ip-api.com: error de conexión.")
-    except requests.exceptions.Timeout:
-        errors.append("ip-api.com: tiempo de espera agotado.")
-    except requests.exceptions.RequestException as e:
-        errors.append(f"ip-api.com: error ({e}).")
-    return result, errors
+    return results
 
 
-def _fetch_domain_rdap(domain):
-    errors = []
-    result = None
-    try:
-        r = requests.get(
-            f"https://rdap.org/domain/{domain}",
-            headers=HEADERS,
-            timeout=TIMEOUT,
-        )
-        if r.status_code == 200:
-            result = r.json()
-        elif r.status_code == 404:
-            errors.append(f"RDAP: dominio '{domain}' no encontrado.")
-        else:
-            errors.append(f"RDAP: respuesta inesperada ({r.status_code}).")
-    except requests.exceptions.ConnectionError:
-        errors.append("RDAP: error de conexión.")
-    except requests.exceptions.Timeout:
-        errors.append("RDAP: tiempo de espera agotado.")
-    except requests.exceptions.RequestException as e:
-        errors.append(f"RDAP: error ({e}).")
-    return result, errors
-
-
-def _fetch_crt_sh(domain):
-    errors = []
-    certs = []
-    try:
-        r = requests.get(
-            "https://crt.sh/",
-            params={"q": domain, "output": "json"},
-            headers=HEADERS,
-            timeout=TIMEOUT,
-        )
-        if r.status_code == 200:
-            raw = r.json()
-            seen = set()
-            for entry in raw[:50]:
-                name = entry.get("name_value", "")
-                for sub in name.split("\n"):
-                    sub = sub.strip()
-                    if sub and sub not in seen:
-                        seen.add(sub)
-                        certs.append(
-                            {
-                                "name": sub,
-                                "issuer": entry.get("issuer_name", ""),
-                                "not_before": entry.get("not_before", ""),
-                                "not_after": entry.get("not_after", ""),
-                            }
-                        )
-        else:
-            errors.append(f"crt.sh: respuesta inesperada ({r.status_code}).")
-    except requests.exceptions.ConnectionError:
-        errors.append("crt.sh: error de conexión.")
-    except requests.exceptions.Timeout:
-        errors.append("crt.sh: tiempo de espera agotado.")
-    except requests.exceptions.RequestException as e:
-        errors.append(f"crt.sh: error ({e}).")
-    return certs, errors
-
-
-def _parse_rdap(data):
-    if not data:
-        return {}
-    parsed = {
-        "handle": data.get("handle"),
-        "ldhName": data.get("ldhName"),
-        "status": data.get("status", []),
-        "events": [],
-        "nameservers": [],
-        "entities": [],
-    }
-    for ev in data.get("events", []):
-        parsed["events"].append({"action": ev.get("eventAction"), "date": ev.get("eventDate", "")[:10]})
-    for ns in data.get("nameservers", []):
-        parsed["nameservers"].append(ns.get("ldhName", ""))
-    for ent in data.get("entities", []):
-        roles = ent.get("roles", [])
-        vcard = ent.get("vcardArray", [None, []])[1]
-        name = next((v[3] for v in vcard if v[0] == "fn"), None) if vcard else None
-        parsed["entities"].append({"roles": roles, "name": name})
-    return parsed
-
-
-_ENGINE = UniversalOsintEngine()
-
-
-def _collect_errors(collectors: dict) -> list[str]:
-    errors: list[str] = []
-    for payload in collectors.values():
-        errors.extend(payload.get("errors", []))
-    return errors
-
-
-@opendata_osint_bp.route("/lookup")
+@opendata_bp.route("/lookup")
 @login_required
-def lookup():
-    query = request.args.get("q", "").strip()
-    source = request.args.get("source", "both")
+def lookup() -> Any:
+    q = request.args.get("q", "").strip()
 
-    if not query:
+    if len(q) > 100:
         return render_template(
             "osint/opendata_fragment.html",
-            query=query,
-            source=source,
-            errors=["No se proporcionó una consulta."],
+            q=q,
+            target_type="unknown",
+            simit=None,
+            truecaller=None,
+            errors=["Consulta demasiado larga (máximo 100 caracteres)."],
+            sources_queried=0,
+            findings_count=0,
         )
 
-    response = _ENGINE.search(
-        target=query,
-        source_hint=source,
-        persist=True,
-        created_by="system",
+    if not q:
+        return render_template(
+            "osint/opendata_fragment.html",
+            q=q,
+            target_type="unknown",
+            simit=None,
+            truecaller=None,
+            errors=["No se proporcionó un término de búsqueda."],
+            sources_queried=0,
+            findings_count=0,
+        )
+
+    target_type = _detect_type(q)
+    results = _run_connectors(q, target_type)
+
+    simit = results.get("simit")
+    truecaller = results.get("truecaller")
+
+    all_errors: list[str] = []
+    if simit:
+        all_errors.extend(simit.errors)
+    if truecaller:
+        all_errors.extend(truecaller.errors)
+
+    sources_queried = sum(
+        1 for r in [simit, truecaller]
+        if r and r.metadata.get("status") != "unconfigured"
     )
-    collectors = response.get("collectors", {})
-    ip_data = collectors.get("ip", {}).get("data")
-    domain_collector = collectors.get("domain", {})
-    rdap_data = domain_collector.get("rdap_data")
-    crt_data = (domain_collector.get("crt_data") or {}).get("certs")
-    errors = _collect_errors(collectors)
+    findings_count = sum([
+        len(simit.data.get("rows", [])) if simit and simit.ok else 0,
+        1 if truecaller and truecaller.ok else 0,
+    ])
 
     return render_template(
         "osint/opendata_fragment.html",
-        query=query,
-        source=source,
-        ip_data=ip_data,
-        rdap_data=rdap_data,
-        crt_data=crt_data,
-        errors=errors,
-        findings=response.get("findings", []),
-        risk=response.get("risk", {}),
-        target_type=response.get("target_type", "unknown"),
+        q=q,
+        target_type=target_type,
+        simit=simit,
+        truecaller=truecaller,
+        errors=all_errors,
+        sources_queried=sources_queried,
+        findings_count=findings_count,
     )

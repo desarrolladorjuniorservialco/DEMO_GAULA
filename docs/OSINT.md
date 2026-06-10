@@ -114,6 +114,12 @@ modules/osint/
 │   ├── memory.py                # L1
 │   ├── redis_cache.py          # L2
 │   └── db_cache.py             # L3
+├── open_data/
+│   ├── base.py
+│   ├── registry.py
+│   ├── models.py
+│   ├── colombia/
+│   └── international/
 ├── history/
 │   ├── models.py                # ConsultaOsint
 │   ├── routes.py                # /osint/history
@@ -214,6 +220,19 @@ Responsabilidades principales:
 - Fallback progresivo si una fuente falla.
 - Persistencia de hallazgos, consultas y relaciones.
 - Emisión de eventos para procesos diferidos.
+
+---
+
+## Open Data y consultas gubernamentales
+
+La arquitectura objetivo incorpora una capa `modules/osint/open_data/` para fuentes publicas e institucionales. Mientras esa capa se completa, el motor acepta `source_hint="government"` como perfil de consulta orientado a registros publicos, trazas institucionales e infraestructura.
+
+En la implementacion actual ese hint reutiliza las fuentes mas cercanas disponibles:
+
+- `domain`
+- `ip`
+- `duckduckgo`
+- `plugins`
 
 ---
 
@@ -804,4 +823,3 @@ La solución debe ser modular, desacoplada y preparada para incorporar nuevas fu
 Para un entorno profesional de investigación, prioriza APIs oficiales y datos públicos estructurados cuando existan y usa scraping solo cuando no haya una API adecuada. Esto mejora velocidad, estabilidad, trazabilidad y mantenimiento.
 
 Para consultas pesadas, conviene introducir una cola de tareas con Celery + Redis para evitar que la interfaz quede bloqueada durante búsquedas extensas.
-

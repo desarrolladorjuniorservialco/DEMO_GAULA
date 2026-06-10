@@ -39,7 +39,7 @@ def _fetch_github(username: str) -> tuple:
         r.raise_for_status()
         profile = r.json()
     except requests.exceptions.HTTPError as e:
-        code = e.response.status_code if e.response else "?"
+        code = e.response.status_code if e.response is not None else "?"
         if code == 404:
             errors.append(f"GitHub: usuario '{username}' no encontrado.")
         else:
@@ -82,7 +82,7 @@ def _fetch_reddit(username: str) -> tuple:
         data = r.json()
         profile = data.get("data", {})
     except requests.exceptions.HTTPError as e:
-        code = e.response.status_code if e.response else "?"
+        code = e.response.status_code if e.response is not None else "?"
         if code == 403:
             errors.append("Reddit: acceso denegado (403).")
         elif code == 429:
@@ -110,7 +110,7 @@ def _fetch_reddit(username: str) -> tuple:
             children = r2.json().get("data", {}).get("children", [])
             posts = [c["data"] for c in children]
         except requests.exceptions.HTTPError as e:
-            code = e.response.status_code if e.response else "?"
+            code = e.response.status_code if e.response is not None else "?"
             errors.append(f"Reddit posts: error HTTP {code}.")
         except requests.exceptions.RequestException as e:
             errors.append(f"Reddit posts: {e}.")
@@ -155,9 +155,11 @@ def lookup():
     github_repos = collectors.get("github", {}).get("repos")
     reddit_profile = collectors.get("reddit", {}).get("profile")
     reddit_posts = collectors.get("reddit", {}).get("posts")
-    facebook_data = collectors.get("facebook", {}).get("data")
-    x_data = collectors.get("x", {}).get("data")
-    tiktok_data = collectors.get("tiktok", {}).get("data")
+    facebook_data  = collectors.get("facebook",  {}).get("data")
+    x_data         = collectors.get("x",         {}).get("data")
+    tiktok_data    = collectors.get("tiktok",    {}).get("data")
+    instagram_data = collectors.get("instagram", {}).get("data")
+    linkedin_data  = collectors.get("linkedin",  {}).get("data")
     plugin_results = collectors.get("plugins", {}).get("plugins", [])
     errors = _collect_errors(collectors)
 
@@ -172,6 +174,8 @@ def lookup():
         facebook_data=facebook_data,
         x_data=x_data,
         tiktok_data=tiktok_data,
+        instagram_data=instagram_data,
+        linkedin_data=linkedin_data,
         plugin_results=plugin_results,
         errors=errors,
         findings=response.get("findings", []),

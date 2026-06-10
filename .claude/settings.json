@@ -139,13 +139,41 @@
       "Bash(python -c \"import ast, sys; ast.parse\\(open\\('static/chatbot.js'\\).read\\(\\)\\)\")",
       "Bash(node -e \"require\\('fs'\\).readFileSync\\('static/chatbot.js','utf8'\\); console.log\\('chatbot.js OK'\\)\")",
       "Bash(node -e \"require\\('fs'\\).readFileSync\\('static/helpbot.js','utf8'\\); console.log\\('helpbot.js OK'\\)\")",
-      "Bash(node --input-type=module)"
+      "Bash(node --input-type=module)",
+      "PowerShell(playwright install chromium)",
+      "PowerShell(playwright install chromium 2>&1)",
+      "PowerShell(python -m playwright install chromium)",
+      "PowerShell(& \".\\\\.venv\\\\Scripts\\\\python.exe\" -m playwright install chromium)",
+      "PowerShell($result = & \".\\\\.venv\\\\Scripts\\\\python.exe\" -m playwright install chromium; Write-Host \"Exit: $LASTEXITCODE\"; Write-Host $result)",
+      "PowerShell(& \".\\\\.venv\\\\Scripts\\\\python.exe\" -c \"from playwright.sync_api import sync_playwright; p = sync_playwright\\(\\).start\\(\\); b = p.chromium.launch\\(\\); print\\('Chromium OK'\\); b.close\\(\\); p.stop\\(\\)\")",
+      "Bash(findstr /n \"extract_x\\\\|extract_tiktok\\\\|import\")",
+      "Bash(Get-ChildItem -Path \"c:\\\\Users\\\\Victor Pulido\\\\Documents\\\\GIT_Repositories\\\\DEMO_GAULA\" -MaxDepth 1 -Filter \"*.py\")",
+      "Bash(Select-Object Name)",
+      "Bash(Remove-Item -Recurse -Force \"c:\\\\Users\\\\Victor Pulido\\\\Documents\\\\GIT_Repositories\\\\DEMO_GAULA\\\\modules\\\\osint\\\\opendata\" -ErrorAction SilentlyContinue)",
+      "Bash(Remove-Item -Recurse -Force \"c:\\\\Users\\\\Victor Pulido\\\\Documents\\\\GIT_Repositories\\\\DEMO_GAULA\\\\modules\\\\osint\\\\open_data\" -ErrorAction SilentlyContinue)",
+      "Bash(Remove-Item -Force \"c:\\\\Users\\\\Victor Pulido\\\\Documents\\\\GIT_Repositories\\\\DEMO_GAULA\\\\templates\\\\osint\\\\opendata_fragment.html\" -ErrorAction SilentlyContinue)",
+      "Bash(Write-Output \"Directorios eliminados\")",
+      "Bash(rm -rf \"c:/Users/Victor Pulido/Documents/GIT_Repositories/DEMO_GAULA/modules/osint/opendata\")",
+      "Bash(rm -rf \"c:/Users/Victor Pulido/Documents/GIT_Repositories/DEMO_GAULA/modules/osint/open_data\")",
+      "Bash(rm -f \"c:/Users/Victor Pulido/Documents/GIT_Repositories/DEMO_GAULA/templates/osint/opendata_fragment.html\")",
+      "PowerShell(cd \"c:\\\\Users\\\\Victor Pulido\\\\Documents\\\\GIT_Repositories\\\\DEMO_GAULA\"; Get-ChildItem -Path \"modules\\\\osint\" -Recurse -Force | Select-Object FullName | Sort-Object FullName | ForEach-Object { $_.FullName -replace [regex]::Escape\\(\\(Get-Item \"modules\\\\osint\"\\).FullName\\), \"modules\\\\osint\" })",
+      "Bash(grep -E \"\\\\.html$|\\\\.htm$\")",
+      "Bash(Get-ChildItem -Path \"modules\\\\osint\\\\connectors\\\\*.py\" -Exclude \"__*\")",
+      "Bash(if [ ! -d \"docs/superpowers/specs\" ]; then mkdir -p docs/superpowers/specs; fi && echo \"ok\")",
+      "Bash(python -m pytest tests/test_opendata_connectors.py -v)",
+      "Bash(python -m ruff check modules/osint/connectors/simit.py)",
+      "Bash(python -m mypy modules/osint/connectors/simit.py --ignore-missing-imports)",
+      "Bash(python -m pytest tests/test_opendata_connectors.py::test_truecaller_connector_name -v)",
+      "Bash(python -m pytest tests/test_opendata_routes.py -v)",
+      "Bash(python -m pytest tests/test_opendata_connectors.py tests/test_opendata_routes.py -v)",
+      "Bash(python -c \"from modules import create_app; app = create_app\\(\\); print\\('OK'\\)\")"
     ],
     "additionalDirectories": [
       "C:\\Users\\Victor Pulido\\Documents\\GIT\\DEMO_GAULA\\docs\\superpowers\\specs",
       "c:\\Users\\Victor Pulido\\Documents\\GIT\\DEMO_GAULA\\docs\\superpowers\\specs",
       "c:\\Users\\Victor Pulido\\.claude\\projects\\c--Users-Victor-Pulido-Documents-GIT-Repositories-DEMO-GAULA\\memory",
-      "C:\\Users\\Victor Pulido\\Documents\\GIT_Repositories\\DEMO_GAULA\\modules"
+      "C:\\Users\\Victor Pulido\\Documents\\GIT_Repositories\\DEMO_GAULA\\modules",
+      "c:\\Users\\Victor Pulido\\Documents\\GIT_Repositories\\DEMO_GAULA\\docs\\superpowers\\specs"
     ]
   }
 }
