@@ -80,7 +80,7 @@ def test_phone_supported_types():
 def test_phone_fetch_local_carrier():
     c = PhoneConnector()
     with _patch2("modules.osint.connectors.phone.os.getenv", return_value=""):
-        with _patch2("duckduckgo_search.DDGS") as mock_ddgs:
+        with _patch2("modules.osint.connectors.web_dork.DDGS") as mock_ddgs:
             mock_ddgs.return_value.__enter__.return_value.text.return_value = []
             result = c.fetch("+573151234567")
 
@@ -103,7 +103,7 @@ def test_phone_fetch_numverify_enrichment():
         mock_get.return_value = _MagicMock2(status_code=200, json=lambda: mock_nv)
         mock_get.return_value.raise_for_status = lambda: None
         with _patch2("modules.osint.connectors.phone.os.getenv", return_value="test-key"):
-            with _patch2("duckduckgo_search.DDGS") as mock_ddgs:
+            with _patch2("modules.osint.connectors.web_dork.DDGS") as mock_ddgs:
                 mock_ddgs.return_value.__enter__.return_value.text.return_value = []
                 result = c.fetch("+573151234567")
 
@@ -115,7 +115,7 @@ def test_phone_fetch_numverify_enrichment():
 def test_phone_fetch_no_numverify_key():
     c = PhoneConnector()
     with _patch2("modules.osint.connectors.phone.os.getenv", return_value=""):
-        with _patch2("duckduckgo_search.DDGS") as mock_ddgs:
+        with _patch2("modules.osint.connectors.web_dork.DDGS") as mock_ddgs:
             mock_ddgs.return_value.__enter__.return_value.text.return_value = []
             result = c.fetch("+573001234567")
 

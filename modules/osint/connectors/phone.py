@@ -3,7 +3,6 @@ from __future__ import annotations
 
 import os
 import re
-import time
 from typing import Any
 
 import requests
@@ -122,38 +121,11 @@ class PhoneConnector(BaseConnector):
         country = numverify.get("country") or local.get("country", "—")
         location = numverify.get("location") or parsed.get("region", "—")
 
-        dork_results: list[dict] = []
-        errors: list[str] = []
-
-        try:
-            from duckduckgo_search import DDGS
-            from duckduckgo_search.exceptions import DuckDuckGoSearchException
-            try:
-                from duckduckgo_search.exceptions import RatelimitException
-            except ImportError:
-                RatelimitException = DuckDuckGoSearchException
-
-            seen_urls: set[str] = set()
-            with DDGS() as ddgs:
-                for query in [f'"{target}"', f'"{normalized}" Colombia']:
-                    try:
-                        for r in (ddgs.text(query, max_results=10) or []):
-                            url = r.get("href", "")
-                            if url and url not in seen_urls:
-                                seen_urls.add(url)
-                                dork_results.append({
-                                    "title":   r.get("title", "")[:120],
-                                    "url":     url,
-                                    "snippet": r.get("body", "")[:250],
-                                })
-                        time.sleep(1.5)
-                    except RatelimitException:
-                        errors.append("DDG: rate limit — intenta en 60s.")
-                        break
-                    except DuckDuckGoSearchException as exc:
-                        errors.append(f"DDG: {exc}")
-        except ImportError:
-            errors.append("duckduckgo-search no disponible.")
+        from modules.osint.connectors.web_dork import run_dork
+        dork_results, errors = run_dork(
+            [f'"{target}"', f'"{normalized}" Colombia'],
+            max_results=10,
+        )
 
         return ConnectorResult(
             connector=self.name,
