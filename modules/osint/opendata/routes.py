@@ -1,4 +1,4 @@
-"""opendata/routes.py — Tab Datos Abiertos: búsqueda universal SIMIT + Truecaller."""
+"""opendata/routes.py — Tab Datos Abiertos: búsqueda universal SIMIT + PhoneConnector."""
 from __future__ import annotations
 
 import re
@@ -8,8 +8,8 @@ from flask import render_template, request
 
 from modules.osint.auth import login_required
 from modules.osint.connectors.base import ConnectorResult
+from modules.osint.connectors.phone import PhoneConnector
 from modules.osint.connectors.simit import SimitConnector
-from modules.osint.connectors.truecaller import TruecallerConnector
 from modules.osint.engines.orchestration import OsintOrchestrator
 from modules.osint.opendata import opendata_bp
 
@@ -17,9 +17,9 @@ _PLATE_RE = re.compile(r"^[A-Za-z]{3}[0-9A-Za-z]{3}$")
 _PHONE_RE = re.compile(r"^(\+57|57)?3\d{9}$")
 
 _ORCHESTRATOR = OsintOrchestrator(
-    connectors=[SimitConnector(), TruecallerConnector()],
+    connectors=[SimitConnector(), PhoneConnector()],
     max_workers=2,
-    timeout=20.0,
+    timeout=30.0,
 )
 
 
@@ -42,9 +42,9 @@ def _run_connectors(q: str, target_type: str) -> dict[str, ConnectorResult]:
             "simit": {"target_type": target_type},
         },
     )
-    if "truecaller" not in results:
-        results["truecaller"] = ConnectorResult(
-            connector="truecaller", ok=False, data={}, errors=[],
+    if "phone" not in results:
+        results["phone"] = ConnectorResult(
+            connector="phone", ok=False, data={}, errors=[],
             metadata={"status": "unconfigured"},
         )
     return results
@@ -61,7 +61,7 @@ def lookup() -> Any:
             q=q,
             target_type="unknown",
             simit=None,
-            truecaller=None,
+            phone=None,
             errors=["Consulta demasiado larga (máximo 100 caracteres)."],
             sources_queried=0,
             findings_count=0,
@@ -73,7 +73,7 @@ def lookup() -> Any:
             q=q,
             target_type="unknown",
             simit=None,
-            truecaller=None,
+            phone=None,
             errors=["No se proporcionó un término de búsqueda."],
             sources_queried=0,
             findings_count=0,
@@ -83,21 +83,21 @@ def lookup() -> Any:
     results = _run_connectors(q, target_type)
 
     simit = results.get("simit")
-    truecaller = results.get("truecaller")
+    phone = results.get("phone")
 
     all_errors: list[str] = []
     if simit:
         all_errors.extend(simit.errors)
-    if truecaller:
-        all_errors.extend(truecaller.errors)
+    if phone:
+        all_errors.extend(phone.errors)
 
     sources_queried = sum(
-        1 for r in [simit, truecaller]
+        1 for r in [simit, phone]
         if r and r.metadata.get("status") != "unconfigured"
     )
     findings_count = sum([
         len(simit.data.get("rows", [])) if simit and simit.ok else 0,
-        1 if truecaller and truecaller.ok else 0,
+        1 if phone and phone.ok else 0,
     ])
 
     return render_template(
@@ -105,7 +105,7 @@ def lookup() -> Any:
         q=q,
         target_type=target_type,
         simit=simit,
-        truecaller=truecaller,
+        phone=phone,
         errors=all_errors,
         sources_queried=sources_queried,
         findings_count=findings_count,

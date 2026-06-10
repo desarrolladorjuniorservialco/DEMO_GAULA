@@ -43,21 +43,17 @@
     <span class="summary-stat">Fuentes consultadas: <strong>{{ sources_queried }}</strong></span>
     <span class="summary-stat">Hallazgos: <strong>{{ findings_count }}</strong></span>
     {% if simit %}
-      {% if simit.metadata.status == 'unconfigured' %}
-        <span class="source-badge warn">SIMIT sin config</span>
-      {% elif simit.ok %}
+      {% if simit.ok %}
         <span class="source-badge ok">SIMIT ✓ ({{ simit.data.rows|length }})</span>
       {% else %}
         <span class="source-badge empty">SIMIT sin resultados</span>
       {% endif %}
     {% endif %}
-    {% if truecaller %}
-      {% if truecaller.metadata.status == 'unconfigured' %}
-        <span class="source-badge warn">Truecaller sin config</span>
-      {% elif truecaller.ok %}
-        <span class="source-badge ok">Truecaller ✓</span>
+    {% if phone %}
+      {% if phone.ok %}
+        <span class="source-badge ok">TEL ✓{% if phone.metadata.enriched %} +NumVerify{% endif %}</span>
       {% else %}
-        <span class="source-badge empty">Truecaller sin resultados</span>
+        <span class="source-badge empty">TEL sin resultados</span>
       {% endif %}
     {% endif %}
   </div>
@@ -109,34 +105,54 @@
   </div>
   {% endif %}
 
-  {% if truecaller %}
+  {% if phone %}
   <div class="section">
-    <div class="section-hdr" onclick="odToggle('od-tc')">
-      <span class="section-tag">TRUECALLER</span>
+    <div class="section-hdr" onclick="odToggle('od-phone')">
+      <span class="section-tag">TELÉFONO</span>
       <span>Información Telefónica</span>
-      <span class="section-toggle" id="od-tc-icon">▼</span>
+      {% if phone.ok %}
+        <span class="section-count">{{ phone.data.mentions_count }} mención(es)</span>
+      {% endif %}
+      <span class="section-toggle" id="od-phone-icon">▼</span>
     </div>
-    <div id="od-tc">
-      {% if truecaller.metadata.status == 'unconfigured' %}
-        <div class="warn-banner">
-          ⚠ Truecaller no está configurado. Define
-          <code>TRUECALLER_API_KEY</code> en el entorno para habilitar este conector.
-        </div>
-      {% elif not truecaller.ok %}
-        <p class="empty-note">Sin resultados en Truecaller para <em>{{ q }}</em>.</p>
+    <div id="od-phone">
+      {% if not phone.ok %}
+        <p class="empty-note">Sin resultados telefónicos para <em>{{ q }}</em>.</p>
       {% else %}
         <table class="kv-table">
           <tbody>
-            <tr><td class="k">Nombre registrado</td><td>{{ truecaller.data.nombre or '—' }}</td></tr>
-            <tr><td class="k">Operador</td><td>{{ truecaller.data.operador or '—' }}</td></tr>
-            <tr><td class="k">País</td><td>{{ truecaller.data.pais or '—' }}</td></tr>
-            <tr><td class="k">Tipo de línea</td><td>{{ truecaller.data.tipo_linea or '—' }}</td></tr>
-            <tr><td class="k">Spam score</td><td>{{ truecaller.data.spam_score }}</td></tr>
-            <tr><td class="k">¿Es spam?</td><td>{{ 'Sí' if truecaller.data.es_spam else 'No' }}</td></tr>
+            <tr><td class="k">Número internacional</td><td>{{ phone.data.international or '—' }}</td></tr>
+            <tr><td class="k">Válido</td><td>{{ 'Sí' if phone.data.valid else 'No' }}</td></tr>
+            <tr><td class="k">Operador</td><td>{{ phone.data.carrier or '—' }}</td></tr>
+            <tr><td class="k">Tipo de línea</td><td>{{ phone.data.line_type or '—' }}</td></tr>
+            <tr><td class="k">País</td><td>{{ phone.data.country or '—' }}</td></tr>
+            <tr><td class="k">Ubicación</td><td>{{ phone.data.location or '—' }}</td></tr>
+            {% if phone.data.timezone %}
+            <tr><td class="k">Zona horaria</td><td>{{ phone.data.timezone | join(', ') }}</td></tr>
+            {% endif %}
+            {% if phone.metadata.enriched %}
+            <tr><td class="k">Fuente</td><td><span style="color:#4bc8a8">NumVerify ✓</span></td></tr>
+            {% endif %}
           </tbody>
         </table>
-        {% if truecaller.metadata.latency_ms %}
-          <div style="font-size:.72rem;color:#4a5a6a;margin-top:.25rem">{{ truecaller.metadata.latency_ms }}ms</div>
+        {% if phone.data.dork_results %}
+        <div style="margin-top:.75rem">
+          <div style="font-size:.75rem;color:#6b8aaa;margin-bottom:.4rem">
+            Menciones web ({{ phone.data.mentions_count }})
+          </div>
+          {% for r in phone.data.dork_results[:5] %}
+          <div style="margin-bottom:.5rem;font-size:.77rem">
+            <a href="{{ r.url }}" target="_blank" rel="noopener"
+               style="color:#4bc8a8;word-break:break-all">{{ r.title or r.url }}</a>
+            {% if r.snippet %}
+            <div style="color:#8ab4cc;margin-top:2px">{{ r.snippet }}</div>
+            {% endif %}
+          </div>
+          {% endfor %}
+        </div>
+        {% endif %}
+        {% if phone.metadata.latency_ms %}
+          <div style="font-size:.72rem;color:#4a5a6a;margin-top:.25rem">{{ phone.metadata.latency_ms }}ms</div>
         {% endif %}
       {% endif %}
     </div>
