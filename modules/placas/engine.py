@@ -4,8 +4,6 @@ import re
 import base64
 import logging
 
-import numpy as np
-
 _log = logging.getLogger(__name__)
 
 _READER = None
@@ -32,6 +30,7 @@ def _check_deps() -> bool:
     global _DEPS_OK
     if _DEPS_OK is None:
         try:
+            import numpy  # noqa: F401
             import cv2  # noqa: F401
             import easyocr  # noqa: F401
             import torch  # noqa: F401
@@ -96,6 +95,7 @@ def _poly2rect(poly: list) -> tuple[int, int, int, int]:
 
 def _construir_variantes(img_bgr):
     import cv2
+    import numpy as np
     vs = [cv2.cvtColor(img_bgr, cv2.COLOR_BGR2RGB)]
     gris = cv2.cvtColor(img_bgr, cv2.COLOR_BGR2GRAY)
     clahe = cv2.createCLAHE(clipLimit=3.0, tileGridSize=(8, 8)).apply(gris)
@@ -107,6 +107,7 @@ def _construir_variantes(img_bgr):
 
 def _mask_amarilla(img_bgr):
     import cv2
+    import numpy as np
     hsv = cv2.cvtColor(img_bgr, cv2.COLOR_BGR2HSV)
     mask = cv2.inRange(hsv, np.array(HSV_AMARILLO_LO), np.array(HSV_AMARILLO_HI))
     return cv2.morphologyEx(
@@ -136,6 +137,7 @@ def _img_a_b64(img_bgr, max_w: int = 560) -> str:
 
 def _panel_amarillo(base, mask, amarillas):
     import cv2
+    import numpy as np
     m3 = np.zeros_like(base)
     m3[mask > 0] = (0, 255, 255)
     img = cv2.addWeighted(base, 0.45, m3, 0.55, 0)
@@ -271,6 +273,7 @@ def reconocer_placa(img_bytes: bytes) -> dict:
         return {"ok": False, "missing_deps": True, "install_cmd": _MISSING_CMD}
     try:
         import cv2
+        import numpy as np
         arr = np.frombuffer(img_bytes, np.uint8)
         img = cv2.imdecode(arr, cv2.IMREAD_COLOR)
         if img is None:
