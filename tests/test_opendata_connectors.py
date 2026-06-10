@@ -233,3 +233,31 @@ def test_rues_fetch_non_json_fails_gracefully():
 
     assert result.ok is False
     assert len(result.errors) == 1
+
+
+def test_rues_fetch_socrata_shape_by_cedula():
+    """Forma real del dataset c82u-588k: lista, con numero_identificacion
+    (cédula) y fecha_cancelacion -> estado derivado."""
+    c = RuesConnector()
+    rows = [{
+        "codigo_camara": "01", "camara_comercio": "ARMENIA", "matricula": "9249",
+        "razon_social": "RAMIREZ DE OSPINA MARIA",
+        "clase_identificacion": "CEDULA DE CIUDADANIA",
+        "numero_identificacion": "24560913", "fecha_cancelacion": "20111229",
+    }]
+    captured = {}
+    def _fake_get(url, **kwargs):
+        captured["where"] = kwargs["params"]["$where"]
+        m = MagicMock(status_code=200, json=lambda: rows)
+        m.raise_for_status = lambda: None
+        return m
+    with patch("modules.osint.connectors.rues.requests.get", side_effect=_fake_get):
+        result = c.fetch("24560913", target_type="document")
+
+    assert "numero_identificacion='24560913'" in captured["where"]
+    assert result.ok is True
+    exp = result.data["expedientes"][0]
+    assert exp["razon_social"] == "RAMIREZ DE OSPINA MARIA"
+    assert exp["camara"] == "ARMENIA"
+    assert exp["nit"] == "24560913"
+    assert exp["estado"] == "CANCELADA"

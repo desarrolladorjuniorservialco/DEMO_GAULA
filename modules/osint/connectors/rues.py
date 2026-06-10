@@ -1,10 +1,12 @@
 """connectors/rues.py — Registro Único Empresarial y Social (RUES).
 
-Consulta pública por documento (NIT/cédula) o razón social. Devuelve
-expedientes mercantiles: razón social, matrícula, estado, cámara.
+Consulta pública por documento (NIT/cédula) o razón social usando el dataset
+abierto de RUES en datos.gov.co (Socrata). Devuelve expedientes mercantiles:
+razón social, matrícula, estado, cámara de comercio.
 
-El endpoint público de RUES expone búsqueda por NIT/razón social. Si la API
-cambia o bloquea, el conector degrada a ok=False sin propagar excepción.
+Fuente estable y legal (datos.gov.co), consultable por número de identificación
+—incluida cédula de ciudadanía de comerciantes— sin token ni captcha. Si la API
+falla, el conector degrada a ok=False sin propagar excepción.
 """
 from __future__ import annotations
 
@@ -15,7 +17,7 @@ import requests
 
 from modules.osint.connectors.base import BaseConnector, ConnectorResult
 
-_API_URL = "https://ruesapi.rues.org.co/api/v1/expedientes/buscar"
+_API_URL = "https://www.datos.gov.co/resource/c82u-588k.json"
 _HEADERS = {"Accept": "application/json", "User-Agent": "NEXO-147-OSINT/1.0"}
 
 
@@ -43,7 +45,8 @@ class RuesConnector(BaseConnector):
         errors: list[str] = []
         expedientes: list[dict] = []
 
-        params = self._build_params(target, target_type)
+        where = self._build_where(target, target_type)
+        params: dict[str, Any] = {"$where": where, "$limit": 50}
         try:
             resp = requests.get(
                 _API_URL, headers=_HEADERS, params=params, timeout=self.timeout_seconds
@@ -67,16 +70,26 @@ class RuesConnector(BaseConnector):
             },
         )
 
-    def _build_params(self, target: str, target_type: str) -> dict[str, Any]:
+    def _build_where(self, target: str, target_type: str) -> str:
+        safe = target.replace("'", "''")
         if target_type == "name":
-            return {"razon_social": target, "tipo": "razon_social"}
-        return {"nit": target, "tipo": "nit"}
+            return f"upper(razon_social) like upper('%{safe}%')"
+        return f"numero_identificacion='{safe}'"
 
     @staticmethod
-    def _parse(payload: Any) -> list[dict]:
-        registros = []
+    def _estado(r: dict) -> str:
+        cancel = (r.get("fecha_cancelacion") or "").strip()
+        if cancel and cancel not in ("00000000", "0", "99991231"):
+            return "CANCELADA"
+        return "ACTIVA"
+
+    @classmethod
+    def _parse(cls, payload: Any) -> list[dict]:
+        registros: list = []
         if isinstance(payload, dict):
             registros = payload.get("registros") or payload.get("data") or []
+            if isinstance(registros, dict):
+                registros = [registros]
         elif isinstance(payload, list):
             registros = payload
         out: list[dict] = []
@@ -84,10 +97,10 @@ class RuesConnector(BaseConnector):
             if not isinstance(r, dict):
                 continue
             out.append({
-                "razon_social": r.get("razon_social") or r.get("razonSocial") or "—",
+                "razon_social": r.get("razon_social") or "—",
                 "matricula":    r.get("matricula") or "—",
-                "estado":       r.get("estado_matricula") or r.get("estado") or "—",
+                "estado":       r.get("estado") or cls._estado(r),
                 "camara":       r.get("camara_comercio") or r.get("camara") or "—",
-                "nit":          r.get("nit") or r.get("identificacion") or "—",
+                "nit":          r.get("nit") or r.get("numero_identificacion") or "—",
             })
         return out
