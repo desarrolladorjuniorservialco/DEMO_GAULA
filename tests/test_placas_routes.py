@@ -58,3 +58,50 @@ def test_reconocer_placa_sin_deps():
     assert resultado["ok"] is False
     assert resultado["missing_deps"] is True
     assert "pip install" in resultado["install_cmd"]
+
+
+# ── Tests de rutas ────────────────────────────────────────────────────────────
+
+def test_placas_index_redirige_sin_login(app):
+    client = app.test_client()
+    resp = client.get("/placas/")
+    assert resp.status_code == 302
+
+
+def test_placas_index_renderiza_con_login(app):
+    client = _auth_client(app)
+    resp = client.get("/placas/")
+    assert resp.status_code == 200
+    assert b"placa" in resp.data.lower() or b"Placa" in resp.data
+
+
+def test_analizar_sin_archivo_retorna_400(app):
+    client = _auth_client(app)
+    resp = client.post("/placas/analizar")
+    assert resp.status_code == 400
+
+
+def test_analizar_mime_no_imagen_retorna_400(app):
+    client = _auth_client(app)
+    data = {"imagen": (io.BytesIO(b"contenido"), "archivo.txt", "text/plain")}
+    resp = client.post("/placas/analizar", data=data, content_type="multipart/form-data")
+    assert resp.status_code == 400
+
+
+def test_analizar_sin_deps_retorna_json_missing_deps(app):
+    from modules.placas import engine
+    client = _auth_client(app)
+    with patch.object(engine, "_check_deps", return_value=False):
+        data = {"imagen": (io.BytesIO(_minimal_png()), "test.png", "image/png")}
+        resp = client.post("/placas/analizar", data=data, content_type="multipart/form-data")
+    assert resp.status_code == 200
+    body = resp.get_json()
+    assert body["ok"] is False
+    assert body["missing_deps"] is True
+
+
+def test_analizar_redirige_sin_login(app):
+    client = app.test_client()
+    data = {"imagen": (io.BytesIO(_minimal_png()), "test.png", "image/png")}
+    resp = client.post("/placas/analizar", data=data, content_type="multipart/form-data")
+    assert resp.status_code == 302

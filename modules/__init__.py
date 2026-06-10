@@ -46,6 +46,7 @@ def _register_blueprints(app):
     from modules.osint.watchlists import watchlists_osint_bp
     from modules.osint.opendata  import opendata_bp
     from modules.chatbot import chatbot_bp
+    from modules.placas import placas_bp
 
     app.register_blueprint(auth_bp)
     app.register_blueprint(casos_bp)
@@ -60,6 +61,7 @@ def _register_blueprints(app):
     app.register_blueprint(watchlists_osint_bp, url_prefix="/osint/watchlists")
     app.register_blueprint(opendata_bp,         url_prefix="/osint/opendata")
     app.register_blueprint(chatbot_bp)
+    app.register_blueprint(placas_bp, url_prefix="/placas")
 
 
 def _seed_db():

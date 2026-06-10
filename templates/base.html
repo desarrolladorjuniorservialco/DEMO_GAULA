@@ -36,6 +36,7 @@
             <a href="{{ url_for('osint_dashboard.dashboard') }}">Dashboard OSINT</a>
             <a href="{{ url_for('history_osint.history') }}">Historial OSINT</a>
             <a href="{{ url_for('search_osint.search_page') }}">Búsqueda OSINT</a>
+            <a href="{{ url_for('placas.index') }}">Placas</a>
             <a href="{{ url_for('auth.logout') }}">Cerrar sesión</a>
             <a href="{{ url_for('dashboard.api_externa') }}">Verificación de brechas de seguridad</a>
           {% else %}
@@ -43,6 +44,7 @@
             <a href="{{ url_for('osint_dashboard.dashboard') }}">Dashboard OSINT</a>
             <a href="{{ url_for('history_osint.history') }}">Historial OSINT</a>
             <a href="{{ url_for('search_osint.search_page') }}">Búsqueda OSINT</a>
+            <a href="{{ url_for('placas.index') }}">Placas</a>
             <a href="{{ url_for('auth.logout') }}">Cerrar sesión</a>
           {% endif %}
         </nav>
