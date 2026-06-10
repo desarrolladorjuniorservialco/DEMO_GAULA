@@ -1,4 +1,7 @@
 # app.py
+from dotenv import load_dotenv
+load_dotenv(override=False)
+
 from modules import create_app
 
 app = create_app()
