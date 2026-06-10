@@ -64,57 +64,89 @@ def test_simit_fetch_network_error():
 
 import os
 from unittest.mock import patch as _patch2, MagicMock as _MagicMock2
-from modules.osint.connectors.truecaller import TruecallerConnector
+from modules.osint.connectors.phone import PhoneConnector
 
 
-def test_truecaller_connector_name():
-    c = TruecallerConnector()
-    assert c.name == "truecaller"
+def test_phone_connector_name():
+    c = PhoneConnector()
+    assert c.name == "phone"
 
 
-def test_truecaller_supported_types():
-    c = TruecallerConnector()
+def test_phone_supported_types():
+    c = PhoneConnector()
     assert "phone" in c.supported_target_types
 
 
-def test_truecaller_unconfigured():
-    c = TruecallerConnector()
-    with patch("os.getenv", return_value=""):
-        result = c.fetch("+573001234567")
-    assert result.ok is False
-    assert result.metadata.get("status") == "unconfigured"
-    assert result.errors == []
+def test_phone_fetch_local_carrier():
+    c = PhoneConnector()
+    with _patch2("modules.osint.connectors.phone.os.getenv", return_value=""):
+        with _patch2("duckduckgo_search.DDGS") as mock_ddgs:
+            mock_ddgs.return_value.__enter__.return_value.text.return_value = []
+            result = c.fetch("+573151234567")
+
+    assert result.ok is True
+    assert result.connector == "phone"
+    assert result.data["country"] == "Colombia"
 
 
-def test_truecaller_fetch_ok():
-    c = TruecallerConnector()
-    mock_resp = {
-        "data": [
-            {
-                "name": {"first": "CARLOS", "last": "GOMEZ"},
-                "phones": [{"e164Format": "+573001234567", "numberType": "MOBILE",
-                             "carrier": "CLARO", "countryCode": "CO"}],
-                "spamInfo": {"isSpam": False, "spamScore": 0},
-            }
-        ]
+def test_phone_fetch_numverify_enrichment():
+    c = PhoneConnector()
+    mock_nv = {
+        "valid": True,
+        "carrier": "CLARO",
+        "line_type": "mobile",
+        "country_name": "Colombia",
+        "location": "Bogota",
+        "international_format": "+57 315 123 4567",
     }
-    with patch("modules.osint.connectors.truecaller.requests.get") as mock_get:
-        mock_get.return_value = MagicMock(status_code=200, json=lambda: mock_resp)
-        with patch("modules.osint.connectors.truecaller.os.getenv", return_value="test-key"):
+    with _patch2("modules.osint.connectors.phone.requests.get") as mock_get:
+        mock_get.return_value = _MagicMock2(status_code=200, json=lambda: mock_nv)
+        mock_get.return_value.raise_for_status = lambda: None
+        with _patch2("modules.osint.connectors.phone.os.getenv", return_value="test-key"):
+            with _patch2("duckduckgo_search.DDGS") as mock_ddgs:
+                mock_ddgs.return_value.__enter__.return_value.text.return_value = []
+                result = c.fetch("+573151234567")
+
+    assert result.ok is True
+    assert result.data["carrier"] == "CLARO"
+    assert result.metadata["enriched"] is True
+
+
+def test_phone_fetch_no_numverify_key():
+    c = PhoneConnector()
+    with _patch2("modules.osint.connectors.phone.os.getenv", return_value=""):
+        with _patch2("duckduckgo_search.DDGS") as mock_ddgs:
+            mock_ddgs.return_value.__enter__.return_value.text.return_value = []
             result = c.fetch("+573001234567")
 
     assert result.ok is True
-    assert result.data["nombre"] == "CARLOS GOMEZ"
-    assert result.data["operador"] == "CLARO"
-    assert result.errors == []
+    assert result.metadata["enriched"] is False
 
 
-def test_truecaller_fetch_not_found():
-    c = TruecallerConnector()
-    with patch("modules.osint.connectors.truecaller.requests.get") as mock_get:
-        mock_get.return_value = MagicMock(status_code=200, json=lambda: {"data": []})
-        with patch("modules.osint.connectors.truecaller.os.getenv", return_value="test-key"):
-            result = c.fetch("+573009999999")
+from modules.osint.connectors import web_dork
 
-    assert result.ok is False
-    assert result.data == {}
+
+def test_web_dork_dedups_by_url():
+    rows = [
+        {"href": "https://a.com", "title": "A", "body": "ba"},
+        {"href": "https://a.com", "title": "A dup", "body": "dup"},
+        {"href": "https://b.com", "title": "B", "body": "bb"},
+    ]
+    with patch("modules.osint.connectors.web_dork.DDGS") as mock_ddgs:
+        mock_ddgs.return_value.__enter__.return_value.text.return_value = rows
+        results, errors = web_dork.run_dork(['"123"'], max_results=10, sleep_between=0)
+
+    urls = [r["url"] for r in results]
+    assert urls == ["https://a.com", "https://b.com"]
+    assert errors == []
+
+
+def test_web_dork_handles_ratelimit():
+    from duckduckgo_search.exceptions import DuckDuckGoSearchException
+    with patch("modules.osint.connectors.web_dork.DDGS") as mock_ddgs:
+        inst = mock_ddgs.return_value.__enter__.return_value
+        inst.text.side_effect = DuckDuckGoSearchException("ratelimit")
+        results, errors = web_dork.run_dork(['"x"'], max_results=5, sleep_between=0)
+
+    assert results == []
+    assert len(errors) == 1
