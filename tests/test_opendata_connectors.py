@@ -16,35 +16,56 @@ def test_simit_supported_types():
     assert "unknown" in c.supported_target_types
 
 
-def test_simit_fetch_document_ok():
+def test_simit_fetch_plate_ok():
     c = SimitConnector()
-    mock_rows = [
-        {
-            "nombre": "JUAN PEREZ",
-            "numero_identificacion": "12345678",
-            "placa": "ABC123",
-            "valor_a_pagar": "150000",
-            "estado": "PENDIENTE",
-            "fecha_infraccion": "2024-01-15",
-            "municipio": "BOGOTA",
-        }
-    ]
+    mock_rows = [{
+        "vigencia": "2019", "placa": "MIK715", "fecha_multa": "25/01/2019",
+        "valor_multa": "414058", "departamento": "Santander",
+        "ciudad": "Bucaramanga", "pagado_si_no": "SI",
+    }]
     with patch("modules.osint.connectors.simit.requests.get") as mock_get:
         mock_get.return_value = MagicMock(status_code=200, json=lambda: mock_rows)
-        result = c.fetch("12345678", target_type="document")
+        mock_get.return_value.raise_for_status = lambda: None
+        result = c.fetch("MIK715", target_type="plate")
 
     assert result.ok is True
     assert result.connector == "simit"
-    assert len(result.data["rows"]) == 1
-    assert result.data["rows"][0]["nombre"] == "JUAN PEREZ"
-    assert result.errors == []
+    row = result.data["rows"][0]
+    assert row["placa"] == "MIK715"
+    assert row["valor"] == "414058"
+    assert row["lugar"] == "Bucaramanga, Santander"
+    assert row["estado"] == "Pagada"
+    assert result.metadata["dataset"] == "72nf-y4v3"
+
+
+def test_simit_fetch_document_uses_comparendos_dataset():
+    c = SimitConnector()
+    mock_rows = [{
+        "identificacion": "12345678", "placa": "ABC123",
+        "fecha": "2020-03-10", "infraccion": "C29", "valor": "390000",
+    }]
+    captured = {}
+    def _fake_get(url, **kwargs):
+        captured["url"] = url
+        captured["where"] = kwargs["params"]["$where"]
+        m = MagicMock(status_code=200, json=lambda: mock_rows)
+        m.raise_for_status = lambda: None
+        return m
+    with patch("modules.osint.connectors.simit.requests.get", side_effect=_fake_get):
+        result = c.fetch("12345678", target_type="document")
+
+    assert "rfag-apa4" in captured["url"]
+    assert "identificacion='12345678'" in captured["where"]
+    assert result.ok is True
+    assert result.data["rows"][0]["identificacion"] == "12345678"
 
 
 def test_simit_fetch_no_results():
     c = SimitConnector()
     with patch("modules.osint.connectors.simit.requests.get") as mock_get:
         mock_get.return_value = MagicMock(status_code=200, json=lambda: [])
-        result = c.fetch("99999999", target_type="document")
+        mock_get.return_value.raise_for_status = lambda: None
+        result = c.fetch("XXX000", target_type="plate")
 
     assert result.ok is False
     assert result.data["rows"] == []
@@ -55,11 +76,17 @@ def test_simit_fetch_network_error():
     c = SimitConnector()
     with patch("modules.osint.connectors.simit.requests.get") as mock_get:
         mock_get.side_effect = req.RequestException("timeout")
-        result = c.fetch("12345678", target_type="document")
+        result = c.fetch("MIK715", target_type="plate")
 
     assert result.ok is False
     assert len(result.errors) == 1
     assert "timeout" in result.errors[0]
+
+
+def test_simit_build_where_sanitizes_quotes():
+    c = SimitConnector()
+    where = c._build_where("AB'C12", "plate")
+    assert "''" in where
 
 
 import os
