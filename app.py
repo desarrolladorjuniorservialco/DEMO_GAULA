@@ -1,6 +1,7 @@
 # app.py
 from dotenv import load_dotenv
 load_dotenv(override=False)
+load_dotenv(".env.local", override=False)
 
 from modules import create_app
 
