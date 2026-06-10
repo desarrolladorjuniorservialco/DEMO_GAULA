@@ -177,3 +177,59 @@ def test_web_dork_handles_ratelimit():
 
     assert results == []
     assert len(errors) == 1
+
+
+from modules.osint.connectors.rues import RuesConnector
+
+
+def test_rues_connector_name_and_types():
+    c = RuesConnector()
+    assert c.name == "rues"
+    assert "document" in c.supported_target_types
+    assert "name" in c.supported_target_types
+    assert c.needs_api_key is False
+
+
+def test_rues_fetch_ok():
+    c = RuesConnector()
+    payload = {"registros": [{
+        "razon_social": "COMERCIALIZADORA XYZ SAS",
+        "matricula": "0001234",
+        "estado_matricula": "ACTIVA",
+        "camara_comercio": "BOGOTA",
+        "nit": "900123456",
+    }]}
+    with patch("modules.osint.connectors.rues.requests.get") as mock_get:
+        mock_get.return_value = MagicMock(status_code=200, json=lambda: payload)
+        mock_get.return_value.raise_for_status = lambda: None
+        result = c.fetch("900123456", target_type="document")
+
+    assert result.ok is True
+    assert result.connector == "rues"
+    exp = result.data["expedientes"][0]
+    assert exp["razon_social"] == "COMERCIALIZADORA XYZ SAS"
+    assert exp["estado"] == "ACTIVA"
+
+
+def test_rues_fetch_no_results():
+    c = RuesConnector()
+    with patch("modules.osint.connectors.rues.requests.get") as mock_get:
+        mock_get.return_value = MagicMock(status_code=200, json=lambda: {"registros": []})
+        mock_get.return_value.raise_for_status = lambda: None
+        result = c.fetch("000", target_type="document")
+
+    assert result.ok is False
+    assert result.data["expedientes"] == []
+
+
+def test_rues_fetch_non_json_fails_gracefully():
+    c = RuesConnector()
+    def _raise_json():
+        raise ValueError("no json")
+    with patch("modules.osint.connectors.rues.requests.get") as mock_get:
+        mock_get.return_value = MagicMock(status_code=200, json=_raise_json)
+        mock_get.return_value.raise_for_status = lambda: None
+        result = c.fetch("900123456", target_type="document")
+
+    assert result.ok is False
+    assert len(result.errors) == 1
