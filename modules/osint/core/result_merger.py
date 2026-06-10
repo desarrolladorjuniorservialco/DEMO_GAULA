@@ -23,12 +23,17 @@ CONFIDENCE: dict[str, float] = {
     "whois":      0.80,
     "duckduckgo": 0.55,
     "playwright": 0.70,
+    "shodan":     0.90,
+    "virustotal": 0.95,
 }
 assert all(0.0 <= v <= 1.0 for v in CONFIDENCE.values()), "CONFIDENCE values must be in [0, 1]"
 
 # Conectores cubiertos por _normalize_collected() en engine.py — se tratan como
 # "legacy" y solo se usan como fallback si legacy no produjo datos.
-_LEGACY_CONNECTORS = frozenset({"github", "reddit", "facebook", "x", "tiktok", "ip", "domain", "plugins"})
+_LEGACY_CONNECTORS = frozenset({
+    "github", "reddit", "facebook", "x", "tiktok",
+    "instagram", "linkedin", "plugins",
+})
 
 
 class ResultMerger:
@@ -111,6 +116,15 @@ class ResultMerger:
 
         if name == "rdap":
             return cls._norm_rdap(data, conf)
+
+        if name == "phone":
+            return cls._norm_phone(data, conf)
+
+        if name == "shodan":
+            return cls._norm_shodan(data, conf)
+
+        if name == "virustotal":
+            return cls._norm_virustotal(data, conf)
 
         # --- Conectores legacy con fallback ---
 
@@ -321,6 +335,113 @@ class ResultMerger:
                         )
                     )
         return out
+
+    @staticmethod
+    def _norm_phone(data: dict[str, Any], conf: float) -> list[NormalizedResult]:
+        phone = data.get("phone_normalized") or data.get("phone_raw", "")
+        if not phone:
+            return []
+        carrier = data.get("carrier", {})
+        out: list[NormalizedResult] = [
+            NormalizedResult(
+                source="phone",
+                entity_type="phone",
+                value=phone,
+                confidence=conf,
+                url="",
+                metadata={
+                    "phone_raw":  data.get("phone_raw", phone),
+                    "carrier":    carrier.get("carrier", "Desconocido"),
+                    "country":    carrier.get("country", "Unknown"),
+                    "line_type":  carrier.get("line_type", "unknown"),
+                    "prefix":     carrier.get("prefix", ""),
+                },
+            )
+        ]
+        for dr in data.get("dork_results", []) or []:
+            url = dr.get("url", "")
+            if url:
+                out.append(
+                    NormalizedResult(
+                        source="phone_dork",
+                        entity_type="url",
+                        value=url,
+                        confidence=0.45,
+                        url=url,
+                        metadata={
+                            "query":   dr.get("query", "")[:80],
+                            "title":   dr.get("title", "")[:100],
+                            "snippet": dr.get("snippet", "")[:200],
+                        },
+                    )
+                )
+        return out
+
+    @staticmethod
+    def _norm_shodan(data: dict[str, Any], conf: float) -> list[NormalizedResult]:
+        ip = data.get("ip", "")
+        if not ip:
+            return []
+        safe_ip = url_quote(str(ip), safe=".")
+        return [
+            NormalizedResult(
+                source="shodan",
+                entity_type="ip",
+                value=str(ip),
+                confidence=conf,
+                url=f"https://www.shodan.io/host/{safe_ip}",
+                metadata={
+                    "org":          data.get("org"),
+                    "isp":          data.get("isp"),
+                    "asn":          data.get("asn"),
+                    "country_code": data.get("country_code"),
+                    "city":         data.get("city"),
+                    "os":           data.get("os"),
+                    "ports":        data.get("ports", []),
+                    "vulns":        data.get("vulns", []),
+                    "hostnames":    data.get("hostnames", []),
+                    "tags":         data.get("tags", []),
+                },
+            )
+        ]
+
+    @staticmethod
+    def _norm_virustotal(data: dict[str, Any], conf: float) -> list[NormalizedResult]:
+        target = data.get("target", "")
+        target_type = data.get("target_type", "unknown")
+        if not target:
+            return []
+        _GUI = {
+            "ip":     f"https://www.virustotal.com/gui/ip-address/{url_quote(target, safe='.')}",
+            "domain": f"https://www.virustotal.com/gui/domain/{url_quote(target, safe='.-')}",
+            "hash":   f"https://www.virustotal.com/gui/file/{target}",
+            "url":    f"https://www.virustotal.com/gui/url/{target}",
+        }
+        gui_url = _GUI.get(target_type, "")
+        malicious = data.get("malicious", 0) or 0
+        suspicious = data.get("suspicious", 0) or 0
+        # Escalada de confianza: si hay detecciones, resultado más relevante
+        adjusted_conf = min(conf + 0.03, 1.0) if (malicious + suspicious) > 0 else conf
+        return [
+            NormalizedResult(
+                source="virustotal",
+                entity_type=target_type,
+                value=target,
+                confidence=adjusted_conf,
+                url=gui_url,
+                metadata={
+                    "malicious":  malicious,
+                    "suspicious": suspicious,
+                    "harmless":   data.get("harmless", 0),
+                    "undetected": data.get("undetected", 0),
+                    "reputation": data.get("reputation"),
+                    "asn":        data.get("asn"),
+                    "as_owner":   data.get("as_owner"),
+                    "country":    data.get("country"),
+                    "tags":       data.get("tags", []),
+                },
+            )
+        ]
 
     @staticmethod
     def _norm_github_fallback(data: dict[str, Any], conf: float) -> list[NormalizedResult]:

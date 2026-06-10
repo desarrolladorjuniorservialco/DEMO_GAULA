@@ -198,7 +198,75 @@
   </section>
   {% endif %}
 
-  {% if not github_profile and not reddit_profile and not facebook_data and not x_data and not tiktok_data and not errors %}
+  {% if instagram_data %}
+  <section class="result-section">
+    <h3 class="section-title"><span class="section-tag" style="color:#E1306C">INSTAGRAM</span> <span class="badge badge-dork">DuckDuckGo Dork</span></h3>
+    <p class="dork-notice">site:instagram.com "{{ username }}" → {{ instagram_data.total_found }} perfiles en {{ instagram_data.raw_count }} resultados.</p>
+    {% if instagram_data.profiles %}
+    <div class="table-wrap">
+      <table class="data-table">
+        <thead><tr><th>Username</th><th>URL</th><th>Seguidores</th><th>Posts</th></tr></thead>
+        <tbody>
+          {% for p in instagram_data.profiles %}
+          <tr>
+            <td style="color:#E1306C">@{{ p.username }}</td>
+            <td><a href="{{ p.url }}" target="_blank" rel="noopener" class="ext-link">{{ p.url }}</a></td>
+            <td>{{ p.follower_hint or '—' }}</td>
+            <td>{{ p.posts_hint or '—' }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}<p style="color:#4a5a6a;font-size:.77rem">Sin perfiles identificados.</p>{% endif %}
+    {% if instagram_data.saved_nodes %}<p style="font-size:.75rem;color:#4bc87a">{{ instagram_data.saved_nodes }} nodos guardados.</p>{% endif %}
+  </section>
+  {% endif %}
+
+  {% if linkedin_data %}
+  <section class="result-section">
+    <h3 class="section-title"><span class="section-tag" style="color:#0A66C2">LINKEDIN</span> <span class="badge badge-dork">DuckDuckGo Dork</span></h3>
+    <p class="dork-notice">site:linkedin.com "{{ username }}" → {{ linkedin_data.total_found }} entidades en {{ linkedin_data.raw_count }} resultados.</p>
+    {% if linkedin_data.profiles %}
+    <p class="subsection-title">Perfiles</p>
+    <div class="table-wrap">
+      <table class="data-table">
+        <thead><tr><th>Perfil</th><th>URL</th><th>Cargo</th><th>Conexiones</th></tr></thead>
+        <tbody>
+          {% for p in linkedin_data.profiles %}
+          <tr>
+            <td style="color:#0A66C2">{{ p.title or p.entity_id }}</td>
+            <td><a href="{{ p.url }}" target="_blank" rel="noopener" class="ext-link">ver perfil</a></td>
+            <td class="col-desc">{{ p.position_hint or '—' }}</td>
+            <td>{{ p.connections_hint or '—' }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% endif %}
+    {% if linkedin_data.companies %}
+    <p class="subsection-title">Empresas</p>
+    <div class="table-wrap">
+      <table class="data-table">
+        <thead><tr><th>Empresa</th><th>URL</th><th>Snippet</th></tr></thead>
+        <tbody>
+          {% for c in linkedin_data.companies %}
+          <tr>
+            <td style="color:#0A66C2">{{ c.title or c.entity_id }}</td>
+            <td><a href="{{ c.url }}" target="_blank" rel="noopener" class="ext-link">ver empresa</a></td>
+            <td class="col-desc">{{ (c.bio_snippet or '')[:80] }}{% if c.bio_snippet and c.bio_snippet|length > 80 %}…{% endif %}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% endif %}
+    {% if not linkedin_data.profiles and not linkedin_data.companies %}<p style="color:#4a5a6a;font-size:.77rem">Sin entidades identificadas.</p>{% endif %}
+  </section>
+  {% endif %}
+
+  {% if not github_profile and not reddit_profile and not facebook_data and not x_data and not tiktok_data and not instagram_data and not linkedin_data and not errors %}
   <div class="empty-state"><p>Sin resultados para <strong>{{ username }}</strong>.</p></div>
   {% endif %}
 </div>

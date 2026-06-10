@@ -226,8 +226,7 @@ def graph():
 
 
 def _collect_all_data_lite(query: str, source: str) -> dict:
-    from modules.osint.social.routes   import _fetch_github, _fetch_reddit
-    from modules.osint.opendata.routes import _fetch_ip_geo, _fetch_domain_rdap, _parse_rdap
+    from modules.osint.social.routes import _fetch_github, _fetch_reddit
 
     result = {
         "github_profile": None, "github_repos": None,
@@ -244,19 +243,6 @@ def _collect_all_data_lite(query: str, source: str) -> dict:
     if source in ("reddit", "social", "all"):
         try:
             result["reddit_profile"], _, _ = _fetch_reddit(query)
-        except Exception:
-            pass
-
-    if source in ("ip", "network", "government", "all"):
-        try:
-            result["ip_data"], _ = _fetch_ip_geo(query)
-        except Exception:
-            pass
-
-    if source in ("domain", "network", "government", "all"):
-        try:
-            rdap_raw, _         = _fetch_domain_rdap(query)
-            result["rdap_data"] = _parse_rdap(rdap_raw)
         except Exception:
             pass
 
