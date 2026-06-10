@@ -29,22 +29,27 @@ def test_opendata_lookup_redirects_unauthenticated(app):
 def test_opendata_lookup_document(app):
     simit_result = ConnectorResult(
         connector="simit", ok=True,
-        data={"rows": [{"nombre": "JUAN", "placa": "ABC123", "valor_a_pagar": "100000",
-                        "estado": "PENDIENTE", "fecha_infraccion": "2024-01-01",
-                        "municipio": "BOGOTA", "numero_identificacion": "12345678"}]},
-        errors=[], metadata={"latency_ms": 50, "count": 1},
+        data={"rows": [{"placa": "ABC123", "fecha": "2020-03-10", "valor": "390000",
+                        "lugar": "Bogota", "estado": "Pendiente", "vigencia": "2020",
+                        "identificacion": "12345678"}]},
+        errors=[], metadata={"latency_ms": 50, "count": 1, "dataset": "rfag-apa4"},
     )
-    tc_result = ConnectorResult(
-        connector="truecaller", ok=False, data={}, errors=[],
-        metadata={"status": "unconfigured"},
+    rues_result = ConnectorResult(
+        connector="rues", ok=True,
+        data={"expedientes": [{"razon_social": "XYZ SAS", "matricula": "0001",
+                               "estado": "ACTIVA", "camara": "BOGOTA", "nit": "12345678"}]},
+        errors=[], metadata={"count": 1},
     )
-    with patch("modules.osint.opendata.routes._run_connectors",
-               return_value={"simit": simit_result, "truecaller": tc_result}):
+    ctx = {"simit": simit_result, "rues": rues_result, "phone": None,
+           "dork": ([], [])}
+    with patch("modules.osint.opendata.routes._gather", return_value=ctx):
         client = _auth_client(app)
         resp = client.get("/osint/opendata/lookup?q=12345678")
 
     assert resp.status_code == 200
-    assert b"JUAN" in resp.data
+    body = resp.data.decode("utf-8")
+    assert "ABC123" in body
+    assert "XYZ SAS" in body
 
 
 def test_opendata_detect_type_document():
@@ -66,6 +71,11 @@ def test_opendata_detect_type_phone():
     assert _detect_type("3001234567") == "phone"
 
 
+def test_opendata_detect_type_name():
+    from modules.osint.opendata.routes import _detect_type
+    assert _detect_type("JUAN CARLOS PEREZ") == "name"
+
+
 def test_opendata_detect_type_unknown():
     from modules.osint.opendata.routes import _detect_type
-    assert _detect_type("JUAN CARLOS PEREZ") == "unknown"
+    assert _detect_type("???") == "unknown"
