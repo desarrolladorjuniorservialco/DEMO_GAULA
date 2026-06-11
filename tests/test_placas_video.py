@@ -102,3 +102,30 @@ def test_conteo_misma_placa_lejos_en_el_tiempo_cuenta_dos_veces():
     assert ev is not None
     assert c.vehiculos == 2
     assert c.placas_leidas == 2
+
+
+def test_conteo_vehiculos_no_va_negativo():
+    """cerrar_track con fusión no puede hacer vehiculos < 0."""
+    from modules.placas.video.plate_votes import ConteoVideo
+    c = ConteoVideo(gap_fusion_s=10.0)
+    # No se llamó confirmar_vehiculo, vehiculos=0
+    ev = c.cerrar_track(1, "ABC123", "CARRO", 0.9, primer_ts=1.0, ultimo_ts=3.0)
+    # Primera vez: no hay previo → cuenta normalmente
+    assert c.placas_leidas == 1
+    # Segunda llamada con la misma placa en gap → fusión, no negativo
+    c2 = ConteoVideo(gap_fusion_s=10.0)
+    c2.confirmar_vehiculo(1, 1.0)
+    c2.cerrar_track(1, "ABC123", "CARRO", 0.9, primer_ts=1.0, ultimo_ts=3.0)
+    c2.confirmar_vehiculo(2, 3.5)
+    c2.cerrar_track(2, "ABC123", "CARRO", 0.8, primer_ts=3.5, ultimo_ts=5.0)
+    assert c2.vehiculos >= 0  # nunca negativo
+
+
+def test_conteo_confianza_invalida_no_crashea():
+    """confianza NaN o non-numeric no crashea el sistema."""
+    from modules.placas.video.plate_votes import ConteoVideo
+    c = ConteoVideo()
+    c.confirmar_vehiculo(1, 1.0)
+    ev = c.cerrar_track(1, "ABC123", "CARRO", float("nan"), primer_ts=1.0, ultimo_ts=3.0)
+    assert ev is not None
+    assert ev["confianza"] == 0.0  # NaN convertido a 0.0

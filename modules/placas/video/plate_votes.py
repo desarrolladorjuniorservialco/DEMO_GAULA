@@ -84,14 +84,22 @@ class ConteoVideo:
 
             previo = self._placas_vistas.get(placa)
             if previo and primer_ts - previo[1] < self._gap:
-                self.vehiculos -= 1
+                if self.vehiculos > 0:
+                    self.vehiculos -= 1
                 self._placas_vistas[placa] = (previo[0], max(previo[1], ultimo_ts))
                 return None
+
+            try:
+                conf_val = float(confianza)
+                if not (0.0 <= conf_val <= 1.0):
+                    conf_val = max(0.0, min(1.0, conf_val)) if conf_val == conf_val else 0.0
+            except (ValueError, TypeError):
+                conf_val = 0.0
 
             self._placas_vistas[placa] = (primer_ts, ultimo_ts)
             self.placas_leidas += 1
             ev = {"tipo": "placa", "track_id": track_id, "placa": placa,
-                  "tipo_vehiculo": tipo, "confianza": round(float(confianza), 2),
+                  "tipo_vehiculo": tipo, "confianza": round(conf_val, 2),
                   "ts_s": round(primer_ts, 2)}
             self.eventos.append(ev)
             return ev
