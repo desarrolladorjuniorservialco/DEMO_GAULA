@@ -223,3 +223,21 @@ def test_job_full_result_incluye_eventos():
     job.eventos.append({"tipo": "placa", "placa": "ABC123", "ts_s": 1.0})
     fr = job.full_result()
     assert fr["eventos"][0]["placa"] == "ABC123"
+
+
+# ── Detector: modo placas / fallback ──────────────────────────────────────────
+
+def test_detector_modo_fallback_sin_modelo(monkeypatch, tmp_path):
+    from modules.placas.video import detector
+    monkeypatch.setattr(detector, "MODELO_PLACAS", str(tmp_path / "no-existe.pt"))
+    monkeypatch.setattr(detector, "_MODO", None)
+    assert detector.modo() == "fallback"
+
+
+def test_detector_modo_placas_con_modelo(monkeypatch, tmp_path):
+    from modules.placas.video import detector
+    modelo = tmp_path / "placas-yolov8n.pt"
+    modelo.write_bytes(b"fake")
+    monkeypatch.setattr(detector, "MODELO_PLACAS", str(modelo))
+    monkeypatch.setattr(detector, "_MODO", None)
+    assert detector.modo() == "placas"
