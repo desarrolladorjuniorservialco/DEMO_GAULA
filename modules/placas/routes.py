@@ -30,6 +30,17 @@ def analizar():
     return jsonify(resultado)
 
 
+@placas_bp.route("/analizar-frame", methods=["POST"])
+@login_required
+def analizar_frame():
+    """Recibe un frame JPEG del browser y devuelve la placa detectada (sin paneles)."""
+    if "frame" not in request.files:
+        return jsonify({"ok": False, "error": "No se envió frame"}), 400
+    resultado = engine.reconocer_placa(request.files["frame"].read())
+    resultado.pop("paneles", None)
+    return jsonify(resultado)
+
+
 # ── Video ─────────────────────────────────────────────────────────────────────
 
 _UPLOAD_FOLDER = os.path.join(os.path.dirname(__file__), "..", "..", "uploads", "videos")
@@ -115,11 +126,15 @@ def video_stream(job_id: str):
         return jsonify({"ok": False, "error": "Job no encontrado"}), 404
 
     def _generate():
+        cursor = 0
         while True:
-            yield f"data: {json.dumps(job.summary())}\n\n"
+            nuevos = job.eventos[cursor:]
+            cursor += len(nuevos)
+            payload = {**job.summary(), "eventos": nuevos}
+            yield f"data: {json.dumps(payload)}\n\n"
             if job.estado in ("done", "error"):
                 break
-            time.sleep(1.0)
+            time.sleep(0.5)
 
     return Response(
         stream_with_context(_generate()),

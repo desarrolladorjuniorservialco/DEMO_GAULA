@@ -308,3 +308,55 @@ def test_pipeline_sin_lectura_cuando_ocr_falla(tmp_path):
     assert job.vehiculos == 1
     assert job.sin_lectura == 1
     assert job.placas_leidas == 0
+
+
+# ── Rutas: status y eventos ───────────────────────────────────────────────────
+
+def _auth_client(app):
+    client = app.test_client()
+    with client.session_transaction() as sess:
+        sess["user"] = "analista"
+        sess["role"] = "analista"
+        sess["name"] = "Analista Test"
+    return client
+
+
+def test_video_status_expone_contadores(app):
+    from modules.placas.video.job_store import job_store
+    job = job_store.create("")
+    job.estado = "processing"
+    job.vehiculos = 2
+    job.placas_leidas = 1
+    client = _auth_client(app)
+    resp = client.get(f"/placas/video/{job.job_id}/status")
+    body = resp.get_json()
+    assert body["vehiculos"] == 2
+    assert body["placas_leidas"] == 1
+    job_store.delete(job.job_id)
+
+
+def test_video_results_incluye_eventos(app):
+    from modules.placas.video.job_store import job_store
+    job = job_store.create("")
+    job.estado = "done"
+    job.eventos.append({"tipo": "placa", "placa": "ABC123", "ts_s": 2.0})
+    client = _auth_client(app)
+    resp = client.get(f"/placas/video/{job.job_id}/results")
+    body = resp.get_json()
+    assert body["eventos"][0]["placa"] == "ABC123"
+    job_store.delete(job.job_id)
+
+
+def test_video_stream_emite_eventos_incrementales(app):
+    """El SSE incluye los eventos nuevos en cada mensaje."""
+    import json as _json
+    from modules.placas.video.job_store import job_store
+    job = job_store.create("")
+    job.estado = "done"           # un solo mensaje y cierra
+    job.eventos.append({"tipo": "vehiculo", "track_id": 1, "ts_s": 0.5})
+    client = _auth_client(app)
+    resp = client.get(f"/placas/video/{job.job_id}/stream")
+    primera_linea = resp.data.decode().split("\n")[0]
+    payload = _json.loads(primera_linea.removeprefix("data: "))
+    assert payload["eventos"][0]["tipo"] == "vehiculo"
+    job_store.delete(job.job_id)
