@@ -177,3 +177,25 @@ def test_buffer_descartar_libera_memoria():
     buf.agregar(1, _crop_nitido())
     buf.descartar(1)
     assert buf.mejores(1) == []
+
+
+# ── ContadorHits ──────────────────────────────────────────────────────────────
+
+def test_hits_confirma_tras_minimo():
+    from modules.placas.video.tracker import ContadorHits
+    h = ContadorHits(min_hits=3)
+    h.registrar([7])
+    h.registrar([7])
+    assert h.es_confirmado(7) is False
+    h.registrar([7])
+    assert h.es_confirmado(7) is True
+
+
+def test_hits_tracks_independientes():
+    from modules.placas.video.tracker import ContadorHits
+    h = ContadorHits(min_hits=2)
+    h.registrar([1, 2])
+    h.registrar([1])
+    assert h.es_confirmado(1) is True
+    assert h.es_confirmado(2) is False
+    assert h.es_confirmado(99) is False

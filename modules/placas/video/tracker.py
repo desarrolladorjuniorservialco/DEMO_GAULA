@@ -20,10 +20,29 @@ class TrackedObject:
         self.x1, self.y1, self.x2, self.y2, self.conf = x1, y1, x2, y2, conf
 
 
+MIN_HITS_CONFIRMACION = 3
+
+
+class ContadorHits:
+    """Cuenta apariciones por track_id; un track se confirma tras min_hits."""
+
+    def __init__(self, min_hits: int = MIN_HITS_CONFIRMACION) -> None:
+        self._min = min_hits
+        self._hits: dict[int, int] = {}
+
+    def registrar(self, track_ids: list[int]) -> None:
+        for tid in track_ids:
+            self._hits[tid] = self._hits.get(tid, 0) + 1
+
+    def es_confirmado(self, track_id: int) -> bool:
+        return self._hits.get(track_id, 0) >= self._min
+
+
 class PlacaTracker:
     """Wrapper sobre supervision ByteTrack. Stateful — una instancia por job de video."""
 
     def __init__(self) -> None:
+        self.hits = ContadorHits()
         self._ok = False
         self._next_id = 0
         try:
@@ -53,6 +72,7 @@ class PlacaTracker:
             x1, y1, x2, y2 = (int(v) for v in tracked.xyxy[i])
             conf = float(tracked.confidence[i]) if tracked.confidence is not None else 0.5
             out.append(TrackedObject(int(tid), x1, y1, x2, y2, conf))
+        self.hits.registrar([o.track_id for o in out])
         return out
 
     def _fallback(self, detections: list[Detection]) -> list[TrackedObject]:
