@@ -129,3 +129,51 @@ def test_conteo_confianza_invalida_no_crashea():
     ev = c.cerrar_track(1, "ABC123", "CARRO", float("nan"), primer_ts=1.0, ultimo_ts=3.0)
     assert ev is not None
     assert ev["confianza"] == 0.0  # NaN convertido a 0.0
+
+
+# ── TrackCropBuffer ───────────────────────────────────────────────────────────
+
+def _crop_nitido(h=40, w=120):
+    """Recorte sintético con alta varianza Laplaciana (ruido)."""
+    import numpy as np
+    rng = np.random.default_rng(42)
+    return rng.integers(0, 255, size=(h, w, 3), dtype=np.uint8)
+
+
+def _crop_borroso(h=40, w=120):
+    """Recorte sintético plano (varianza Laplaciana ~0)."""
+    import numpy as np
+    return np.full((h, w, 3), 128, dtype=np.uint8)
+
+
+def test_buffer_descarta_recortes_muy_pequenos():
+    from modules.placas.video.best_frames import TrackCropBuffer
+    buf = TrackCropBuffer()
+    buf.agregar(1, _crop_nitido(h=8))          # alto < 12 px
+    assert buf.mejores(1) == []
+
+
+def test_buffer_prefiere_nitido_sobre_borroso():
+    from modules.placas.video.best_frames import TrackCropBuffer
+    buf = TrackCropBuffer(k=2)
+    buf.agregar(1, _crop_borroso())
+    buf.agregar(1, _crop_nitido())
+    mejores = buf.mejores(1, n=1)
+    assert len(mejores) == 1
+    assert mejores[0].std() > 5   # el mejor debe ser el nítido
+
+
+def test_buffer_limita_a_k():
+    from modules.placas.video.best_frames import TrackCropBuffer
+    buf = TrackCropBuffer(k=3)
+    for _ in range(10):
+        buf.agregar(1, _crop_nitido())
+    assert len(buf.mejores(1, n=99)) == 3
+
+
+def test_buffer_descartar_libera_memoria():
+    from modules.placas.video.best_frames import TrackCropBuffer
+    buf = TrackCropBuffer()
+    buf.agregar(1, _crop_nitido())
+    buf.descartar(1)
+    assert buf.mejores(1) == []
