@@ -18,7 +18,7 @@ class Config:
         "pool_recycle": 1800,
     }
     SQLALCHEMY_TRACK_MODIFICATIONS = False
-    MAX_CONTENT_LENGTH = 10 * 1024 * 1024  # 10 MB
+    MAX_CONTENT_LENGTH = int(os.getenv("MAX_VIDEO_MB", "200")) * 1024 * 1024
 
 
 class TestConfig(Config):

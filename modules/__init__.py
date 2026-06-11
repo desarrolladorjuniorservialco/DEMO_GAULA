@@ -13,6 +13,13 @@ def create_app(config=None):
 
     db.init_app(app)
 
+    from flask import jsonify
+
+    @app.errorhandler(413)
+    def request_too_large(e):
+        lim = app.config.get("MAX_CONTENT_LENGTH", 0) // 1024 // 1024
+        return jsonify({"ok": False, "error": f"Archivo supera el límite de {lim} MB"}), 413
+
     @app.after_request
     def disable_cache(response):
         response.headers["Cache-Control"] = "no-store, no-cache, must-revalidate, max-age=0"
