@@ -199,3 +199,27 @@ def test_hits_tracks_independientes():
     assert h.es_confirmado(1) is True
     assert h.es_confirmado(2) is False
     assert h.es_confirmado(99) is False
+
+
+# ── VideoJob: eventos y contadores ────────────────────────────────────────────
+
+def test_job_summary_incluye_contadores():
+    from modules.placas.video.schemas import VideoJob
+    job = VideoJob(job_id="abc")
+    job.vehiculos = 3
+    job.placas_leidas = 2
+    job.sin_lectura = 1
+    job.modelo_detector = "placas"
+    s = job.summary()
+    assert s["vehiculos"] == 3
+    assert s["placas_leidas"] == 2
+    assert s["sin_lectura"] == 1
+    assert s["modelo_detector"] == "placas"
+
+
+def test_job_full_result_incluye_eventos():
+    from modules.placas.video.schemas import VideoJob
+    job = VideoJob(job_id="abc")
+    job.eventos.append({"tipo": "placa", "placa": "ABC123", "ts_s": 1.0})
+    fr = job.full_result()
+    assert fr["eventos"][0]["placa"] == "ABC123"

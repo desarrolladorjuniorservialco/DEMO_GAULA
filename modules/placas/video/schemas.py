@@ -53,6 +53,11 @@ class VideoJob:
     error: str | None = None
     video_path: str = ""
     creado_en: float = field(default_factory=time.time)
+    eventos: list[dict] = field(default_factory=list)
+    vehiculos: int = 0
+    placas_leidas: int = 0
+    sin_lectura: int = 0
+    modelo_detector: str = ""
 
     def summary(self) -> dict[str, Any]:
         return {
@@ -63,11 +68,16 @@ class VideoJob:
             "duracion_s": round(self.duracion_s, 2),
             "total_frames": self.total_frames,
             "frames_procesados": self.frames_procesados,
+            "vehiculos": self.vehiculos,
+            "placas_leidas": self.placas_leidas,
+            "sin_lectura": self.sin_lectura,
+            "modelo_detector": self.modelo_detector,
             "error": self.error,
         }
 
     def full_result(self) -> dict[str, Any]:
         return {
             **self.summary(),
+            "eventos": list(self.eventos),
             "timeline": [r.as_dict() for r in self.resultados],
         }
