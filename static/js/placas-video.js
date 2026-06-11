@@ -1,106 +1,42 @@
 // static/js/placas-video.js
-// Canvas overlay + sincronización con video HTML5 para reconocimiento de placas
+// Sube el video al servidor para análisis completo (todos los frames) y muestra
+// los resultados en vivo vía SSE mientras el video se reproduce localmente.
 (function () {
   "use strict";
 
-  // ── Estado ──────────────────────────────────────────────────────────────────
-  let timeline = [];       // [{ts_ms, frame, detecciones:[...]}]
-  let jobId = null;
-  let eventSource = null;
+  // ── Estado ───────────────────────────────────────────────────────────────────
   let videoFile = null;
-  const trackColors = {};  // track_id -> color CSS
+  let jobId     = null;
+  let evtSource = null;
+  let analyzing = false;
 
-  // ── DOM ─────────────────────────────────────────────────────────────────────
-  const dropZone     = document.getElementById("drop-zone");
-  const videoInput   = document.getElementById("video-input");
-  const dropInner    = document.getElementById("drop-inner");
-  const dropFileName = document.getElementById("drop-file-name");
-  const btnAnalizar  = document.getElementById("btn-analizar");
-  const progressWrap = document.getElementById("pv-progress-wrap");
-  const progressBar  = document.getElementById("progress-bar");
-  const statusLabel  = document.getElementById("status-label");
-  const statusPct    = document.getElementById("status-pct");
-  const bannerError  = document.getElementById("banner-error");
-  const playerWrap   = document.getElementById("pv-player-wrap");
-  const videoEl      = document.getElementById("placas-video");
-  const canvas       = document.getElementById("placas-canvas");
-  const ctx          = canvas.getContext("2d");
-  const resultsPanel = document.getElementById("pv-results-panel");
-  const placasList   = document.getElementById("placas-list");
-
-  // ── Helpers de color ─────────────────────────────────────────────────────────
-  function colorParaTrack(trackId) {
-    if (!trackColors[trackId]) {
-      const hue = (trackId * 47) % 360;
-      trackColors[trackId] = `hsl(${hue}, 90%, 55%)`;
-    }
-    return trackColors[trackId];
-  }
-
-  // ── Búsqueda binaria en timeline ──────────────────────────────────────────────
-  function buscarFrame(ts_ms) {
-    if (!timeline.length) return null;
-    let lo = 0, hi = timeline.length - 1, best = timeline[0];
-    while (lo <= hi) {
-      const mid = (lo + hi) >> 1;
-      if (Math.abs(timeline[mid].ts_ms - ts_ms) < Math.abs(best.ts_ms - ts_ms)) {
-        best = timeline[mid];
-      }
-      if (timeline[mid].ts_ms < ts_ms) lo = mid + 1;
-      else hi = mid - 1;
-    }
-    return best;
-  }
-
-  // ── Canvas: dimensiones y dibujo ──────────────────────────────────────────────
-  function syncCanvasSize() {
-    const rect = videoEl.getBoundingClientRect();
-    canvas.width  = rect.width;
-    canvas.height = rect.height;
-  }
-
-  function dibujarOverlay() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    if (!timeline.length) return;
-
-    const ts_ms = Math.round(videoEl.currentTime * 1000);
-    const frame = buscarFrame(ts_ms);
-    if (!frame || Math.abs(frame.ts_ms - ts_ms) > 500) return;
-
-    const W = canvas.width, H = canvas.height;
-
-    for (const det of frame.detecciones) {
-      const [x1n, y1n, x2n, y2n] = det.bbox;
-      const x = x1n * W, y = y1n * H;
-      const w = (x2n - x1n) * W, h = (y2n - y1n) * H;
-      const color = colorParaTrack(det.track_id);
-
-      ctx.strokeStyle = color;
-      ctx.lineWidth = det.nuevo ? 3 : 2;
-      ctx.strokeRect(x, y, w, h);
-
-      const label = det.placa || ("T-" + det.track_id);
-      ctx.font = "bold 12px 'IBM Plex Mono', monospace";
-      const tw = ctx.measureText(label).width + 10;
-      ctx.fillStyle = color;
-      const ly = y - 22 < 0 ? y + h + 2 : y - 2;
-      ctx.fillRect(x, ly - 18, tw, 20);
-      ctx.fillStyle = "#000";
-      ctx.fillText(label, x + 5, ly - 3);
-    }
-  }
+  // ── DOM ──────────────────────────────────────────────────────────────────────
+  const $ = (id) => document.getElementById(id);
+  const dropZone     = $("drop-zone");
+  const videoInput   = $("video-input");
+  const dropInner    = $("drop-inner");
+  const dropFileName = $("drop-file-name");
+  const btnAnalizar  = $("btn-analizar");
+  const progressWrap = $("pv-progress-wrap");
+  const progressBar  = $("progress-bar");
+  const statusLabel  = $("status-label");
+  const statusPct    = $("status-pct");
+  const countersEl   = $("pv-counters");
+  const bannerError  = $("banner-error");
+  const playerWrap   = $("pv-player-wrap");
+  const videoEl      = $("placas-video");
+  const resultsPanel = $("pv-results-panel");
+  const placasList   = $("placas-list");
+  const emptyMsg     = $("pv-empty-msg");
 
   // ── Drop zone ─────────────────────────────────────────────────────────────────
   dropZone.addEventListener("click", (e) => {
     if (e.target.closest("label")) return;
     videoInput.click();
   });
-
   videoInput.addEventListener("change", () => {
-    const f = videoInput.files[0];
-    if (f) seleccionarArchivo(f);
+    if (videoInput.files[0]) seleccionarArchivo(videoInput.files[0]);
   });
-
   dropZone.addEventListener("dragover", (e) => {
     e.preventDefault();
     dropZone.classList.add("drag-over");
@@ -114,156 +50,194 @@
   });
 
   function seleccionarArchivo(file) {
-    const MAX = 200 * 1024 * 1024;
-    if (file.size > MAX) {
+    if (file.size > 200 * 1024 * 1024) {
       mostrarError("El video supera el límite de 200 MB");
       return;
     }
+    cerrarStream();
+    analyzing = false;
     videoFile = file;
-    dropInner.style.display = "none";
-    dropFileName.textContent = file.name + " (" + (file.size / 1024 / 1024).toFixed(1) + " MB)";
-    dropFileName.style.display = "block";
-    btnAnalizar.disabled = false;
+    jobId = null;
+    placasList.innerHTML = "";
     ocultarError();
+
+    dropInner.style.display = "none";
+    dropFileName.textContent =
+      file.name + " (" + (file.size / 1024 / 1024).toFixed(1) + " MB)";
+    dropFileName.style.display = "block";
+
+    videoEl.src = URL.createObjectURL(file);
+    playerWrap.style.display = "block";
+    resultsPanel.style.display = "block";
+    if (emptyMsg) emptyMsg.style.display = "block";
+
+    btnAnalizar.disabled = false;
+    btnAnalizar.textContent = "Iniciar análisis";
+    progressWrap.style.display = "none";
+    if (countersEl) countersEl.textContent = "";
   }
 
-  // ── Upload y análisis ─────────────────────────────────────────────────────────
-  btnAnalizar.addEventListener("click", async () => {
-    if (!videoFile) return;
-    btnAnalizar.disabled = true;
-    ocultarError();
-    resetTimeline();
-
-    const fd = new FormData();
-    fd.append("video", videoFile);
-
-    progressWrap.style.display = "block";
-    setStatus("Subiendo video…", 0);
-
-    let res, data;
-    try {
-      res  = await fetch("/placas/video/upload", { method: "POST", body: fd });
-      data = await res.json();
-    } catch (err) {
-      mostrarError("Error de red: " + err.message);
-      btnAnalizar.disabled = false;
-      return;
-    }
-
-    if (!data.ok) {
-      mostrarError(data.error || "Error desconocido");
-      btnAnalizar.disabled = false;
-      return;
-    }
-
-    jobId = data.job_id;
-
-    videoEl.src = URL.createObjectURL(videoFile);
-    playerWrap.style.display = "block";
-    syncCanvasSize();
-
-    suscribirSSE(jobId);
+  // ── Análisis ─────────────────────────────────────────────────────────────────
+  btnAnalizar.addEventListener("click", () => {
+    if (!videoFile || analyzing) return;
+    iniciarAnalisis();
   });
 
-  function suscribirSSE(jid) {
-    if (eventSource) eventSource.close();
-    eventSource = new EventSource(`/placas/video/${jid}/stream`);
-
-    eventSource.onmessage = (e) => {
-      const st  = JSON.parse(e.data);
-      const pct = Math.round(st.progreso * 100);
-      setStatus(
-        st.estado === "processing" ? "Analizando frames…" :
-        st.estado === "done"       ? "Análisis completo" :
-        st.estado === "error"      ? "Error en análisis" : st.estado,
-        pct
-      );
-      if (st.estado === "done")  { eventSource.close(); cargarResultados(jid); }
-      if (st.estado === "error") {
-        eventSource.close();
-        mostrarError(st.error || "Error en el pipeline");
-        btnAnalizar.disabled = false;
-      }
-    };
-
-    eventSource.onerror = () => {
-      eventSource.close();
-      pollStatus(jid);
-    };
-  }
-
-  async function pollStatus(jid) {
-    while (true) {
-      await new Promise(r => setTimeout(r, 2000));
-      try {
-        const r  = await fetch(`/placas/video/${jid}/status`);
-        const st = await r.json();
-        if (!st.ok) break;
-        setStatus("Analizando…", Math.round(st.progreso * 100));
-        if (st.estado === "done")  { cargarResultados(jid); break; }
-        if (st.estado === "error") { mostrarError(st.error || "Error"); break; }
-      } catch (_) { break; }
-    }
-  }
-
-  async function cargarResultados(jid) {
-    try {
-      const r    = await fetch(`/placas/video/${jid}/results`);
-      const data = await r.json();
-      if (!data.ok) return;
-      timeline = data.timeline;
-      mostrarPlacasDetectadas(data.timeline);
-    } catch (err) {
-      mostrarError("Error cargando resultados: " + err.message);
-    }
-  }
-
-  function mostrarPlacasDetectadas(tl) {
-    const encontradas = new Map();
-    for (const frame of tl) {
-      for (const det of frame.detecciones) {
-        if (det.placa && !encontradas.has(det.placa)) {
-          encontradas.set(det.placa, { tipo: det.tipo, ts_ms: frame.ts_ms });
-        }
-      }
-    }
-
+  function iniciarAnalisis() {
+    analyzing = true;
+    btnAnalizar.disabled = true;
+    btnAnalizar.textContent = "Analizando…";
+    progressWrap.style.display = "block";
+    progressBar.style.width = "0%";
     placasList.innerHTML = "";
-    for (const [placa, info] of encontradas) {
-      const seg = (info.ts_ms / 1000).toFixed(1);
-      const li  = document.createElement("li");
-      li.innerHTML =
-        `<span class="pv-placa-tag">${placa}</span>` +
-        `<span class="pv-placa-tipo">${info.tipo || ""}</span>` +
-        `<span class="pv-placa-ts">${seg}s</span>` +
-        `<button class="pv-placa-btn" data-ts="${info.ts_ms}">&#9654; ir</button>`;
-      placasList.appendChild(li);
-    }
+    if (emptyMsg) emptyMsg.style.display = "block";
+    ocultarError();
+    setStatus("Subiendo video…", "0%");
 
-    if (encontradas.size > 0) {
-      resultsPanel.style.display = "block";
-    }
+    const fd = new FormData();
+    fd.append("video", videoFile, videoFile.name);
 
-    placasList.querySelectorAll(".pv-placa-btn").forEach((btn) => {
-      btn.addEventListener("click", () => {
-        videoEl.currentTime = parseInt(btn.dataset.ts, 10) / 1000;
-        videoEl.play();
-        videoEl.scrollIntoView({ behavior: "smooth", block: "center" });
-      });
-    });
+    const xhr = new XMLHttpRequest();
+    xhr.open("POST", "/placas/video/upload");
+    xhr.upload.onprogress = (e) => {
+      if (e.lengthComputable) {
+        const p = Math.round((e.loaded / e.total) * 100);
+        progressBar.style.width = p + "%";
+        setStatus("Subiendo video…", p + "%");
+      }
+    };
+    xhr.onload = () => {
+      let data;
+      try { data = JSON.parse(xhr.responseText); }
+      catch (_) { fallo("Respuesta inválida del servidor"); return; }
+      if (!data.ok) { fallo(data.error || "Error al subir el video"); return; }
+      jobId = data.job_id;
+      progressBar.style.width = "0%";
+      setStatus("Analizando en servidor…", "0%");
+      videoEl.play();
+      abrirStream();
+    };
+    xhr.onerror = () => fallo("Error de red al subir el video");
+    xhr.send(fd);
   }
 
-  // ── Sincronización video → Canvas ─────────────────────────────────────────────
-  videoEl.addEventListener("timeupdate", dibujarOverlay);
-  videoEl.addEventListener("seeked",     dibujarOverlay);
-  videoEl.addEventListener("play",       dibujarOverlay);
-  window.addEventListener("resize", () => { syncCanvasSize(); dibujarOverlay(); });
+  function abrirStream() {
+    evtSource = new EventSource("/placas/video/" + jobId + "/stream");
+    evtSource.onmessage = (m) => {
+      let d;
+      try { d = JSON.parse(m.data); } catch (_) { return; }
+      aplicarEstado(d);
+    };
+    evtSource.onerror = () => {
+      // El servidor cierra el stream al terminar; solo es error si seguíamos analizando
+      if (analyzing) {
+        cerrarStream();
+        consultarResultadoFinal();
+      }
+    };
+  }
+
+  function aplicarEstado(d) {
+    const pct = Math.round((d.progreso || 0) * 100);
+    progressBar.style.width = pct + "%";
+    setStatus(
+      d.estado === "processing" ? "Analizando en servidor…" : d.estado,
+      pct + "%"
+    );
+    actualizarContadores(d);
+    (d.eventos || []).forEach(procesarEvento);
+
+    if (d.estado === "done")  finalizar(d);
+    if (d.estado === "error") fallo(d.error || "Error en el análisis");
+  }
+
+  function actualizarContadores(d) {
+    if (!countersEl) return;
+    let txt = (d.vehiculos || 0) + " vehículo(s) · " +
+              (d.placas_leidas || 0) + " placa(s) leída(s)";
+    if (d.sin_lectura) txt += " · " + d.sin_lectura + " sin lectura";
+    if (d.modelo_detector === "fallback") txt += " · ⚠ modelo genérico";
+    countersEl.textContent = txt;
+  }
+
+  function procesarEvento(ev) {
+    if (ev.tipo === "placa") {
+      agregarFila(ev.placa, ev.tipo_vehiculo, ev.confianza, ev.ts_s, false);
+    } else if (ev.tipo === "sin_lectura") {
+      agregarFila("SIN LECTURA", null, null, ev.ts_s, true);
+    } else {
+      return; // eventos "vehiculo" solo afectan contadores
+    }
+    if (emptyMsg) emptyMsg.style.display = "none";
+  }
+
+  function finalizar(d) {
+    analyzing = false;
+    cerrarStream();
+    progressBar.style.width = "100%";
+    setStatus(
+      "Análisis completo — " + (d.vehiculos || 0) + " vehículo(s), " +
+      (d.placas_leidas || 0) + " placa(s) leída(s)",
+      "100%"
+    );
+    btnAnalizar.disabled = false;
+    btnAnalizar.textContent = "Analizar de nuevo";
+  }
+
+  function consultarResultadoFinal() {
+    // Red de seguridad si el SSE se corta: pedir el estado completo una vez
+    if (!jobId) return;
+    fetch("/placas/video/" + jobId + "/results")
+      .then((r) => r.json())
+      .then((d) => {
+        if (!d.ok) { fallo(d.error || "Análisis interrumpido"); return; }
+        placasList.innerHTML = "";
+        (d.eventos || []).forEach(procesarEvento);
+        actualizarContadores(d);
+        if (d.estado === "done") finalizar(d);
+      })
+      .catch(() => fallo("Conexión perdida con el servidor"));
+  }
+
+  // ── Tabla de resultados ───────────────────────────────────────────────────────
+  function agregarFila(texto, tipo, confianza, ts, esGris) {
+    const mm   = Math.floor(ts / 60);
+    const ss   = String(Math.floor(ts % 60)).padStart(2, "0");
+    const conf = confianza != null ? Math.round(confianza * 100) + "%" : "—";
+
+    const li = document.createElement("li");
+    li.innerHTML =
+      `<span class="pv-placa-tag${esGris ? " pv-placa-tag--gris" : ""}">${texto}</span>` +
+      `<span class="pv-placa-tipo">${tipo || "—"}</span>` +
+      `<span class="pv-placa-conf">${conf}</span>` +
+      `<span class="pv-placa-ts">${mm}:${ss}</span>` +
+      `<button class="pv-placa-btn" data-ts="${ts}">&#9654; ir</button>`;
+
+    li.querySelector(".pv-placa-btn").addEventListener("click", () => {
+      videoEl.currentTime = ts;
+      videoEl.play();
+      videoEl.scrollIntoView({ behavior: "smooth", block: "center" });
+    });
+
+    placasList.prepend(li); // más reciente arriba
+  }
 
   // ── Helpers UI ────────────────────────────────────────────────────────────────
+  function cerrarStream() {
+    if (evtSource) { evtSource.close(); evtSource = null; }
+  }
+
   function setStatus(msg, pct) {
     statusLabel.textContent = msg;
-    statusPct.textContent   = pct + "%";
-    progressBar.style.width = pct + "%";
+    statusPct.textContent = pct;
+  }
+
+  function fallo(msg) {
+    analyzing = false;
+    cerrarStream();
+    mostrarError(msg);
+    btnAnalizar.disabled = false;
+    btnAnalizar.textContent = "Reintentar análisis";
   }
 
   function mostrarError(msg) {
@@ -274,23 +248,4 @@
   function ocultarError() {
     bannerError.style.display = "none";
   }
-
-  function resetTimeline() {
-    timeline = [];
-    placasList.innerHTML = "";
-    resultsPanel.style.display = "none";
-    Object.keys(trackColors).forEach(k => delete trackColors[k]);
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-  }
-
-  // ── Limpieza al salir ─────────────────────────────────────────────────────────
-  window.addEventListener("beforeunload", () => {
-    if (jobId) {
-      navigator.sendBeacon(`/placas/video/${jobId}`, new Blob(
-        [JSON.stringify({ _method: "DELETE" })],
-        { type: "application/json" }
-      ));
-    }
-  });
-
 })();
