@@ -241,3 +241,70 @@ def test_detector_modo_placas_con_modelo(monkeypatch, tmp_path):
     monkeypatch.setattr(detector, "MODELO_PLACAS", str(modelo))
     monkeypatch.setattr(detector, "_MODO", None)
     assert detector.modo() == "placas"
+
+
+# ── Pipeline: integración con detector y OCR mockeados ────────────────────────
+
+def _video_sintetico(tmp_path, n_frames=30, fps=10):
+    """Genera un .avi de ruido (MJPG viene incluido en opencv-python)."""
+    import cv2
+    import numpy as np
+    path = str(tmp_path / "trafico.avi")
+    vw = cv2.VideoWriter(path, cv2.VideoWriter_fourcc(*"MJPG"), fps, (320, 240))
+    rng = np.random.default_rng(7)
+    for _ in range(n_frames):
+        vw.write(rng.integers(0, 255, size=(240, 320, 3), dtype=np.uint8))
+    vw.release()
+    return path
+
+
+def test_pipeline_cuenta_vehiculo_y_placa(tmp_path):
+    """Un vehículo cruza el video: 1 vehículo confirmado + 1 placa votada."""
+    from unittest.mock import patch
+    from modules.placas.video import pipeline
+    from modules.placas.video.detector import Detection
+    from modules.placas.video.schemas import VideoJob
+
+    video_path = _video_sintetico(tmp_path)
+    job = VideoJob(job_id="test", video_path=video_path)
+
+    def fake_detectar(frame, conf_threshold=0.30):
+        return [Detection(60, 100, 140, 124, 0.9)]   # bbox 80×24 px estable
+
+    with patch.object(pipeline, "yolo_ok", return_value=True), \
+         patch.object(pipeline, "detectar_frame", side_effect=fake_detectar), \
+         patch.object(pipeline, "_ocr_recorte", return_value=("ABC123", 0.9)):
+        pipeline._procesar_video(job)
+
+    assert job.estado == "done"
+    assert job.vehiculos == 1
+    assert job.placas_leidas == 1
+    tipos = [e["tipo"] for e in job.eventos]
+    assert "vehiculo" in tipos
+    assert "placa" in tipos
+    placa_ev = next(e for e in job.eventos if e["tipo"] == "placa")
+    assert placa_ev["placa"] == "ABC123"
+
+
+def test_pipeline_sin_lectura_cuando_ocr_falla(tmp_path):
+    """Si el OCR nunca lee nada válido, el vehículo queda SIN LECTURA."""
+    from unittest.mock import patch
+    from modules.placas.video import pipeline
+    from modules.placas.video.detector import Detection
+    from modules.placas.video.schemas import VideoJob
+
+    video_path = _video_sintetico(tmp_path)
+    job = VideoJob(job_id="test2", video_path=video_path)
+
+    def fake_detectar(frame, conf_threshold=0.30):
+        return [Detection(60, 100, 140, 124, 0.9)]
+
+    with patch.object(pipeline, "yolo_ok", return_value=True), \
+         patch.object(pipeline, "detectar_frame", side_effect=fake_detectar), \
+         patch.object(pipeline, "_ocr_recorte", return_value=("", 0.0)):
+        pipeline._procesar_video(job)
+
+    assert job.estado == "done"
+    assert job.vehiculos == 1
+    assert job.sin_lectura == 1
+    assert job.placas_leidas == 0

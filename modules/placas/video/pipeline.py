@@ -2,61 +2,57 @@
 from __future__ import annotations
 
 import logging
-import re
 import threading
-from concurrent.futures import ThreadPoolExecutor
+from concurrent.futures import Future, ThreadPoolExecutor
 
 import cv2
 
-from modules.placas.engine import ALLOW, extraer_placas_de_texto, _get_reader
+from modules.placas.engine import ALLOW, _get_reader
+from . import detector
 from .detector import Detection, check_deps as yolo_ok, detectar_frame
 from .tracker import PlacaTracker
-from .ocr_cache import OcrTrackCache
-from .schemas import FrameResult, PlacaDeteccion, VideoJob
+from .best_frames import TrackCropBuffer
+from .plate_votes import PlateVoter, ConteoVideo
+from .schemas import VideoJob
 from .job_store import job_store
 
 log = logging.getLogger(__name__)
 
 # ── Configuración de rendimiento ──────────────────────────────────────────────
-YOLO_EVERY_N_FRAMES = 5      # inferencia YOLO 1 de cada N frames (80% menos llamadas)
-MAX_YOLO_DIM = 640           # resize máximo antes de YOLO para reducir cómputo
+YOLO_EVERY_N_FRAMES = 2      # inferencia YOLO 1 de cada N frames
+MAX_YOLO_DIM = 640           # resize máximo antes de YOLO
 OCR_WORKERS = 2              # hilos paralelos de EasyOCR
-MAX_CONCURRENT_JOBS = 2      # límite de videos procesándose en paralelo
+MAX_CONCURRENT_JOBS = 2      # videos procesándose en paralelo
+CIERRE_GAP_S = 1.5           # s de video sin ver el track → se cierra
+OCR_PARCIAL_CADA_S = 2.0     # OCR temprano para tracks largos aún abiertos
+CROP_PAD_PX = 6
 
 _semaphore = threading.Semaphore(MAX_CONCURRENT_JOBS)
 _executor = ThreadPoolExecutor(max_workers=OCR_WORKERS, thread_name_prefix="placas-ocr")
 
 
-# ── Helpers OCR ───────────────────────────────────────────────────────────────
+# ── OCR sobre recorte de placa ────────────────────────────────────────────────
 
-def _recortar_y_ocr(frame_bgr, x1: int, y1: int, x2: int, y2: int) -> str | None:
-    """Recorta región de placa, hace upscale ×3 y aplica EasyOCR (igual que engine.py pase B)."""
-    pad = 6
-    h, w = frame_bgr.shape[:2]
-    cx1, cy1 = max(0, x1 - pad), max(0, y1 - pad)
-    cx2, cy2 = min(w, x2 + pad), min(h, y2 + pad)
-    crop = frame_bgr[cy1:cy2, cx1:cx2]
-    if crop.size == 0 or crop.shape[0] < 8 or crop.shape[1] < 16:
-        return None
-
-    up = cv2.resize(crop, None, fx=3, fy=3, interpolation=cv2.INTER_CUBIC)
-    reader = _get_reader()
+def _ocr_recorte(crop_bgr) -> tuple[str, float]:
+    """Upscale ×3 + EasyOCR con allowlist. Devuelve (texto, confianza_media)."""
     try:
+        up = cv2.resize(crop_bgr, None, fx=3, fy=3, interpolation=cv2.INTER_CUBIC)
+        reader = _get_reader()
         dets = reader.readtext(up, allowlist=ALLOW, detail=1, paragraph=False)
     except Exception:
-        return None
+        return "", 0.0
+    if not dets:
+        return "", 0.0
+    texto = "".join(t for _, t, _ in dets)
+    conf = sum(float(c) for _, _, c in dets) / len(dets)
+    return texto, conf
 
-    texto_concat = "".join(
-        re.sub(r"[^A-Z0-9]", "", t.upper()) for _, t, _ in dets
-    )
-    candidatos = extraer_placas_de_texto(texto_concat)
-    if candidatos:
-        return candidatos[0][0]
-    for _, t, _ in dets:
-        candidatos = extraer_placas_de_texto(t)
-        if candidatos:
-            return candidatos[0][0]
-    return None
+
+def _recortar(frame_bgr, x1: int, y1: int, x2: int, y2: int):
+    h, w = frame_bgr.shape[:2]
+    cx1, cy1 = max(0, x1 - CROP_PAD_PX), max(0, y1 - CROP_PAD_PX)
+    cx2, cy2 = min(w, x2 + CROP_PAD_PX), min(h, y2 + CROP_PAD_PX)
+    return frame_bgr[cy1:cy2, cx1:cx2]
 
 
 def _resize_para_yolo(frame):
@@ -73,8 +69,7 @@ def _escalar_detecciones(dets: list[Detection], scale: float) -> list[Detection]
     return [
         Detection(
             int(d.x1 / scale), int(d.y1 / scale),
-            int(d.x2 / scale), int(d.y2 / scale),
-            d.conf,
+            int(d.x2 / scale), int(d.y2 / scale), d.conf,
         )
         for d in dets
     ]
@@ -93,83 +88,132 @@ def _procesar_video(job: VideoJob) -> None:
     job.fps = cap.get(cv2.CAP_PROP_FPS) or 25.0
     job.total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
     job.duracion_s = job.total_frames / job.fps
+    job.modelo_detector = detector.modo() if yolo_ok() else "sin-yolo"
     job.estado = "processing"
 
     tracker = PlacaTracker()
-    ocr_cache = OcrTrackCache()
+    crops = TrackCropBuffer()
+    voter = PlateVoter()
+    conteo = ConteoVideo()
+    job.eventos = conteo.eventos  # misma lista: appends visibles para el SSE
+
+    # track_id -> {"primer_ts", "ultimo_ts", "confirmado", "ultimo_ocr"}
+    abiertos: dict[int, dict] = {}
+    # OCR parciales en vuelo: alimentan el voter al completarse
+    parciales: list[tuple[Future, int]] = []
+    # tracks cerrados esperando sus OCRs finales: track_id -> (futures, estado)
+    cierres: dict[int, tuple[list[Future], dict]] = {}
+
+    def _drenar_parciales(wait: bool = False) -> None:
+        restantes = []
+        for f, tid in parciales:
+            if wait or f.done():
+                try:
+                    texto, conf = f.result(timeout=10 if wait else 0)
+                    voter.agregar_lectura(tid, texto, conf)
+                except Exception as exc:
+                    log.debug("OCR parcial track %d: %s", tid, exc)
+            else:
+                restantes.append((f, tid))
+        parciales[:] = restantes
+
+    def _iniciar_cierre(tid: int) -> None:
+        est = abiertos.pop(tid)
+        if not est["confirmado"]:
+            crops.descartar(tid)        # track fugaz: falso positivo
+            return
+        futs = [_executor.submit(_ocr_recorte, c) for c in crops.mejores(tid, 3)]
+        crops.descartar(tid)
+        cierres[tid] = (futs, est)
+
+    def _resolver_cierres(wait: bool = False) -> None:
+        for tid in list(cierres):
+            futs, est = cierres[tid]
+            if not wait and not all(f.done() for f in futs):
+                continue
+            for f in futs:
+                try:
+                    texto, conf = f.result(timeout=15 if wait else 0)
+                    voter.agregar_lectura(tid, texto, conf)
+                except Exception as exc:
+                    log.debug("OCR cierre track %d: %s", tid, exc)
+            placa, tipo, conf_voto = voter.resolver(tid)
+            conteo.cerrar_track(
+                tid, placa, tipo, conf_voto, est["primer_ts"], est["ultimo_ts"]
+            )
+            del cierres[tid]
+
     frame_idx = 0
-    last_tracked: list = []
-    futures: dict = {}  # future -> (track_id, PlacaDeteccion)
-
-    def _flush_futures(wait: bool = False) -> None:
-        done = [f for f in list(futures) if wait or f.done()]
-        for f in done:
-            track_id, det = futures.pop(f)
-            try:
-                placa = f.result(timeout=5 if wait else 0)
-                ocr_cache.registrar(track_id, placa)
-                det.placa = placa
-            except Exception as exc:
-                log.debug("OCR future track %d: %s", track_id, exc)
-
     try:
         while True:
             ret, frame = cap.read()
             if not ret:
                 break
+            ts_s = frame_idx / job.fps
 
-            ts_ms = int(frame_idx * 1000 / job.fps)
-            frame_result = FrameResult(ts_ms=ts_ms, frame_idx=frame_idx)
-
-            # ── Detección YOLO (1 de cada N frames) ──────────────────────────
             if frame_idx % YOLO_EVERY_N_FRAMES == 0:
                 yolo_frame, scale = _resize_para_yolo(frame)
-                raw_dets = detectar_frame(yolo_frame) if yolo_ok() else []
-                raw_dets = _escalar_detecciones(raw_dets, scale)
-                last_tracked = tracker.update(raw_dets, frame.shape)
+                raw = detectar_frame(yolo_frame) if yolo_ok() else []
+                raw = _escalar_detecciones(raw, scale)
+                tracked = tracker.update(raw, frame.shape)
 
-            _flush_futures()
-
-            # ── Construir detecciones del frame ──────────────────────────────
-            h, w = frame.shape[:2]
-            for obj in last_tracked:
-                es_nuevo = ocr_cache.es_nuevo(obj.track_id)
-                necesita = ocr_cache.necesita_ocr(obj.track_id)
-                placa_actual = ocr_cache.obtener(obj.track_id)
-
-                det = PlacaDeteccion(
-                    track_id=obj.track_id,
-                    placa=placa_actual,
-                    tipo=None,
-                    confianza=obj.conf,
-                    bbox_norm=(obj.x1 / w, obj.y1 / h, obj.x2 / w, obj.y2 / h),
-                    nuevo=es_nuevo,
-                )
-                frame_result.detecciones.append(det)
-
-                if necesita:
-                    frame_copy = frame.copy()
-                    future = _executor.submit(
-                        _recortar_y_ocr, frame_copy, obj.x1, obj.y1, obj.x2, obj.y2
+                vistos = set()
+                for obj in tracked:
+                    vistos.add(obj.track_id)
+                    est = abiertos.setdefault(
+                        obj.track_id,
+                        {"primer_ts": ts_s, "ultimo_ts": ts_s,
+                         "confirmado": False, "ultimo_ocr": ts_s},
                     )
-                    futures[future] = (obj.track_id, det)
+                    est["ultimo_ts"] = ts_s
+                    crops.agregar(
+                        obj.track_id, _recortar(frame, obj.x1, obj.y1, obj.x2, obj.y2)
+                    )
+                    if not est["confirmado"] and tracker.hits.es_confirmado(obj.track_id):
+                        est["confirmado"] = True
+                        conteo.confirmar_vehiculo(obj.track_id, ts_s)
 
-            if frame_result.detecciones:
-                job.resultados.append(frame_result)
+                    # OCR temprano para tracks largos (feedback antes del cierre)
+                    if (est["confirmado"]
+                            and ts_s - est["ultimo_ocr"] >= OCR_PARCIAL_CADA_S):
+                        est["ultimo_ocr"] = ts_s
+                        mejores = crops.mejores(obj.track_id, 1)
+                        if mejores:
+                            parciales.append(
+                                (_executor.submit(_ocr_recorte, mejores[0]),
+                                 obj.track_id)
+                            )
+
+                # Cerrar tracks que desaparecieron hace > CIERRE_GAP_S
+                for tid in [t for t, e in abiertos.items()
+                            if t not in vistos and ts_s - e["ultimo_ts"] > CIERRE_GAP_S]:
+                    _iniciar_cierre(tid)
+
+            _drenar_parciales()
+            _resolver_cierres()
 
             frame_idx += 1
             job.frames_procesados = frame_idx
             job.progreso = frame_idx / max(job.total_frames, 1)
+            job.vehiculos = conteo.vehiculos
+            job.placas_leidas = conteo.placas_leidas
+            job.sin_lectura = conteo.sin_lectura
 
     finally:
         cap.release()
-        _flush_futures(wait=True)
+        for tid in list(abiertos):
+            _iniciar_cierre(tid)
+        _drenar_parciales(wait=True)
+        _resolver_cierres(wait=True)
+        job.vehiculos = conteo.vehiculos
+        job.placas_leidas = conteo.placas_leidas
+        job.sin_lectura = conteo.sin_lectura
 
     job.estado = "done"
     job.progreso = 1.0
     log.info(
-        "Video job %s completado: %d frames procesados, %d con detecciones",
-        job.job_id, frame_idx, len(job.resultados),
+        "Video job %s: %d frames, %d vehiculos, %d placas, %d sin lectura",
+        job.job_id, frame_idx, job.vehiculos, job.placas_leidas, job.sin_lectura,
     )
 
 
